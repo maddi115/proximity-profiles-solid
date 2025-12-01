@@ -154,29 +154,54 @@ body {
 
 .tease-amount {
   position: absolute;
-  top: calc(50% - 175px);
-  left: calc(50% - 175px);
-  font-size: 90px;
+  top: 10px;
+  left: 10px;
+  font-size: 60px;
+  font-weight: bold;
+  color: white;
+  background: rgba(147, 51, 234, 0.95);
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 2px solid rgba(147, 51, 234, 1);
   z-index: 10001;
+  box-shadow: 0 4px 12px rgba(147, 51, 234, 0.5);
+  opacity: 0;
+  transform: scale(0.8);
+  animation: teaseAppear 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.tease-amount.show {
-  display: block;
+@keyframes teaseAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .sent-msg {
   position: absolute;
-  top: calc(50% - 175px);
-  left: calc(50% - 175px);
+  top: 10px;
+  left: 10px;
   font-size: 90px;
   z-index: 10001;
+  opacity: 0;
+  transform: scale(0.5);
+  animation: reactionAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-@keyframes fadeInOut {
-  0% { opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; }
+@keyframes reactionAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .floating-heart {
@@ -334,6 +359,26 @@ body {
   display: none;
 }
 
-.sent-msg {
-  animation: none !important;
+.following-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 40px;
+  z-index: 10003;
+  opacity: 0;
+  transform: scale(0.5);
+  animation: followingAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  line-height: 1;
+}
+
+@keyframes followingAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

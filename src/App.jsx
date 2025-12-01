@@ -37,9 +37,10 @@ function ProfileMarker(props) {
   const [showActionForm, setShowActionForm] = createSignal(false);
   const [actionLink, setActionLink] = createSignal('');
   const [isHovering, setIsHovering] = createSignal(false);
+  const [imageExpanded, setImageExpanded] = createSignal(false);
 
   // Refs
-  let pulseRef, teaseRef, sentMsgRef, markerRef;
+  let pulseRef, teaseRef, sentMsgRef, markerRef, imgRef;
   let interval, timeout, holding = false, activated = false;
 
   // ==================== BUTTON HANDLERS ====================
@@ -71,7 +72,6 @@ function ProfileMarker(props) {
   const handleFollow = (e) => {
     e.stopPropagation();
     setIsFollowing(!isFollowing());
-    setSavedReaction(isFollowing() ? '✅' : '❌');
   };
 
   const handleActionClick = (e) => {
@@ -126,8 +126,17 @@ function ProfileMarker(props) {
 
   // ==================== HOVER HANDLERS ====================
   
-  const handleMouseEnter = () => setIsHovering(true);
-  const handleMouseLeave = () => setIsHovering(false);
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+    setTimeout(() => {
+      setImageExpanded(true);
+    }, 250);
+  };
+  
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+    setImageExpanded(false);
+  };
 
   // ==================== LIFECYCLE ====================
   
@@ -151,7 +160,7 @@ function ProfileMarker(props) {
   return (
     <div ref={markerRef} class="marker" style={{ top: props.profile.top, left: props.profile.left }}>
       {/* Profile Image */}
-      <img src={props.profile.img} class="marker-img" loading="lazy" />
+      <img ref={imgRef} src={props.profile.img} class="marker-img" loading="lazy" />
       
       {/* Balance Badge */}
       <Show when={props.profile.balance >= 100}>
@@ -161,8 +170,13 @@ function ProfileMarker(props) {
         </div>
       </Show>
       
+      {/* Following Badge - Top Left Corner, separate from reactions */}
+      <Show when={isFollowing() && isHovering()}>
+        <div class="following-badge">⭐</div>
+      </Show>
+      
       {/* Big Reaction Emoji */}
-      <Show when={savedReaction() && isHovering()}>
+      <Show when={savedReaction() && isHovering() && imageExpanded()}>
         <div class="sent-msg" ref={sentMsgRef}>{savedReaction()}</div>
       </Show>
       
