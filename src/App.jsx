@@ -24,62 +24,61 @@ const createHeart = (x, y) => {
 };
 
 function ProfileMarker(props) {
-  const [sentMsg, setSentMsg] = createSignal('');
-  const [showMsg, setShowMsg] = createSignal(false);
+  const [savedReaction, setSavedReaction] = createSignal('');
   const [teaseAmount, setTeaseAmount] = createSignal(1.00);
   const [showAmount, setShowAmount] = createSignal(false);
   const [isHolding, setIsHolding] = createSignal(false);
   const [isFollowing, setIsFollowing] = createSignal(false);
   const [showActionForm, setShowActionForm] = createSignal(false);
   const [actionLink, setActionLink] = createSignal('');
+  const [isHovering, setIsHovering] = createSignal(false);
 
-  let pulseRef, teaseRef;
+  let pulseRef, teaseRef, sentMsgRef, markerRef;
   let interval, timeout, holding = false, activated = false;
 
   const handlePulse = (e) => {
     e.stopPropagation();
-    const rect = pulseRef.getBoundingClientRect();
-    for (let i = 0; i < 3; i++) {
-      setTimeout(() => createHeart(rect.left + rect.width / 2, rect.top + rect.height / 2), i * 100);
+    
+    // Save the reaction permanently for this profile
+    setSavedReaction('❤️');
+    
+    // Get the position of the big emoji reaction
+    if (sentMsgRef) {
+      const rect = sentMsgRef.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => createHeart(centerX, centerY), i * 100);
+      }
     }
-    setSentMsg('sent ❤️ pulse $3.00');
-    setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 2000);
   };
 
   const handleReveal = (e) => {
     e.stopPropagation();
-    setSentMsg('sent 📸 reveal request $4.00');
-    setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 2000);
+    setSavedReaction('📸');
   };
 
   const handleSlap = (e) => {
     e.stopPropagation();
-    setSentMsg('sent 👋 slap $2.00');
-    setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 2000);
+    setSavedReaction('👋');
   };
 
   const handleFollow = (e) => {
     e.stopPropagation();
     setIsFollowing(!isFollowing());
-    setSentMsg(isFollowing() ? '✅ following' : '❌ unfollowed');
-    setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 2000);
+    setSavedReaction(isFollowing() ? '✅' : '❌');
   };
 
   const handleActionClick = (e) => {
     e.stopPropagation();
-    setShowActionForm(true);
+    setShowActionForm(!showActionForm());
   };
 
   const handleActionSubmit = (e) => {
     e.stopPropagation();
     if (actionLink().trim()) {
-      setSentMsg('sent 💭 action $9.00');
-      setShowMsg(true);
-      setTimeout(() => setShowMsg(false), 2000);
+      setSavedReaction('💭');
       setShowActionForm(false);
       setActionLink('');
     }
@@ -115,10 +114,16 @@ function ProfileMarker(props) {
     if (!activated) return;
     clearInterval(interval);
     setIsHolding(false);
-    setSentMsg(`sent 😏 tease $${teaseAmount().toFixed(2)}`);
-    setShowMsg(true);
-    setTimeout(() => setShowMsg(false), 2000);
+    setSavedReaction('😏');
     setTimeout(() => setShowAmount(false), 500);
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
   };
 
   onMount(() => {
@@ -129,10 +134,19 @@ function ProfileMarker(props) {
       teaseRef.addEventListener('touchstart', startTease);
       teaseRef.addEventListener('touchend', stopTease);
     }
+
+    if (markerRef) {
+      markerRef.addEventListener('mouseenter', handleMouseEnter);
+      markerRef.addEventListener('mouseleave', handleMouseLeave);
+    }
   });
 
   return (
-    <div class="marker" style={{ top: props.profile.top, left: props.profile.left }}>
+    <div 
+      ref={markerRef}
+      class="marker" 
+      style={{ top: props.profile.top, left: props.profile.left }}
+    >
       <img src={props.profile.img} class="marker-img" loading="lazy" />
       <Show when={props.profile.balance >= 100}>
         <div class="balance-badge">
@@ -140,59 +154,60 @@ function ProfileMarker(props) {
           <span class="balance-amount">${props.profile.balance}</span>
         </div>
       </Show>
+      <Show when={savedReaction() && isHovering()}>
+        <div class="sent-msg" ref={sentMsgRef}>{savedReaction()}</div>
+      </Show>
+      <Show when={showAmount()}>
+        <div class="tease-amount">${teaseAmount().toFixed(2)}</div>
+      </Show>
       <div class="pulse-action">
         <button ref={pulseRef} class="btn" onClick={handlePulse}>
-          <span style={{ "font-size": "6px" }}>pulse $</span>
+          <span>pulse $</span>
           <span class="btn-emoji">❤️</span>
         </button>
         <button class="btn" onClick={handleReveal}>
-          <span style={{ "font-size": "6px" }}>reveal request pic</span>
+          <span>reveal request pic</span>
           <span class="btn-emoji">📸</span>
         </button>
         <button class="btn" onClick={handleSlap}>
-          <span style={{ "font-size": "6px" }}>slap</span>
+          <span>slap</span>
           <span class="btn-emoji">👋</span>
         </button>
         <button class={`btn ${isFollowing() ? 'following' : ''}`} onClick={handleFollow}>
-          <span style={{ "font-size": "6px" }}>{isFollowing() ? 'following' : 'follow'}</span>
+          <span>{isFollowing() ? 'following' : 'follow'}</span>
           <span class="btn-emoji">{isFollowing() ? '✓' : '+'}</span>
         </button>
-        <button class="btn" onClick={handleActionClick}>
-          <span style={{ "font-size": "6px" }}>what do you want to do to her</span>
-          <span class="btn-emoji">💭</span>
-        </button>
+        <div class="action-button-wrapper">
+          <button class={`btn ${showActionForm() ? 'active' : ''}`} onClick={handleActionClick}>
+            <span>what do you want to do to her</span>
+            <span class="btn-emoji">💭</span>
+          </button>
+          <Show when={showActionForm()}>
+            <div class="action-form">
+              <input
+                type="text"
+                class="action-input"
+                placeholder="Paste image/video link..."
+                value={actionLink()}
+                onInput={(e) => setActionLink(e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+              />
+              <div class="action-form-buttons">
+                <button class="action-submit" onClick={handleActionSubmit}>
+                  Send $9.00
+                </button>
+                <button class="action-cancel" onClick={handleActionCancel}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </Show>
+        </div>
         <button ref={teaseRef} class={`btn tease-btn ${isHolding() ? 'holding' : ''}`}>
-          <span style={{ "font-size": "6px" }}>tease</span>
+          <span>tease</span>
           <span class="btn-emoji">😏</span>
           <div class="tease-hint">hold button to tease</div>
-          <div class={`tease-amount ${showAmount() ? 'show' : ''}`}>${teaseAmount().toFixed(2)}</div>
         </button>
-        <Show when={showMsg()}>
-          <div class="sent-msg">{sentMsg()}</div>
-        </Show>
-        <Show when={showActionForm()}>
-          <div class="action-form">
-            <div class="action-form-header">
-              <span>💭 What do you want to do? ($9.00)</span>
-            </div>
-            <input
-              type="text"
-              class="action-input"
-              placeholder="Paste image/video link..."
-              value={actionLink()}
-              onInput={(e) => setActionLink(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-            />
-            <div class="action-form-buttons">
-              <button class="action-submit" onClick={handleActionSubmit}>
-                Send $9.00
-              </button>
-              <button class="action-cancel" onClick={handleActionCancel}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </Show>
       </div>
     </div>
   );
