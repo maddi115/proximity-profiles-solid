@@ -1,6 +1,7 @@
 import { createSignal, For, Show, onMount } from 'solid-js';
 import './App.css';
 
+// ==================== DATA ====================
 const profiles = [
   { id: 1, img: "https://i.imgur.com/2D8gFpZ.png", top: "42%", left: "50%", balance: 0 },
   { id: 2, img: "https://i.imgur.com/zLafbHr.png", top: "46%", left: "56%", balance: 0 },
@@ -12,6 +13,7 @@ const profiles = [
   { id: 8, img: "https://i.imgur.com/NyAlxXl.png", top: "51%", left: "50%", balance: 0 }
 ];
 
+// ==================== UTILITIES ====================
 const createHeart = (x, y) => {
   const h = document.createElement('div');
   h.className = 'floating-heart';
@@ -23,7 +25,10 @@ const createHeart = (x, y) => {
   setTimeout(() => h.remove(), 3000);
 };
 
+// ==================== COMPONENTS ====================
+
 function ProfileMarker(props) {
+  // State
   const [savedReaction, setSavedReaction] = createSignal('');
   const [teaseAmount, setTeaseAmount] = createSignal(1.00);
   const [showAmount, setShowAmount] = createSignal(false);
@@ -33,21 +38,20 @@ function ProfileMarker(props) {
   const [actionLink, setActionLink] = createSignal('');
   const [isHovering, setIsHovering] = createSignal(false);
 
+  // Refs
   let pulseRef, teaseRef, sentMsgRef, markerRef;
   let interval, timeout, holding = false, activated = false;
 
+  // ==================== BUTTON HANDLERS ====================
+  
   const handlePulse = (e) => {
     e.stopPropagation();
-    
-    // Save the reaction permanently for this profile
     setSavedReaction('❤️');
     
-    // Get the position of the big emoji reaction
     if (sentMsgRef) {
       const rect = sentMsgRef.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-      
       for (let i = 0; i < 3; i++) {
         setTimeout(() => createHeart(centerX, centerY), i * 100);
       }
@@ -90,6 +94,8 @@ function ProfileMarker(props) {
     setActionLink('');
   };
 
+  // ==================== TEASE BUTTON LOGIC ====================
+  
   const startTease = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -118,14 +124,13 @@ function ProfileMarker(props) {
     setTimeout(() => setShowAmount(false), 500);
   };
 
-  const handleMouseEnter = () => {
-    setIsHovering(true);
-  };
+  // ==================== HOVER HANDLERS ====================
+  
+  const handleMouseEnter = () => setIsHovering(true);
+  const handleMouseLeave = () => setIsHovering(false);
 
-  const handleMouseLeave = () => {
-    setIsHovering(false);
-  };
-
+  // ==================== LIFECYCLE ====================
+  
   onMount(() => {
     if (teaseRef) {
       teaseRef.addEventListener('mousedown', startTease);
@@ -141,42 +146,58 @@ function ProfileMarker(props) {
     }
   });
 
+  // ==================== RENDER ====================
+  
   return (
-    <div 
-      ref={markerRef}
-      class="marker" 
-      style={{ top: props.profile.top, left: props.profile.left }}
-    >
+    <div ref={markerRef} class="marker" style={{ top: props.profile.top, left: props.profile.left }}>
+      {/* Profile Image */}
       <img src={props.profile.img} class="marker-img" loading="lazy" />
+      
+      {/* Balance Badge */}
       <Show when={props.profile.balance >= 100}>
         <div class="balance-badge">
           <span class="balance-heart">🤍</span>
           <span class="balance-amount">${props.profile.balance}</span>
         </div>
       </Show>
+      
+      {/* Big Reaction Emoji */}
       <Show when={savedReaction() && isHovering()}>
         <div class="sent-msg" ref={sentMsgRef}>{savedReaction()}</div>
       </Show>
+      
+      {/* Tease Amount Counter */}
       <Show when={showAmount()}>
         <div class="tease-amount">${teaseAmount().toFixed(2)}</div>
       </Show>
+      
+      {/* Action Menu */}
       <div class="pulse-action">
+        {/* Pulse Button */}
         <button ref={pulseRef} class="btn" onClick={handlePulse}>
           <span>pulse $</span>
           <span class="btn-emoji">❤️</span>
         </button>
+        
+        {/* Reveal Button */}
         <button class="btn" onClick={handleReveal}>
           <span>reveal request pic</span>
           <span class="btn-emoji">📸</span>
         </button>
+        
+        {/* Slap Button */}
         <button class="btn" onClick={handleSlap}>
           <span>slap</span>
           <span class="btn-emoji">👋</span>
         </button>
+        
+        {/* Follow Button */}
         <button class={`btn ${isFollowing() ? 'following' : ''}`} onClick={handleFollow}>
           <span>{isFollowing() ? 'following' : 'follow'}</span>
           <span class="btn-emoji">{isFollowing() ? '✓' : '+'}</span>
         </button>
+        
+        {/* Action Form Button */}
         <div class="action-button-wrapper">
           <button class={`btn ${showActionForm() ? 'active' : ''}`} onClick={handleActionClick}>
             <span>what do you want to do to her</span>
@@ -203,6 +224,8 @@ function ProfileMarker(props) {
             </div>
           </Show>
         </div>
+        
+        {/* Tease Button */}
         <button ref={teaseRef} class={`btn tease-btn ${isHolding() ? 'holding' : ''}`}>
           <span>tease</span>
           <span class="btn-emoji">😏</span>
