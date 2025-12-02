@@ -1,12 +1,13 @@
 import { For, ErrorBoundary } from "solid-js";
 import { profiles } from "./data";
 import { ProfileMarker } from "./components/ProfileMarker";
+import styles from "./proximity.module.css"; // <-- NEW CSS MODULE IMPORT
 
 export function ProximityMap() {
   return (
     <div>
-      <div class="proximity-circle"></div>
-      <div class="proximity-label">
+      <div class={styles["proximity-circle"]}></div>
+      <div class={styles["proximity-label"]}>
         people live online within 50ft radius of you
       </div>
 

@@ -1,4 +1,4 @@
-import "./App.css";
+import "./global.css"; // This line is the fix!
 import { ErrorBoundary } from "solid-js";
 import { DynamicIsland } from "./features/proximity/components/DynamicIsland";
 import { ProximityMap } from "./features/proximity/ProximityMap";

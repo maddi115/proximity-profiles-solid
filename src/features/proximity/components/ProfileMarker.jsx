@@ -1,5 +1,9 @@
 import { createSignal, Show, onCleanup } from "solid-js";
 import { createHeart } from "../utils";
+import styles from "../proximity.module.css"; // <-- NEW CSS MODULE IMPORT
+
+// Helper to conditionally join CSS Module classes
+const classNames = (...classes) => classes.filter(Boolean).join(' ');
 
 export function ProfileMarker(props) {
   // State
@@ -132,87 +136,87 @@ export function ProfileMarker(props) {
 
   return (
     <div
-      class="marker"
+      class={styles.marker}
       style={{ top: props.profile.top, left: props.profile.left }}
       onMouseEnter={handleMouseEnterMarker}
       onMouseLeave={handleMouseLeaveMarker}
     >
-      <img src={props.profile.img} class="marker-img" loading="lazy" />
+      <img src={props.profile.img} class={styles["marker-img"]} loading="lazy" />
 
       <Show when={props.profile.balance >= 100}>
-        <div class="balance-badge">
-          <span class="balance-heart">🤍</span>
-          <span class="balance-amount">${props.profile.balance}</span>
+        <div class={styles["balance-badge"]}>
+          <span class={styles["balance-heart"]}>🤍</span>
+          <span class={styles["balance-amount"]}>${props.profile.balance}</span>
         </div>
       </Show>
 
       <Show when={isFollowing() && isHovering()}>
-        <div class="following-badge">⭐</div>
+        <div class={styles["following-badge"]}>⭐</div>
       </Show>
 
       <Show when={savedReaction() && isHovering() && imageExpanded()}>
-        <div class="sent-msg" ref={sentMsgRef}>
+        <div class={styles["sent-msg"]} ref={sentMsgRef}>
           {savedReaction()}
         </div>
       </Show>
 
       <Show when={showAmount()}>
-        <div class="tease-amount">${teaseAmount().toFixed(2)}</div>
+        <div class={styles["tease-amount"]}>${teaseAmount().toFixed(2)}</div>
       </Show>
 
-      <div class="pulse-action">
+      <div class={styles["pulse-action"]}>
         {/* Pulse Button */}
-        <button class="btn" onClick={handlePulse}>
+        <button class={styles.btn} onClick={handlePulse}>
           <span>pulse $</span>
-          <span class="btn-emoji">❤️</span>
+          <span class={styles["btn-emoji"]}>❤️</span>
         </button>
 
         {/* Reveal Button */}
-        <button class="btn" onClick={handleReveal}>
+        <button class={styles.btn} onClick={handleReveal}>
           <span>reveal request pic</span>
-          <span class="btn-emoji">📸</span>
+          <span class={styles["btn-emoji"]}>📸</span>
         </button>
 
         {/* Slap Button */}
-        <button class="btn" onClick={handleSlap}>
+        <button class={styles.btn} onClick={handleSlap}>
           <span>slap</span>
-          <span class="btn-emoji">👋</span>
+          <span class={styles["btn-emoji"]}>👋</span>
         </button>
 
         {/* Follow Button */}
         <button
-          class={`btn ${isFollowing() ? "following" : ""}`}
+          class={classNames(styles.btn, isFollowing() && styles.following)}
           onClick={handleFollow}
         >
           <span>{isFollowing() ? "following" : "follow"}</span>
-          <span class="btn-emoji">{isFollowing() ? "✓" : "+"}</span>
+          <span class={styles["btn-emoji"]}>{isFollowing() ? "✓" : "+"}</span>
         </button>
 
         {/* Action Form Button */}
-        <div class="action-button-wrapper">
+        <div class={styles["action-button-wrapper"]}>
           <button
-            class={`btn ${showActionForm() ? "active" : ""}`}
+            class={classNames(styles.btn, showActionForm() && styles.active)}
             onClick={handleActionClick}
           >
             <span>what do you want to do to her</span>
-            <span class="btn-emoji">💭</span>
+            <span class={styles["btn-emoji"]}>💭</span>
           </button>
 
           <Show when={showActionForm()}>
-            <div class="action-form">
+            <div classs={styles["action-form"]}>
               <input
                 type="text"
-                class="action-input"
+                class={styles["action-input"]}
                 placeholder="Paste image/video link..."
                 value={actionLink()}
                 onInput={(e) => setActionLink(e.currentTarget.value)}
                 onClick={(e) => e.stopPropagation()}
               />
-              <div class="action-form-buttons">
-                <button class="action-submit" onClick={handleActionSubmit}>
+              <div class={styles["action-form-buttons"]}>
+                <button class={styles["action-submit"]} onClick={handleActionSubmit}>
                   Send $9.00
                 </button>
-                <button class="action-cancel" onClick={handleActionCancel}>
+                <button class={styles["action-cancel"]} onClick={handleActionCancel}>
                   Cancel
                 </button>
               </div>
@@ -222,7 +226,7 @@ export function ProfileMarker(props) {
 
         {/* Tease Button */}
         <button
-          class={`btn tease-btn ${isHolding() ? "holding" : ""}`}
+          class={classNames(styles.btn, styles["tease-btn"], isHolding() && styles.holding)}
           onMouseDown={startTease}
           onMouseUp={stopTease}
           onMouseLeave={stopTease}
@@ -230,8 +234,8 @@ export function ProfileMarker(props) {
           onTouchEnd={stopTease}
         >
           <span>tease</span>
-          <span class="btn-emoji">😏</span>
-          <div class="tease-hint">hold button to tease</div>
+          <span class={styles["btn-emoji"]}>😏</span>
+          <div class={styles["tease-hint"]}>hold button to tease</div>
         </button>
       </div>
     </div>
