@@ -13,6 +13,14 @@ const profiles = [
   { id: 8, img: "https://i.imgur.com/NyAlxXl.png", top: "51%", left: "50%", balance: 0 }
 ];
 
+// User profile for dynamic island
+const userProfile = {
+  img: "https://i.imgur.com/2D8gFpZ.png"
+};
+
+// Closest profile (simulated - in real app this would be calculated by distance)
+const closestProfile = profiles[1]; // Using profile 2 as closest
+
 // ==================== UTILITIES ====================
 const createHeart = (x, y) => {
   const h = document.createElement('div');
@@ -26,6 +34,25 @@ const createHeart = (x, y) => {
 };
 
 // ==================== COMPONENTS ====================
+
+function DynamicIsland() {
+  return (
+    <div class="dynamic-island">
+      <div class="island-avatar">
+        <img src={userProfile.img} alt="You" />
+      </div>
+      
+      <div class="proximity-text">really close to</div>
+      
+      <div class="island-avatar">
+        <img src={closestProfile.img} alt="Nearby" />
+        <div class="live-indicator">
+          <span class="live-icon">👁️</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function ProfileMarker(props) {
   // State
@@ -253,6 +280,7 @@ function ProfileMarker(props) {
 function App() {
   return (
     <div>
+      <DynamicIsland />
       <div class="proximity-circle"></div>
       <div class="proximity-label">people live online within 50ft radius of you</div>
       <For each={profiles}>{profile => <ProfileMarker profile={profile} />}</For>
