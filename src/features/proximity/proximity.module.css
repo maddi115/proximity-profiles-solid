@@ -345,3 +345,22 @@
     transform: scale(1);
   }
 }
+
+.floating-heart {
+  position: fixed;
+  font-size: 40px;
+  pointer-events: none;
+  z-index: 10002;
+  animation: floatUp 3s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0) translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px) translateX(var(--drift-x, 0px)) scale(0.5);
+  }
+}
