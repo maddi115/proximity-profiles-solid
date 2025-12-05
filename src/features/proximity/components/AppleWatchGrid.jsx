@@ -14,11 +14,12 @@ export function AppleWatchGrid(props) {
   let snapStartTime = 0;
   let snapStartOffset = { x: 0, y: 0 };
   let snapTargetOffset = { x: 0, y: 0 };
+  let lastCenteredProfile = null;
   
   const RADIUS = 35;
   const PADDING = 12;
   const SCALE_FACTOR = 220;
-  const SNAP_DURATION = 1200; // Longer, smoother
+  const SNAP_DURATION = 1200;
   
   let cullingBox = {
     x: 0,
@@ -164,7 +165,33 @@ export function AppleWatchGrid(props) {
       );
     };
     
-    // Buttery smooth cubic bezier easing (ease-out-cubic with gentle overshoot)
+    // Find the most centered profile (closest to box center)
+    const getCenteredProfile = () => {
+      const centerX = cullingBox.x + cullingBox.width / 2;
+      const centerY = cullingBox.y + cullingBox.height / 2;
+      
+      const visibleCircles = circles.filter(isInCullingBox);
+      if (visibleCircles.length === 0) return null;
+      
+      let closest = visibleCircles[0];
+      let minDist = Infinity;
+      
+      visibleCircles.forEach(circle => {
+        const screenX = circle.x + offsetX;
+        const screenY = circle.y + offsetY;
+        const dx = screenX - centerX;
+        const dy = screenY - centerY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        if (dist < minDist) {
+          minDist = dist;
+          closest = circle;
+        }
+      });
+      
+      return closest;
+    };
+    
     const easeOutBack = (t) => {
       const c1 = 1.70158;
       const c3 = c1 + 1;
@@ -217,6 +244,13 @@ export function AppleWatchGrid(props) {
       
       if (visibleCircles.length === 0 && !isDragging && !isSnapping) {
         startSnapback();
+      }
+      
+      // Detect centered profile and notify parent
+      const centeredProfile = getCenteredProfile();
+      if (centeredProfile && centeredProfile.id !== lastCenteredProfile) {
+        lastCenteredProfile = centeredProfile.id;
+        props.onCenterProfileChange?.(centeredProfile.id);
       }
       
       const sorted = [...visibleCircles].sort((a, b) => {

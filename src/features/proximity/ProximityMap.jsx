@@ -1,4 +1,4 @@
-import { createSignal, onMount, Show } from "solid-js";
+import { createSignal, onMount, Show, createEffect } from "solid-js";
 import { profiles } from "./data";
 import { proximityActions, store } from "../../store/proximityStore";
 import { AppleWatchGrid } from "./components/AppleWatchGrid";
@@ -6,7 +6,7 @@ import { useProfileActions } from "./useProfileActions";
 import styles from "./proximity.module.css";
 
 export function ProximityMap() {
-  const [selectedProfile, setSelectedProfile] = createSignal(profiles[0]); // Default to first profile
+  const [selectedProfile, setSelectedProfile] = createSignal(profiles[0]);
   
   onMount(() => {
     proximityActions.initializeProfiles(profiles);
@@ -14,6 +14,14 @@ export function ProximityMap() {
   
   const handleProfileClick = (profile) => {
     setSelectedProfile(profile);
+  };
+  
+  // Auto-select profile based on what's most centered/visible
+  const handleAutoSelect = (profileId) => {
+    const profile = profiles.find(p => p.id === profileId);
+    if (profile) {
+      setSelectedProfile(profile);
+    }
   };
   
   const getStoreProfile = () => {
@@ -29,6 +37,7 @@ export function ProximityMap() {
       <AppleWatchGrid 
         profiles={profiles} 
         onProfileClick={handleProfileClick}
+        onCenterProfileChange={handleAutoSelect}
       />
       
       {/* Always visible bottom panel */}
