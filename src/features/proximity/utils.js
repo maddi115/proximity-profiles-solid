@@ -1,6 +1,12 @@
 import { animate } from "motion";
 import { DURATIONS } from "./constants";
 
+/**
+ * Calculate Euclidean distance between two coordinate points
+ * @param {Object} userCoords - User coordinates with left/top as percentages
+ * @param {Object} profileCoords - Profile coordinates with left/top as percentages
+ * @returns {number} Distance between points
+ */
 export function calculateDistance(userCoords, profileCoords) {
   const parseCoord = (coord) => parseFloat(coord.replace("%", ""));
   const userX = parseCoord(userCoords.left);
@@ -12,6 +18,12 @@ export function calculateDistance(userCoords, profileCoords) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
+/**
+ * Create and animate a heart emoji at specified coordinates
+ * Uses hardware-accelerated CSS transforms for 60fps animation
+ * @param {number} x - X coordinate in pixels
+ * @param {number} y - Y coordinate in pixels
+ */
 export function createHeart(x, y) {
   const heart = document.createElement("div");
   heart.style.cssText = `
@@ -42,7 +54,7 @@ export function createHeart(x, y) {
       ]
     },
     {
-      duration: DURATIONS.heart / 1000, // Convert to seconds
+      duration: DURATIONS.heart / 1000,
       easing: [0.25, 0.1, 0.25, 1.0]
     }
   ).finished.then(() => {

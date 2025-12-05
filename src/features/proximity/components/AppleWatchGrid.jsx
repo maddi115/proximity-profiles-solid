@@ -3,10 +3,15 @@ import styles from "./appleWatch.module.css";
 import { generateHoneycombPositions, getGridBounds } from "./layout/honeycombLayout";
 import { useSnapback } from "./canvas/useSnapback";
 import { useCulling } from "./canvas/useCulling";
-import { RADIUS, PADDING, SCALE_FACTOR, COLORS, CULLING_BOX, DURATIONS, DRAG_THRESHOLD } from "../constants";
+import { useProfileClick } from "./interactions/useProfileClick";
+import { RADIUS, PADDING, SCALE_FACTOR, COLORS, CULLING_BOX, DURATIONS } from "../constants";
 
 /**
  * Apple Watch-style honeycomb grid with reactive culling and snapback
+ * @param {Object} props
+ * @param {import('../types').Profile[]} props.profiles - Array of profiles to display
+ * @param {Function} props.onProfileClick - Callback when profile is clicked
+ * @param {Function} props.onCenterProfileChange - Callback when centered profile changes
  */
 export function AppleWatchGrid(props) {
   let canvasRef;
@@ -29,9 +34,10 @@ export function AppleWatchGrid(props) {
   const [dragStart, setDragStart] = createSignal({ x: 0, y: 0 });
   const [dragInitialOffset, setDragInitialOffset] = createSignal({ x: 0, y: 0 });
   
-  // Reactive culling and snapback
+  // Hooks
   const culling = useCulling(circles, offset, cullingBox, RADIUS, SCALE_FACTOR);
   const snapback = useSnapback(DURATIONS.snapback);
+  const clickHandler = useProfileClick();
   
   // Auto-update offset during snapback
   createEffect(() => {
@@ -249,31 +255,19 @@ export function AppleWatchGrid(props) {
     };
     
     const handleClick = (e) => {
-      const start = dragStart();
-      const dragDist = Math.sqrt(
-        Math.pow(e.clientX - start.x, 2) + Math.pow(e.clientY - start.y, 2)
+      const clickedProfile = clickHandler.detectClickedProfile(
+        e,
+        culling.visibleCircles(),
+        offset(),
+        cullingBox(),
+        dragStart(),
+        culling.getDistance,
+        overlayRef
       );
       
-      if (dragDist > DRAG_THRESHOLD) return;
-      
-      const box = cullingBox();
-      const rect = overlayRef.getBoundingClientRect();
-      const clickX = e.clientX - rect.left + box.x;
-      const clickY = e.clientY - rect.top + box.y;
-      
-      culling.visibleCircles().forEach((circle) => {
-        const scale = culling.getDistance(circle);
-        const currentOffset = offset();
-        const screenX = circle.x + currentOffset.x;
-        const screenY = circle.y + currentOffset.y;
-        const dx = screenX - clickX;
-        const dy = screenY - clickY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        
-        if (dist < RADIUS * scale) {
-          props.onProfileClick?.(circle.profile);
-        }
-      });
+      if (clickedProfile) {
+        props.onProfileClick?.(clickedProfile);
+      }
     };
     
     if (overlayRef) {

@@ -1,5 +1,5 @@
 import { Show, createMemo } from "solid-js";
-import { useProfileActions } from "../useProfileActions";
+import { useProfileActions } from "../hooks/useProfileActions";
 import styles from "../proximity.module.css";
 
 /**
