@@ -1,0 +1,1023 @@
+.proximity-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.proximity-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  text-align: center;
+  max-width: 200px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.marker {
+  position: absolute;
+  cursor: pointer;
+  z-index: 100;
+  transition: transform 0.2s ease;
+}
+
+.marker:hover {
+  transform: scale(1.1);
+  z-index: 101;
+}
+
+.marker-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  object-fit: cover;
+  transition: border-color 0.3s ease;
+}
+
+.marker:hover .marker-img {
+  border-color: #ff69b4;
+}
+
+.balance-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 10000;
+}
+
+.balance-heart {
+  font-size: 14px;
+}
+
+.balance-amount {
+  color: white;
+  font-weight: bold;
+}
+
+.following-badge {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  font-size: 24px;
+  z-index: 10000;
+}
+
+.sent-msg {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 90px;
+  z-index: 10001;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  opacity: 0;
+  transform: translate3d(0, 0, 0) scale(0.5);
+  animation: reactionAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes reactionAppear {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.tease-amount {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 105, 180, 0.9);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 10000;
+}
+
+.pulse-action {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  min-width: 200px;
+}
+
+.marker:hover .pulse-action {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.btn {
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: rgba(255, 105, 180, 0.9);
+  border-color: #ff69b4;
+  transform: scale(1.05);
+}
+
+.btn-emoji {
+  font-size: 16px;
+}
+
+.following {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: gold;
+}
+
+.tease-btn {
+  position: relative;
+}
+
+.tease-hint {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+
+.holding {
+  background: rgba(255, 105, 180, 1);
+  transform: scale(1.1);
+}
+
+.action-button-wrapper {
+  position: relative;
+}
+
+.active {
+  background: rgba(147, 51, 234, 0.9);
+}
+
+.action-form {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 12px;
+  z-index: 10001;
+}
+
+.action-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: white;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.action-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.action-form-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-submit, .action-cancel {
+  flex: 1;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+}
+
+.action-submit {
+  background: rgba(147, 51, 234, 0.9);
+  color: white;
+}
+
+.action-cancel {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.floating-heart {
+  position: fixed;
+  font-size: 40px;
+  pointer-events: none;
+  z-index: 10002;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+/* ========================================
+   MOBILE-FRIENDLY BOTTOM SHEET
+   ======================================== */
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, rgba(30, 30, 35, 0.98) 0%, rgba(20, 20, 25, 0.98) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 24px 24px 0 0;
+  padding: 24px;
+  z-index: 9999;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  max-height: 70vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.sheetHandle {
+  width: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+
+.sheetProfile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sheetAvatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3px solid #ff69b4;
+  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+}
+
+.sheetBalance {
+  color: white;
+  font-size: 28px;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.sheetActions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.sheetBtn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  min-height: 120px;
+  touch-action: manipulation;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.sheetBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 105, 180, 0.1), rgba(147, 51, 234, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sheetBtn:hover::before {
+  opacity: 1;
+}
+
+.sheetBtn:active {
+  transform: scale(0.95);
+  background: rgba(255, 105, 180, 0.2);
+  border-color: #ff69b4;
+}
+
+.sheetEmoji {
+  font-size: 42px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.sheetCost {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  font-weight: 400;
+  margin-top: 4px;
+}
+
+.sheetFollowing {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+.sheetFollowing:active {
+  background: rgba(255, 215, 0, 0.25);
+}
+
+/* ========================================
+   RESPONSIVE: TABLET & DESKTOP
+   ======================================== */
+
+@media (min-width: 768px) {
+  .sheet {
+    right: 20px;
+    left: auto;
+    bottom: 20px;
+    top: 20px;
+    max-width: 400px;
+    border-radius: 24px;
+    animation: slideInRight 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+  
+  @keyframes slideInRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  
+  .sheetHandle {
+    display: none;
+  }
+  
+  .sheetActions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .sheetBtn {
+    min-height: 130px;
+    padding: 28px 20px;
+  }
+  
+  .sheetEmoji {
+    font-size: 48px;
+  }
+}
+
+/* ========================================
+   LARGE DESKTOP
+   ======================================== */
+
+@media (min-width: 1200px) {
+  .sheet {
+    max-width: 450px;
+  }
+  
+  .sheetActions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .sheetBtn {
+    min-height: 140px;
+  }
+}
+
+/* ========================================
+   MARKER UPDATES FOR MOBILE
+   ======================================== */
+
+.marker {
+  position: absolute;
+  cursor: pointer;
+  z-index: 100;
+  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.marker:active {
+  transform: scale(1.1);
+}
+
+@media (hover: hover) {
+  .marker:hover {
+    transform: scale(1.15);
+    z-index: 101;
+  }
+}
+
+.marker-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  object-fit: cover;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@media (hover: hover) {
+  .marker:hover .marker-img {
+    border-color: #ff69b4;
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+  }
+}
+
+/* Mobile: Larger tap targets */
+@media (max-width: 767px) {
+  .marker-img {
+    width: 70px;
+    height: 70px;
+    border-width: 4px;
+  }
+  
+  .balance-badge {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY & TOUCH IMPROVEMENTS
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .backdrop,
+  .sheetBtn {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Improve scrolling on iOS */
+.sheet {
+  overscroll-behavior: contain;
+}
+
+/* Better text rendering */
+.sheetBtn {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   MOBILE-FRIENDLY BOTTOM SHEET (UBER STYLE)
+   ======================================== */
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 500px;
+  background: linear-gradient(180deg, rgba(30, 30, 35, 0.98) 0%, rgba(20, 20, 25, 0.98) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 24px 24px 0 0;
+  padding: 24px;
+  z-index: 9999;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  max-height: 70vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateX(-50%) translateY(100%); 
+  }
+  to { 
+    transform: translateX(-50%) translateY(0); 
+  }
+}
+
+.sheetHandle {
+  width: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+
+.sheetProfile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sheetAvatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3px solid #ff69b4;
+  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+}
+
+.sheetBalance {
+  color: white;
+  font-size: 28px;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.sheetActions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.sheetBtn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  min-height: 120px;
+  touch-action: manipulation;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.sheetBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 105, 180, 0.1), rgba(147, 51, 234, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sheetBtn:hover::before {
+  opacity: 1;
+}
+
+.sheetBtn:active {
+  transform: scale(0.95);
+  background: rgba(255, 105, 180, 0.2);
+  border-color: #ff69b4;
+}
+
+.sheetEmoji {
+  font-size: 42px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.sheetCost {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  font-weight: 400;
+  margin-top: 4px;
+}
+
+.sheetFollowing {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+.sheetFollowing:active {
+  background: rgba(255, 215, 0, 0.25);
+}
+
+/* ========================================
+   RESPONSIVE: TABLET & DESKTOP
+   ======================================== */
+
+@media (min-width: 768px) {
+  .sheet {
+    bottom: 20px;
+    max-width: 600px;
+    border-radius: 24px;
+    animation: slideUpDesktop 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+  
+  @keyframes slideUpDesktop {
+    from { 
+      transform: translateX(-50%) translateY(100%); 
+    }
+    to { 
+      transform: translateX(-50%) translateY(0); 
+    }
+  }
+  
+  .sheetHandle {
+    display: none;
+  }
+  
+  .sheetActions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .sheetBtn {
+    min-height: 130px;
+    padding: 28px 20px;
+  }
+  
+  .sheetEmoji {
+    font-size: 48px;
+  }
+}
+
+/* ========================================
+   LARGE DESKTOP
+   ======================================== */
+
+@media (min-width: 1200px) {
+  .sheet {
+    max-width: 700px;
+  }
+  
+  .sheetActions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .sheetBtn {
+    min-height: 140px;
+  }
+}
+
+/* ========================================
+   MARKER UPDATES FOR MOBILE
+   ======================================== */
+
+.marker {
+  position: absolute;
+  cursor: pointer;
+  z-index: 100;
+  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.marker:active {
+  transform: scale(1.1);
+}
+
+@media (hover: hover) {
+  .marker:hover {
+    transform: scale(1.15);
+    z-index: 101;
+  }
+}
+
+.marker-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  object-fit: cover;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@media (hover: hover) {
+  .marker:hover .marker-img {
+    border-color: #ff69b4;
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+  }
+}
+
+/* Mobile: Larger tap targets */
+@media (max-width: 767px) {
+  .marker-img {
+    width: 70px;
+    height: 70px;
+    border-width: 4px;
+  }
+  
+  .balance-badge {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY & TOUCH IMPROVEMENTS
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .backdrop,
+  .sheetBtn {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Improve scrolling on iOS */
+.sheet {
+  overscroll-behavior: contain;
+}
+
+/* Better text rendering */
+.sheetBtn {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Apple Watch-style breathing animation */
+@keyframes breathe {
+  0%, 100% { 
+    transform: scale(1) translateZ(0); 
+  }
+  50% { 
+    transform: scale(1.05) translateZ(0); 
+  }
+}
+
+.marker {
+  animation: breathe 3s ease-in-out infinite;
+  animation-delay: calc(var(--marker-index) * 0.1s);
+}
+
+/* Stagger the animations */
+.marker:nth-child(1) { --marker-index: 0; }
+.marker:nth-child(2) { --marker-index: 1; }
+.marker:nth-child(3) { --marker-index: 2; }
+.marker:nth-child(4) { --marker-index: 3; }
+.marker:nth-child(5) { --marker-index: 4; }
+.marker:nth-child(6) { --marker-index: 5; }
+.marker:nth-child(7) { --marker-index: 6; }
+.marker:nth-child(8) { --marker-index: 7; }
+
+  display: none;
+}
+
+/* Always visible bottom sheet - CENTERED on all devices */
+.sheet {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 500px;
+  background: linear-gradient(180deg, rgba(30, 30, 35, 0.95) 0%, rgba(20, 20, 25, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 24px 24px 0 0;
+  padding: 20px 24px 24px 24px;
+  z-index: 9999;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+  max-height: 50vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sheetHandle {
+  width: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+.sheetProfile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sheetAvatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid #ff69b4;
+  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+}
+
+.sheetBalance {
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.sheetActions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.sheetBtn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  min-height: 100px;
+  touch-action: manipulation;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.sheetBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 105, 180, 0.1), rgba(147, 51, 234, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sheetBtn:hover::before {
+  opacity: 1;
+}
+
+.sheetBtn:active {
+  transform: scale(0.95);
+  background: rgba(255, 105, 180, 0.2);
+  border-color: #ff69b4;
+}
+
+.sheetEmoji {
+  font-size: 36px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.sheetCost {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.sheetFollowing {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+.sheetFollowing:active {
+  background: rgba(255, 215, 0, 0.25);
+}
+
+/* Desktop: Keep it bottom center, just make it slightly bigger and rounded */
+@media (min-width: 768px) {
+  .sheet {
+    bottom: 20px;
+    max-width: 600px;
+    border-radius: 24px;  /* Rounded on all sides for desktop */
+  }
+  
+  .sheetHandle {
+    display: none;
+  }
+  
+  .sheetActions {
+    gap: 14px;
+  }
+  
+  .sheetBtn {
+    min-height: 110px;
+    padding: 24px 16px;
+  }
+  
+  .sheetEmoji {
+    font-size: 40px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .sheet {
+    max-width: 700px;
+    bottom: 30px;
+  }
+  
+  .sheetActions {
+    gap: 16px;
+  }
+  
+  .sheetBtn {
+    min-height: 120px;
+  }
+}
+
+/* Remove backdrop */
+.backdrop {
+  display: none;
+}

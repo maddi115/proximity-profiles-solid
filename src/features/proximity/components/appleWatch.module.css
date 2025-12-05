@@ -1,0 +1,12 @@
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  cursor: grab;
+  touch-action: none;
+  background: black;
+}
+
+.canvas:active {
+  cursor: grabbing;
+}
