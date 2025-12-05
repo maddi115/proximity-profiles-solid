@@ -1,4 +1,5 @@
 import { animate } from "motion";
+import { DURATIONS } from "./constants";
 
 export function calculateDistance(userCoords, profileCoords) {
   const parseCoord = (coord) => parseFloat(coord.replace("%", ""));
@@ -26,12 +27,10 @@ export function createHeart(x, y) {
     transform-style: preserve-3d;
   `;
   heart.innerHTML = "❤️";
-  
   const driftX = (Math.random() - 0.5) * 50;
   
   document.body.appendChild(heart);
   
-  // Silky smooth with spring physics
   animate(
     heart,
     {
@@ -43,8 +42,8 @@ export function createHeart(x, y) {
       ]
     },
     {
-      duration: 2,
-      easing: [0.25, 0.1, 0.25, 1.0]  // Smooth cubic bezier
+      duration: DURATIONS.heart / 1000, // Convert to seconds
+      easing: [0.25, 0.1, 0.25, 1.0]
     }
   ).finished.then(() => {
     heart.remove();

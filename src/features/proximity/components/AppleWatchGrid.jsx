@@ -1,14 +1,13 @@
-import { onMount, onCleanup, createSignal, createEffect, createMemo } from "solid-js";
+import { onMount, onCleanup, createSignal, createEffect } from "solid-js";
 import styles from "./appleWatch.module.css";
 import { generateHoneycombPositions, getGridBounds } from "./layout/honeycombLayout";
 import { useSnapback } from "./canvas/useSnapback";
 import { useCulling } from "./canvas/useCulling";
+import { RADIUS, PADDING, SCALE_FACTOR, COLORS, CULLING_BOX, DURATIONS, DRAG_THRESHOLD } from "../constants";
 
-const RADIUS = 35;
-const PADDING = 12;
-const SCALE_FACTOR = 220;
-const COLORS = ["#FF9AA2", "#FFB7B2", "#FFDAC1", "#E2F0CB", "#B5EAD7", "#C7CEEA"];
-
+/**
+ * Apple Watch-style honeycomb grid with reactive culling and snapback
+ */
 export function AppleWatchGrid(props) {
   let canvasRef;
   let overlayRef;
@@ -19,19 +18,22 @@ export function AppleWatchGrid(props) {
   // Reactive state
   const [circles, setCircles] = createSignal([]);
   const [offset, setOffset] = createSignal({ x: 0, y: 0 });
-  const [cullingBox, setCullingBox] = createSignal({ x: 0, y: 0, width: 500, height: 350 });
+  const [cullingBox, setCullingBox] = createSignal({ 
+    x: 0, 
+    y: 0, 
+    width: CULLING_BOX.width, 
+    height: CULLING_BOX.height 
+  });
   const [isDragging, setIsDragging] = createSignal(false);
   const [centerOffset, setCenterOffset] = createSignal({ x: 0, y: 0 });
   const [dragStart, setDragStart] = createSignal({ x: 0, y: 0 });
   const [dragInitialOffset, setDragInitialOffset] = createSignal({ x: 0, y: 0 });
   
-  // Reactive culling calculations
+  // Reactive culling and snapback
   const culling = useCulling(circles, offset, cullingBox, RADIUS, SCALE_FACTOR);
+  const snapback = useSnapback(DURATIONS.snapback);
   
-  // Reactive snapback
-  const snapback = useSnapback(1200);
-  
-  // Auto-update offset during snapback (reactive effect)
+  // Auto-update offset during snapback
   createEffect(() => {
     const snapOffset = snapback.currentOffset();
     if (snapOffset) {
@@ -39,7 +41,7 @@ export function AppleWatchGrid(props) {
     }
   });
   
-  // Auto-trigger snapback when no profiles visible (reactive effect)
+  // Auto-trigger snapback when no profiles visible
   createEffect(() => {
     const visible = culling.visibleCircles();
     if (visible.length === 0 && !isDragging() && !snapback.isSnapping()) {
@@ -47,7 +49,7 @@ export function AppleWatchGrid(props) {
     }
   });
   
-  // Auto-notify parent of centered profile changes (reactive effect)
+  // Auto-notify parent of centered profile changes
   createEffect(() => {
     const centered = culling.centeredProfile();
     if (centered) {
@@ -116,7 +118,7 @@ export function AppleWatchGrid(props) {
       setOffset(centered);
     };
     
-    // Render loop - reads from reactive signals
+    // Render loop
     const draw = () => {
       ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
       
@@ -136,7 +138,7 @@ export function AppleWatchGrid(props) {
       ctx.clip();
       ctx.translate(currentOffset.x, currentOffset.y);
       
-      // Render sorted visible circles (reactive)
+      // Render sorted visible circles
       const sorted = culling.sortedVisibleCircles();
       
       sorted.forEach((circle) => {
@@ -252,7 +254,7 @@ export function AppleWatchGrid(props) {
         Math.pow(e.clientX - start.x, 2) + Math.pow(e.clientY - start.y, 2)
       );
       
-      if (dragDist > 5) return;
+      if (dragDist > DRAG_THRESHOLD) return;
       
       const box = cullingBox();
       const rect = overlayRef.getBoundingClientRect();
