@@ -10,16 +10,21 @@ export function AppleWatchGrid(props) {
   let ctx, circles = [], offsetX, offsetY;
   let startX, startY, oldOffsetX, oldOffsetY;
   let isDragging = false;
+  let isSnapping = false;
+  let snapStartTime = 0;
+  let snapStartOffset = { x: 0, y: 0 };
+  let snapTargetOffset = { x: 0, y: 0 };
   
   const RADIUS = 35;
   const PADDING = 12;
   const SCALE_FACTOR = 220;
+  const SNAP_DURATION = 1200; // Longer, smoother
   
   let cullingBox = {
     x: 0,
     y: 0,
     width: 500,
-    height: 600
+    height: 350
   };
 
   onMount(() => {
@@ -36,7 +41,6 @@ export function AppleWatchGrid(props) {
       canvasRef.width = window.innerWidth;
       canvasRef.height = window.innerHeight;
       
-      // Position box in ABSOLUTE center of screen
       cullingBox.x = (canvasRef.width - cullingBox.width) / 2;
       cullingBox.y = (canvasRef.height - cullingBox.height) / 2;
       
@@ -61,10 +65,12 @@ export function AppleWatchGrid(props) {
         });
       });
       
-      // Center profiles inside the culling box
       const bounds = getGridBounds(positions);
       offsetX = cullingBox.x + (cullingBox.width - bounds.width) / 2 - bounds.minX;
       offsetY = cullingBox.y + (cullingBox.height - bounds.height) / 2 - bounds.minY;
+      
+      snapTargetOffset.x = offsetX;
+      snapTargetOffset.y = offsetY;
     };
     
     const generateVerticalHoneycomb = (count) => {
@@ -135,15 +141,17 @@ export function AppleWatchGrid(props) {
     };
     
     const isInCullingBox = (circle) => {
+      const scale = getDistance(circle);
+      const scaledRadius = RADIUS * scale;
+      
       const screenX = circle.x + offsetX;
       const screenY = circle.y + offsetY;
-      const renderRadius = RADIUS * 2;
       
       return (
-        screenX + renderRadius > cullingBox.x &&
-        screenX - renderRadius < cullingBox.x + cullingBox.width &&
-        screenY + renderRadius > cullingBox.y &&
-        screenY - renderRadius < cullingBox.y + cullingBox.height
+        screenX - scaledRadius >= cullingBox.x &&
+        screenX + scaledRadius <= cullingBox.x + cullingBox.width &&
+        screenY - scaledRadius >= cullingBox.y &&
+        screenY + scaledRadius <= cullingBox.y + cullingBox.height
       );
     };
     
@@ -156,7 +164,42 @@ export function AppleWatchGrid(props) {
       );
     };
     
+    // Buttery smooth cubic bezier easing (ease-out-cubic with gentle overshoot)
+    const easeOutBack = (t) => {
+      const c1 = 1.70158;
+      const c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    };
+    
+    const startSnapback = () => {
+      isSnapping = true;
+      snapStartTime = performance.now();
+      snapStartOffset.x = offsetX;
+      snapStartOffset.y = offsetY;
+    };
+    
+    const updateSnapback = (currentTime) => {
+      if (!isSnapping) return;
+      
+      const elapsed = currentTime - snapStartTime;
+      const progress = Math.min(elapsed / SNAP_DURATION, 1);
+      const eased = easeOutBack(progress);
+      
+      offsetX = snapStartOffset.x + (snapTargetOffset.x - snapStartOffset.x) * eased;
+      offsetY = snapStartOffset.y + (snapTargetOffset.y - snapStartOffset.y) * eased;
+      
+      if (progress >= 1) {
+        isSnapping = false;
+        offsetX = snapTargetOffset.x;
+        offsetY = snapTargetOffset.y;
+      }
+    };
+    
     const draw = () => {
+      const currentTime = performance.now();
+      
+      updateSnapback(currentTime);
+      
       ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
       
       ctx.strokeStyle = isDragging ? 'rgba(255, 105, 180, 0.6)' : 'rgba(255, 255, 255, 0.4)';
@@ -171,6 +214,10 @@ export function AppleWatchGrid(props) {
       ctx.translate(offsetX, offsetY);
       
       const visibleCircles = circles.filter(isInCullingBox);
+      
+      if (visibleCircles.length === 0 && !isDragging && !isSnapping) {
+        startSnapback();
+      }
       
       const sorted = [...visibleCircles].sort((a, b) => {
         return getDistance(a) - getDistance(b);
@@ -230,6 +277,8 @@ export function AppleWatchGrid(props) {
       
       if (!isInsideCullingBox(mouseX, mouseY)) return;
       
+      isSnapping = false;
+      
       isDragging = true;
       startX = e.clientX;
       startY = e.clientY;
@@ -260,6 +309,8 @@ export function AppleWatchGrid(props) {
       const touchY = e.touches[0].clientY - rect.top;
       
       if (!isInsideCullingBox(touchX, touchY)) return;
+      
+      isSnapping = false;
       
       isDragging = true;
       startX = e.touches[0].clientX;
