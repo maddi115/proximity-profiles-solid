@@ -1,37 +1,64 @@
-import { onMount, onCleanup } from "solid-js";
+import { onMount, onCleanup, createSignal, createEffect, createMemo } from "solid-js";
 import styles from "./appleWatch.module.css";
+import { generateHoneycombPositions, getGridBounds } from "./layout/honeycombLayout";
+import { useSnapback } from "./canvas/useSnapback";
+import { useCulling } from "./canvas/useCulling";
+
+const RADIUS = 35;
+const PADDING = 12;
+const SCALE_FACTOR = 220;
+const COLORS = ["#FF9AA2", "#FFB7B2", "#FFDAC1", "#E2F0CB", "#B5EAD7", "#C7CEEA"];
 
 export function AppleWatchGrid(props) {
   let canvasRef;
-  let overlayRef; // Invisible overlay for event handling
+  let overlayRef;
+  let ctx;
   let animationId;
-  let images = new Map();
+  const images = new Map();
   
-  const colors = ["#FF9AA2", "#FFB7B2", "#FFDAC1", "#E2F0CB", "#B5EAD7", "#C7CEEA"];
-  let ctx, circles = [], offsetX, offsetY;
-  let startX, startY, oldOffsetX, oldOffsetY;
-  let isDragging = false;
-  let isSnapping = false;
-  let snapStartTime = 0;
-  let snapStartOffset = { x: 0, y: 0 };
-  let snapTargetOffset = { x: 0, y: 0 };
-  let lastCenteredProfile = null;
+  // Reactive state
+  const [circles, setCircles] = createSignal([]);
+  const [offset, setOffset] = createSignal({ x: 0, y: 0 });
+  const [cullingBox, setCullingBox] = createSignal({ x: 0, y: 0, width: 500, height: 350 });
+  const [isDragging, setIsDragging] = createSignal(false);
+  const [centerOffset, setCenterOffset] = createSignal({ x: 0, y: 0 });
+  const [dragStart, setDragStart] = createSignal({ x: 0, y: 0 });
+  const [dragInitialOffset, setDragInitialOffset] = createSignal({ x: 0, y: 0 });
   
-  const RADIUS = 35;
-  const PADDING = 12;
-  const SCALE_FACTOR = 220;
-  const SNAP_DURATION = 1200;
+  // Reactive culling calculations
+  const culling = useCulling(circles, offset, cullingBox, RADIUS, SCALE_FACTOR);
   
-  let cullingBox = {
-    x: 0,
-    y: 0,
-    width: 500,
-    height: 350
-  };
+  // Reactive snapback
+  const snapback = useSnapback(1200);
+  
+  // Auto-update offset during snapback (reactive effect)
+  createEffect(() => {
+    const snapOffset = snapback.currentOffset();
+    if (snapOffset) {
+      setOffset(snapOffset);
+    }
+  });
+  
+  // Auto-trigger snapback when no profiles visible (reactive effect)
+  createEffect(() => {
+    const visible = culling.visibleCircles();
+    if (visible.length === 0 && !isDragging() && !snapback.isSnapping()) {
+      snapback.startSnapback(offset(), centerOffset());
+    }
+  });
+  
+  // Auto-notify parent of centered profile changes (reactive effect)
+  createEffect(() => {
+    const centered = culling.centeredProfile();
+    if (centered) {
+      props.onCenterProfileChange?.(centered.id);
+    }
+  });
 
   onMount(() => {
     ctx = canvasRef.getContext("2d");
     
+    // Load images
     props.profiles?.forEach(profile => {
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -39,226 +66,83 @@ export function AppleWatchGrid(props) {
       images.set(profile.id, img);
     });
     
-    const resize = () => {
+    const handleResize = () => {
       canvasRef.width = window.innerWidth;
       canvasRef.height = window.innerHeight;
       
-      cullingBox.x = (canvasRef.width - cullingBox.width) / 2;
-      cullingBox.y = (canvasRef.height - cullingBox.height) / 2;
+      const box = cullingBox();
+      const newBox = {
+        x: (canvasRef.width - box.width) / 2,
+        y: (canvasRef.height - box.height) / 2,
+        width: box.width,
+        height: box.height
+      };
+      setCullingBox(newBox);
       
-      // Position the overlay div
       if (overlayRef) {
-        overlayRef.style.left = `${cullingBox.x}px`;
-        overlayRef.style.top = `${cullingBox.y}px`;
-        overlayRef.style.width = `${cullingBox.width}px`;
-        overlayRef.style.height = `${cullingBox.height}px`;
+        overlayRef.style.left = `${newBox.x}px`;
+        overlayRef.style.top = `${newBox.y}px`;
+        overlayRef.style.width = `${newBox.width}px`;
+        overlayRef.style.height = `${newBox.height}px`;
       }
       
       initCircles();
     };
     
     const initCircles = () => {
-      circles = [];
       const profiles = props.profiles || [];
-      
       if (profiles.length === 0) return;
       
-      const positions = generateVerticalHoneycomb(profiles.length);
+      const positions = generateHoneycombPositions(profiles.length, RADIUS, PADDING);
       
-      profiles.forEach((profile, i) => {
-        circles.push({
-          x: positions[i].x,
-          y: positions[i].y,
-          color: colors[i % colors.length],
-          profile: profile,
-          id: profile.id
-        });
-      });
+      const newCircles = profiles.map((profile, i) => ({
+        x: positions[i].x,
+        y: positions[i].y,
+        color: COLORS[i % COLORS.length],
+        profile: profile,
+        id: profile.id
+      }));
       
-      const bounds = getGridBounds(positions);
-      offsetX = cullingBox.x + (cullingBox.width - bounds.width) / 2 - bounds.minX;
-      offsetY = cullingBox.y + (cullingBox.height - bounds.height) / 2 - bounds.minY;
+      setCircles(newCircles);
       
-      snapTargetOffset.x = offsetX;
-      snapTargetOffset.y = offsetY;
-    };
-    
-    const generateVerticalHoneycomb = (count) => {
-      const spacing = RADIUS * 2 + PADDING;
-      const verticalSpacing = spacing * 0.866;
-      const positions = [];
-      
-      let row = 0;
-      let placed = 0;
-      
-      while (placed < count) {
-        let itemsInRow, offsetX;
-        
-        if (row === 0) {
-          itemsInRow = 1;
-          offsetX = 0;
-        } else if (row % 2 === 1) {
-          itemsInRow = 3;
-          offsetX = 0;
-        } else {
-          itemsInRow = 2;
-          offsetX = spacing / 2;
-        }
-        
-        for (let col = 0; col < itemsInRow && placed < count; col++) {
-          const x = (col - (itemsInRow - 1) / 2) * spacing;
-          const y = row * verticalSpacing;
-          
-          positions.push({ x, y });
-          placed++;
-        }
-        
-        row++;
-      }
-      
-      return positions;
-    };
-    
-    const getGridBounds = (positions) => {
-      let minX = Infinity, maxX = -Infinity;
-      let minY = Infinity, maxY = -Infinity;
-      
-      positions.forEach(pos => {
-        minX = Math.min(minX, pos.x - RADIUS);
-        maxX = Math.max(maxX, pos.x + RADIUS);
-        minY = Math.min(minY, pos.y - RADIUS);
-        maxY = Math.max(maxY, pos.y + RADIUS);
-      });
-      
-      return {
-        minX,
-        maxX,
-        minY,
-        maxY,
-        width: maxX - minX,
-        height: maxY - minY
+      const bounds = getGridBounds(positions, RADIUS);
+      const box = cullingBox();
+      const centered = {
+        x: box.x + (box.width - bounds.width) / 2 - bounds.minX,
+        y: box.y + (box.height - bounds.height) / 2 - bounds.minY
       };
+      
+      setCenterOffset(centered);
+      setOffset(centered);
     };
     
-    const getDistance = (circle) => {
-      const centerX = cullingBox.x + cullingBox.width / 2;
-      const centerY = cullingBox.y + cullingBox.height / 2;
-      const dx = circle.x + offsetX - centerX;
-      const dy = circle.y + offsetY - centerY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      let scale = 1 - dist / SCALE_FACTOR;
-      return scale > 0.3 ? scale : 0.3;
-    };
-    
-    const isInCullingBox = (circle) => {
-      const scale = getDistance(circle);
-      const scaledRadius = RADIUS * scale;
-      
-      const screenX = circle.x + offsetX;
-      const screenY = circle.y + offsetY;
-      
-      return (
-        screenX - scaledRadius >= cullingBox.x &&
-        screenX + scaledRadius <= cullingBox.x + cullingBox.width &&
-        screenY - scaledRadius >= cullingBox.y &&
-        screenY + scaledRadius <= cullingBox.y + cullingBox.height
-      );
-    };
-    
-    const getCenteredProfile = () => {
-      const centerX = cullingBox.x + cullingBox.width / 2;
-      const centerY = cullingBox.y + cullingBox.height / 2;
-      
-      const visibleCircles = circles.filter(isInCullingBox);
-      if (visibleCircles.length === 0) return null;
-      
-      let closest = visibleCircles[0];
-      let minDist = Infinity;
-      
-      visibleCircles.forEach(circle => {
-        const screenX = circle.x + offsetX;
-        const screenY = circle.y + offsetY;
-        const dx = screenX - centerX;
-        const dy = screenY - centerY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        
-        if (dist < minDist) {
-          minDist = dist;
-          closest = circle;
-        }
-      });
-      
-      return closest;
-    };
-    
-    const easeOutBack = (t) => {
-      const c1 = 1.70158;
-      const c3 = c1 + 1;
-      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
-    };
-    
-    const startSnapback = () => {
-      isSnapping = true;
-      snapStartTime = performance.now();
-      snapStartOffset.x = offsetX;
-      snapStartOffset.y = offsetY;
-    };
-    
-    const updateSnapback = (currentTime) => {
-      if (!isSnapping) return;
-      
-      const elapsed = currentTime - snapStartTime;
-      const progress = Math.min(elapsed / SNAP_DURATION, 1);
-      const eased = easeOutBack(progress);
-      
-      offsetX = snapStartOffset.x + (snapTargetOffset.x - snapStartOffset.x) * eased;
-      offsetY = snapStartOffset.y + (snapTargetOffset.y - snapStartOffset.y) * eased;
-      
-      if (progress >= 1) {
-        isSnapping = false;
-        offsetX = snapTargetOffset.x;
-        offsetY = snapTargetOffset.y;
-      }
-    };
-    
+    // Render loop - reads from reactive signals
     const draw = () => {
-      const currentTime = performance.now();
-      
-      updateSnapback(currentTime);
-      
       ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
       
-      ctx.strokeStyle = isDragging ? 'rgba(255, 105, 180, 0.6)' : 'rgba(255, 255, 255, 0.4)';
+      const box = cullingBox();
+      const currentOffset = offset();
+      
+      // Draw box border
+      ctx.strokeStyle = isDragging() 
+        ? 'rgba(255, 105, 180, 0.6)' 
+        : 'rgba(255, 255, 255, 0.4)';
       ctx.lineWidth = 3;
-      ctx.strokeRect(cullingBox.x, cullingBox.y, cullingBox.width, cullingBox.height);
+      ctx.strokeRect(box.x, box.y, box.width, box.height);
       
       ctx.save();
       ctx.beginPath();
-      ctx.rect(cullingBox.x, cullingBox.y, cullingBox.width, cullingBox.height);
+      ctx.rect(box.x, box.y, box.width, box.height);
       ctx.clip();
+      ctx.translate(currentOffset.x, currentOffset.y);
       
-      ctx.translate(offsetX, offsetY);
-      
-      const visibleCircles = circles.filter(isInCullingBox);
-      
-      if (visibleCircles.length === 0 && !isDragging && !isSnapping) {
-        startSnapback();
-      }
-      
-      const centeredProfile = getCenteredProfile();
-      if (centeredProfile && centeredProfile.id !== lastCenteredProfile) {
-        lastCenteredProfile = centeredProfile.id;
-        props.onCenterProfileChange?.(centeredProfile.id);
-      }
-      
-      const sorted = [...visibleCircles].sort((a, b) => {
-        return getDistance(a) - getDistance(b);
-      });
+      // Render sorted visible circles (reactive)
+      const sorted = culling.sortedVisibleCircles();
       
       sorted.forEach((circle) => {
-        ctx.save();
-        const scale = getDistance(circle);
+        const scale = culling.getDistance(circle);
         
+        ctx.save();
         ctx.translate(circle.x, circle.y);
         ctx.scale(scale, scale);
         
@@ -271,7 +155,6 @@ export function AppleWatchGrid(props) {
         ctx.beginPath();
         ctx.arc(0, 0, RADIUS, 0, Math.PI * 2);
         ctx.fill();
-        
         ctx.shadowBlur = 0;
         
         const img = images.get(circle.id);
@@ -295,29 +178,24 @@ export function AppleWatchGrid(props) {
       
       ctx.restore();
       
+      // Debug info
       ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
       ctx.font = '14px monospace';
-      ctx.fillText(`${visibleCircles.length}/${circles.length} visible`, cullingBox.x + 10, cullingBox.y + 25);
+      ctx.fillText(
+        `${culling.visibleCircles().length}/${circles().length} visible`,
+        box.x + 10,
+        box.y + 25
+      );
       
       animationId = requestAnimationFrame(draw);
     };
     
-    const cleanupDrag = () => {
-      isDragging = false;
-      if (overlayRef) overlayRef.style.cursor = "grab";
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchend", handleTouchEnd);
-    };
-    
+    // Event handlers
     const handleMouseDown = (e) => {
-      isSnapping = false;
-      isDragging = true;
-      startX = e.clientX;
-      startY = e.clientY;
-      oldOffsetX = offsetX;
-      oldOffsetY = offsetY;
+      setIsDragging(true);
+      setDragStart({ x: e.clientX, y: e.clientY });
+      setDragInitialOffset(offset());
+      snapback.stopSnapback();
       if (overlayRef) overlayRef.style.cursor = "grabbing";
       
       window.addEventListener("mousemove", handleMouseMove);
@@ -325,55 +203,67 @@ export function AppleWatchGrid(props) {
     };
     
     const handleMouseMove = (e) => {
-      if (!isDragging) return;
-      offsetX = oldOffsetX + (e.clientX - startX);
-      offsetY = oldOffsetY + (e.clientY - startY);
+      if (!isDragging()) return;
+      const start = dragStart();
+      const initial = dragInitialOffset();
+      setOffset({
+        x: initial.x + (e.clientX - start.x),
+        y: initial.y + (e.clientY - start.y)
+      });
     };
     
     const handleMouseUp = () => {
-      cleanupDrag();
+      setIsDragging(false);
+      if (overlayRef) overlayRef.style.cursor = "grab";
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
     
     const handleTouchStart = (e) => {
-      isSnapping = false;
-      isDragging = true;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      oldOffsetX = offsetX;
-      oldOffsetY = offsetY;
+      setIsDragging(true);
+      setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+      setDragInitialOffset(offset());
+      snapback.stopSnapback();
       
       window.addEventListener("touchmove", handleTouchMove);
       window.addEventListener("touchend", handleTouchEnd);
     };
     
     const handleTouchMove = (e) => {
-      if (!isDragging) return;
+      if (!isDragging()) return;
       e.preventDefault();
-      offsetX = oldOffsetX + (e.touches[0].clientX - startX);
-      offsetY = oldOffsetY + (e.touches[0].clientY - startY);
+      const start = dragStart();
+      const initial = dragInitialOffset();
+      setOffset({
+        x: initial.x + (e.touches[0].clientX - start.x),
+        y: initial.y + (e.touches[0].clientY - start.y)
+      });
     };
     
     const handleTouchEnd = () => {
-      cleanupDrag();
+      setIsDragging(false);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
     
     const handleClick = (e) => {
-      const dragDistance = Math.sqrt(
-        Math.pow(e.clientX - startX, 2) + Math.pow(e.clientY - startY, 2)
+      const start = dragStart();
+      const dragDist = Math.sqrt(
+        Math.pow(e.clientX - start.x, 2) + Math.pow(e.clientY - start.y, 2)
       );
       
-      if (dragDistance > 5) return;
+      if (dragDist > 5) return;
       
+      const box = cullingBox();
       const rect = overlayRef.getBoundingClientRect();
-      const clickX = e.clientX - rect.left + cullingBox.x;
-      const clickY = e.clientY - rect.top + cullingBox.y;
+      const clickX = e.clientX - rect.left + box.x;
+      const clickY = e.clientY - rect.top + box.y;
       
-      const visibleCircles = circles.filter(isInCullingBox);
-      
-      visibleCircles.forEach((circle) => {
-        const scale = getDistance(circle);
-        const screenX = circle.x + offsetX;
-        const screenY = circle.y + offsetY;
+      culling.visibleCircles().forEach((circle) => {
+        const scale = culling.getDistance(circle);
+        const currentOffset = offset();
+        const screenX = circle.x + currentOffset.x;
+        const screenY = circle.y + currentOffset.y;
         const dx = screenX - clickX;
         const dy = screenY - clickY;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -384,22 +274,24 @@ export function AppleWatchGrid(props) {
       });
     };
     
-    // Set up overlay for event handling
     if (overlayRef) {
       overlayRef.addEventListener("mousedown", handleMouseDown);
       overlayRef.addEventListener("touchstart", handleTouchStart, { passive: false });
       overlayRef.addEventListener("click", handleClick);
     }
     
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", handleResize);
     
-    resize();
+    handleResize();
     draw();
     
     onCleanup(() => {
       cancelAnimationFrame(animationId);
-      window.removeEventListener("resize", resize);
-      cleanupDrag();
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
       if (overlayRef) {
         overlayRef.removeEventListener("mousedown", handleMouseDown);
         overlayRef.removeEventListener("touchstart", handleTouchStart);
