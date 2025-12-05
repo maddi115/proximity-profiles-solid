@@ -7,13 +7,20 @@ export function AppleWatchGrid(props) {
   let images = new Map();
   
   const colors = ["#FF9AA2", "#FFB7B2", "#FFDAC1", "#E2F0CB", "#B5EAD7", "#C7CEEA"];
-  let ctx, circles = [], centerX, centerY, offsetX, offsetY;
+  let ctx, circles = [], offsetX, offsetY;
   let startX, startY, oldOffsetX, oldOffsetY;
-  let mouseX = 0, mouseY = 0;
+  let isDragging = false;
   
   const RADIUS = 35;
   const PADDING = 12;
   const SCALE_FACTOR = 220;
+  
+  let cullingBox = {
+    x: 0,
+    y: 0,
+    width: 500,
+    height: 600
+  };
 
   onMount(() => {
     ctx = canvasRef.getContext("2d");
@@ -28,8 +35,11 @@ export function AppleWatchGrid(props) {
     const resize = () => {
       canvasRef.width = window.innerWidth;
       canvasRef.height = window.innerHeight;
-      centerX = canvasRef.width / 2;
-      centerY = canvasRef.height / 2;
+      
+      // Position box in ABSOLUTE center of screen
+      cullingBox.x = (canvasRef.width - cullingBox.width) / 2;
+      cullingBox.y = (canvasRef.height - cullingBox.height) / 2;
+      
       initCircles();
     };
     
@@ -51,15 +61,15 @@ export function AppleWatchGrid(props) {
         });
       });
       
+      // Center profiles inside the culling box
       const bounds = getGridBounds(positions);
-      offsetX = (canvasRef.width - bounds.width) / 2 - bounds.minX;
-      offsetY = (canvasRef.height - bounds.height) / 2 - bounds.minY;
+      offsetX = cullingBox.x + (cullingBox.width - bounds.width) / 2 - bounds.minX;
+      offsetY = cullingBox.y + (cullingBox.height - bounds.height) / 2 - bounds.minY;
     };
     
-    // Vertical honeycomb: 1, 3, 2, 3, 2, 3...
     const generateVerticalHoneycomb = (count) => {
       const spacing = RADIUS * 2 + PADDING;
-      const verticalSpacing = spacing * 0.866; // Hexagonal vertical spacing
+      const verticalSpacing = spacing * 0.866;
       const positions = [];
       
       let row = 0;
@@ -69,15 +79,12 @@ export function AppleWatchGrid(props) {
         let itemsInRow, offsetX;
         
         if (row === 0) {
-          // Row 0: 1 item centered
           itemsInRow = 1;
           offsetX = 0;
         } else if (row % 2 === 1) {
-          // Odd rows (1, 3, 5...): 3 items
           itemsInRow = 3;
           offsetX = 0;
         } else {
-          // Even rows (2, 4, 6...): 2 items, offset by half spacing
           itemsInRow = 2;
           offsetX = spacing / 2;
         }
@@ -118,19 +125,54 @@ export function AppleWatchGrid(props) {
     };
     
     const getDistance = (circle) => {
-      const dx = circle.x - centerX + offsetX;
-      const dy = circle.y - centerY + offsetY;
+      const centerX = cullingBox.x + cullingBox.width / 2;
+      const centerY = cullingBox.y + cullingBox.height / 2;
+      const dx = circle.x + offsetX - centerX;
+      const dy = circle.y + offsetY - centerY;
       const dist = Math.sqrt(dx * dx + dy * dy);
       let scale = 1 - dist / SCALE_FACTOR;
       return scale > 0.3 ? scale : 0.3;
     };
     
+    const isInCullingBox = (circle) => {
+      const screenX = circle.x + offsetX;
+      const screenY = circle.y + offsetY;
+      const renderRadius = RADIUS * 2;
+      
+      return (
+        screenX + renderRadius > cullingBox.x &&
+        screenX - renderRadius < cullingBox.x + cullingBox.width &&
+        screenY + renderRadius > cullingBox.y &&
+        screenY - renderRadius < cullingBox.y + cullingBox.height
+      );
+    };
+    
+    const isInsideCullingBox = (x, y) => {
+      return (
+        x >= cullingBox.x &&
+        x <= cullingBox.x + cullingBox.width &&
+        y >= cullingBox.y &&
+        y <= cullingBox.y + cullingBox.height
+      );
+    };
+    
     const draw = () => {
       ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
+      
+      ctx.strokeStyle = isDragging ? 'rgba(255, 105, 180, 0.6)' : 'rgba(255, 255, 255, 0.4)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(cullingBox.x, cullingBox.y, cullingBox.width, cullingBox.height);
+      
       ctx.save();
+      ctx.beginPath();
+      ctx.rect(cullingBox.x, cullingBox.y, cullingBox.width, cullingBox.height);
+      ctx.clip();
+      
       ctx.translate(offsetX, offsetY);
       
-      const sorted = [...circles].sort((a, b) => {
+      const visibleCircles = circles.filter(isInCullingBox);
+      
+      const sorted = [...visibleCircles].sort((a, b) => {
         return getDistance(a) - getDistance(b);
       });
       
@@ -173,10 +215,22 @@ export function AppleWatchGrid(props) {
       });
       
       ctx.restore();
+      
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.font = '14px monospace';
+      ctx.fillText(`${visibleCircles.length}/${circles.length} visible`, cullingBox.x + 10, cullingBox.y + 25);
+      
       animationId = requestAnimationFrame(draw);
     };
     
     const handleMouseDown = (e) => {
+      const rect = canvasRef.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      if (!isInsideCullingBox(mouseX, mouseY)) return;
+      
+      isDragging = true;
       startX = e.clientX;
       startY = e.clientY;
       oldOffsetX = offsetX;
@@ -188,19 +242,26 @@ export function AppleWatchGrid(props) {
     };
     
     const handleMouseMove = (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      offsetX = oldOffsetX + mouseX - startX;
-      offsetY = oldOffsetY + mouseY - startY;
+      if (!isDragging) return;
+      offsetX = oldOffsetX + (e.clientX - startX);
+      offsetY = oldOffsetY + (e.clientY - startY);
     };
     
     const handleMouseUp = () => {
+      isDragging = false;
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
       canvasRef.style.cursor = "grab";
     };
     
     const handleTouchStart = (e) => {
+      const rect = canvasRef.getBoundingClientRect();
+      const touchX = e.touches[0].clientX - rect.left;
+      const touchY = e.touches[0].clientY - rect.top;
+      
+      if (!isInsideCullingBox(touchX, touchY)) return;
+      
+      isDragging = true;
       startX = e.touches[0].clientX;
       startY = e.touches[0].clientY;
       oldOffsetX = offsetX;
@@ -211,14 +272,14 @@ export function AppleWatchGrid(props) {
     };
     
     const handleTouchMove = (e) => {
+      if (!isDragging) return;
       e.preventDefault();
-      mouseX = e.touches[0].clientX;
-      mouseY = e.touches[0].clientY;
-      offsetX = oldOffsetX + mouseX - startX;
-      offsetY = oldOffsetY + mouseY - startY;
+      offsetX = oldOffsetX + (e.touches[0].clientX - startX);
+      offsetY = oldOffsetY + (e.touches[0].clientY - startY);
     };
     
     const handleTouchEnd = () => {
+      isDragging = false;
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
@@ -234,7 +295,11 @@ export function AppleWatchGrid(props) {
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
       
-      circles.forEach((circle) => {
+      if (!isInsideCullingBox(clickX, clickY)) return;
+      
+      const visibleCircles = circles.filter(isInCullingBox);
+      
+      visibleCircles.forEach((circle) => {
         const scale = getDistance(circle);
         const screenX = circle.x + offsetX;
         const screenY = circle.y + offsetY;
