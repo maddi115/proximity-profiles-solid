@@ -3,6 +3,7 @@ import styles from "./appleWatch.module.css";
 
 export function AppleWatchGrid(props) {
   let canvasRef;
+  let overlayRef; // Invisible overlay for event handling
   let animationId;
   let images = new Map();
   
@@ -44,6 +45,14 @@ export function AppleWatchGrid(props) {
       
       cullingBox.x = (canvasRef.width - cullingBox.width) / 2;
       cullingBox.y = (canvasRef.height - cullingBox.height) / 2;
+      
+      // Position the overlay div
+      if (overlayRef) {
+        overlayRef.style.left = `${cullingBox.x}px`;
+        overlayRef.style.top = `${cullingBox.y}px`;
+        overlayRef.style.width = `${cullingBox.width}px`;
+        overlayRef.style.height = `${cullingBox.height}px`;
+      }
       
       initCircles();
     };
@@ -156,16 +165,6 @@ export function AppleWatchGrid(props) {
       );
     };
     
-    const isInsideCullingBox = (x, y) => {
-      return (
-        x >= cullingBox.x &&
-        x <= cullingBox.x + cullingBox.width &&
-        y >= cullingBox.y &&
-        y <= cullingBox.y + cullingBox.height
-      );
-    };
-    
-    // Find the most centered profile (closest to box center)
     const getCenteredProfile = () => {
       const centerX = cullingBox.x + cullingBox.width / 2;
       const centerY = cullingBox.y + cullingBox.height / 2;
@@ -246,7 +245,6 @@ export function AppleWatchGrid(props) {
         startSnapback();
       }
       
-      // Detect centered profile and notify parent
       const centeredProfile = getCenteredProfile();
       if (centeredProfile && centeredProfile.id !== lastCenteredProfile) {
         lastCenteredProfile = centeredProfile.id;
@@ -304,21 +302,23 @@ export function AppleWatchGrid(props) {
       animationId = requestAnimationFrame(draw);
     };
     
+    const cleanupDrag = () => {
+      isDragging = false;
+      if (overlayRef) overlayRef.style.cursor = "grab";
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+    
     const handleMouseDown = (e) => {
-      const rect = canvasRef.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-      
-      if (!isInsideCullingBox(mouseX, mouseY)) return;
-      
       isSnapping = false;
-      
       isDragging = true;
       startX = e.clientX;
       startY = e.clientY;
       oldOffsetX = offsetX;
       oldOffsetY = offsetY;
-      canvasRef.style.cursor = "grabbing";
+      if (overlayRef) overlayRef.style.cursor = "grabbing";
       
       window.addEventListener("mousemove", handleMouseMove);
       window.addEventListener("mouseup", handleMouseUp);
@@ -331,21 +331,11 @@ export function AppleWatchGrid(props) {
     };
     
     const handleMouseUp = () => {
-      isDragging = false;
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-      canvasRef.style.cursor = "grab";
+      cleanupDrag();
     };
     
     const handleTouchStart = (e) => {
-      const rect = canvasRef.getBoundingClientRect();
-      const touchX = e.touches[0].clientX - rect.left;
-      const touchY = e.touches[0].clientY - rect.top;
-      
-      if (!isInsideCullingBox(touchX, touchY)) return;
-      
       isSnapping = false;
-      
       isDragging = true;
       startX = e.touches[0].clientX;
       startY = e.touches[0].clientY;
@@ -364,9 +354,7 @@ export function AppleWatchGrid(props) {
     };
     
     const handleTouchEnd = () => {
-      isDragging = false;
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchend", handleTouchEnd);
+      cleanupDrag();
     };
     
     const handleClick = (e) => {
@@ -376,11 +364,9 @@ export function AppleWatchGrid(props) {
       
       if (dragDistance > 5) return;
       
-      const rect = canvasRef.getBoundingClientRect();
-      const clickX = e.clientX - rect.left;
-      const clickY = e.clientY - rect.top;
-      
-      if (!isInsideCullingBox(clickX, clickY)) return;
+      const rect = overlayRef.getBoundingClientRect();
+      const clickX = e.clientX - rect.left + cullingBox.x;
+      const clickY = e.clientY - rect.top + cullingBox.y;
       
       const visibleCircles = circles.filter(isInCullingBox);
       
@@ -398,9 +384,13 @@ export function AppleWatchGrid(props) {
       });
     };
     
-    canvasRef.addEventListener("mousedown", handleMouseDown);
-    canvasRef.addEventListener("touchstart", handleTouchStart, { passive: false });
-    canvasRef.addEventListener("click", handleClick);
+    // Set up overlay for event handling
+    if (overlayRef) {
+      overlayRef.addEventListener("mousedown", handleMouseDown);
+      overlayRef.addEventListener("touchstart", handleTouchStart, { passive: false });
+      overlayRef.addEventListener("click", handleClick);
+    }
+    
     window.addEventListener("resize", resize);
     
     resize();
@@ -409,11 +399,27 @@ export function AppleWatchGrid(props) {
     onCleanup(() => {
       cancelAnimationFrame(animationId);
       window.removeEventListener("resize", resize);
-      canvasRef?.removeEventListener("mousedown", handleMouseDown);
-      canvasRef?.removeEventListener("touchstart", handleTouchStart);
-      canvasRef?.removeEventListener("click", handleClick);
+      cleanupDrag();
+      if (overlayRef) {
+        overlayRef.removeEventListener("mousedown", handleMouseDown);
+        overlayRef.removeEventListener("touchstart", handleTouchStart);
+        overlayRef.removeEventListener("click", handleClick);
+      }
     });
   });
   
-  return <canvas ref={canvasRef} class={styles.canvas} />;
+  return (
+    <>
+      <canvas ref={canvasRef} class={styles.canvas} />
+      <div 
+        ref={overlayRef}
+        style={{
+          position: 'fixed',
+          cursor: 'grab',
+          'touch-action': 'none',
+          'z-index': 100
+        }}
+      />
+    </>
+  );
 }
