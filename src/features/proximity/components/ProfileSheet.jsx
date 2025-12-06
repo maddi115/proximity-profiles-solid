@@ -15,7 +15,7 @@ export function ProfileSheet(props) {
     return props.profile ? useProfileActions(props.profile.id) : null;
   });
   
-  // Extract dominant color when profile changes
+  // Extract dominant color when profile changes (kept for potential future use)
   createEffect(async () => {
     const profile = props.profile;
     if (profile && profile.img) {
@@ -24,7 +24,7 @@ export function ProfileSheet(props) {
         setGlowColor(color);
       } catch (err) {
         console.error('Failed to extract color:', err);
-        setGlowColor('139, 92, 246'); // Fallback to purple
+        setGlowColor('139, 92, 246');
       }
     }
   });
@@ -58,14 +58,6 @@ export function ProfileSheet(props) {
       {(profile) => (
         <div 
           class={styles.sheet}
-          style={{
-            'box-shadow': `
-              0 -8px 32px rgba(0, 0, 0, 0.3),
-              0 0 60px rgba(${glowColor()}, 0.5),
-              0 0 100px rgba(${glowColor()}, 0.3),
-              0 0 140px rgba(${glowColor()}, 0.2)
-            `
-          }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Blurred background */}
@@ -73,7 +65,7 @@ export function ProfileSheet(props) {
           
           {/* Content overlay */}
           <div class={styles.sheetContent}>
-            <div class={styles.sheetHandle} />
+            {/* Handle removed */}
             
             <div class={styles.sheetProfile}>
               <img 
