@@ -151,17 +151,21 @@ export function AppleWatchGrid(props) {
       ctx.clip();
       ctx.translate(currentOffset.x, currentOffset.y);
       
+      // Get centered profile for highlighting
+      const centeredProfile = culling.centeredProfile();
+      
       // Render sorted visible circles
       const sorted = culling.sortedVisibleCircles();
       
       sorted.forEach((circle) => {
         const scale = culling.getDistance(circle);
+        const isCentered = centeredProfile && centeredProfile.id === circle.id;
         
         ctx.save();
         ctx.translate(circle.x, circle.y);
         ctx.scale(scale, scale);
         
-        // Draw background circle (no glow)
+        // Draw background circle
         ctx.fillStyle = circle.color;
         ctx.beginPath();
         ctx.arc(0, 0, RADIUS, 0, Math.PI * 2);
@@ -171,12 +175,21 @@ export function AppleWatchGrid(props) {
         if (img && img.complete) {
           ctx.save();
           ctx.beginPath();
-          // Make image fill entire circle (no gap)
+          // Make image fill entire circle
           ctx.arc(0, 0, RADIUS, 0, Math.PI * 2);
           ctx.clip();
           // Draw image to fill entire circle
           ctx.drawImage(img, -RADIUS, -RADIUS, RADIUS * 2, RADIUS * 2);
           ctx.restore();
+          
+          // Draw border on centered/selected profile
+          if (isCentered) {
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(0, 0, RADIUS, 0, Math.PI * 2);
+            ctx.stroke();
+          }
         }
         
         ctx.restore();

@@ -3,8 +3,8 @@
  */
 
 // Visual constants
-export const RADIUS = 35;
-export const PADDING = 12;
+export const RADIUS = 55;
+export const PADDING = 8; // Reduced from 15 to 8 - closer together
 export const SCALE_FACTOR = 220;
 
 // Colors for profile circles
@@ -17,10 +17,10 @@ export const COLORS = [
   "#C7CEEA"
 ];
 
-// Culling box dimensions - compact square viewport
+// Culling box dimensions
 export const CULLING_BOX = {
-  width: 250,   // Reduced to 250px
-  height: 250   // Kept at 250px (square viewport)
+  width: 350,
+  height: 350
 };
 
 // Animation durations (ms)
