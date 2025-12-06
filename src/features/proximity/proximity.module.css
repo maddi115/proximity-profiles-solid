@@ -1,21 +1,31 @@
 /* Profile Sheet Styles */
 .sheet {
   position: fixed;
-  bottom: 20px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 500px;
-  height: 460px;
-  background: rgba(20, 20, 30, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: 20px;
+  height: 530px;
+  border-radius: 24px 24px 0 0;
   z-index: 1000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: none;
+  overflow: hidden;
+  transition: box-shadow 0.5s ease;
+}
+
+/* Content overlay sits above blurred background */
+.sheetContent {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background: rgba(20, 20, 30, 0.7);
+  backdrop-filter: blur(10px);
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sheetHandle {
@@ -39,7 +49,8 @@
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .sheetBalance {
@@ -47,6 +58,7 @@
   font-weight: 600;
   color: #4ade80;
   margin-left: auto;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .sheetActions {
@@ -57,8 +69,8 @@
 }
 
 .sheetBtn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 16px;
   padding: 20px;
   color: white;
@@ -71,11 +83,13 @@
   gap: 8px;
   font-size: 14px;
   font-weight: 500;
+  backdrop-filter: blur(5px);
 }
 
 .sheetBtn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .sheetBtn:active {
@@ -89,17 +103,17 @@
 
 .sheetCost {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 400;
 }
 
 .sheetFollowing {
-  background: rgba(74, 222, 128, 0.2);
+  background: rgba(74, 222, 128, 0.25);
   border-color: rgba(74, 222, 128, 0.4);
 }
 
 .sheetFollowing:hover {
-  background: rgba(74, 222, 128, 0.3);
+  background: rgba(74, 222, 128, 0.35);
 }
 
 /* Mobile adjustments */
@@ -108,6 +122,10 @@
     width: 90%;
     max-width: 500px;
     height: 400px;
+  }
+  
+  .sheetContent {
+    padding: 16px;
   }
   
   .sheetAvatar {
