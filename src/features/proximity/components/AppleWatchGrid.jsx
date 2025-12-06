@@ -79,12 +79,20 @@ export function AppleWatchGrid(props) {
       canvasRef.height = window.innerHeight;
       
       const box = cullingBox();
+      
+      // Center horizontally, position in upper-middle area
+      // Leave room for bottom sheet (220px on mobile, 250px on desktop)
+      const sheetHeight = canvasRef.width >= 768 ? 250 : 220;
+      const availableHeight = canvasRef.height - sheetHeight;
+      const topMargin = (availableHeight - box.height) / 2 - 50; // Moved up 50px
+      
       const newBox = {
         x: (canvasRef.width - box.width) / 2,
-        y: (canvasRef.height - box.height) / 2,
+        y: Math.max(40, topMargin), // Minimum 40px from top
         width: box.width,
         height: box.height
       };
+      
       setCullingBox(newBox);
       
       if (overlayRef) {

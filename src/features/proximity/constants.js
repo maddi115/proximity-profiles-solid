@@ -17,10 +17,10 @@ export const COLORS = [
   "#C7CEEA"
 ];
 
-// Culling box dimensions
+// Culling box dimensions - compact square viewport
 export const CULLING_BOX = {
-  width: 500,
-  height: 350
+  width: 250,   // Reduced to 250px
+  height: 250   // Kept at 250px (square viewport)
 };
 
 // Animation durations (ms)
@@ -30,4 +30,4 @@ export const DURATIONS = {
 };
 
 // Interaction thresholds
-export const DRAG_THRESHOLD = 5; // pixels before it's considered a drag vs click
+export const DRAG_THRESHOLD = 5;

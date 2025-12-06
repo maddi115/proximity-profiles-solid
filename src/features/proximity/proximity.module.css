@@ -1,134 +1,22 @@
-.proximity-circle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 300px;
-  height: 300px;
-  border: 2px dashed rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.proximity-label {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 12px;
-  text-align: center;
-  max-width: 200px;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.marker {
-  position: absolute;
-  cursor: pointer;
-  z-index: 100;
-  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-  -webkit-tap-highlight-color: transparent;
-}
-
-.marker:active {
-  transform: scale(1.1);
-}
-
-.marker-img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.8);
-  object-fit: cover;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.balance-badge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  z-index: 10000;
-}
-
-.balance-heart {
-  font-size: 14px;
-}
-
-.balance-amount {
-  color: white;
-  font-weight: bold;
-}
-
-.following-badge {
-  position: absolute;
-  top: -8px;
-  left: -8px;
-  font-size: 24px;
-  z-index: 10000;
-}
-
-.sent-msg {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 90px;
-  z-index: 10001;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  opacity: 0;
-  transform: translate3d(0, 0, 0) scale(0.5);
-  animation: reactionAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-@keyframes reactionAppear {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 0, 0) scale(0.5);
-  }
-  100% {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-}
-
-.floating-heart {
-  position: fixed;
-  font-size: 40px;
-  pointer-events: none;
-  z-index: 10002;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  transform: translate3d(0, 0, 0);
-}
-
-/* Bottom Sheet - Mobile: Bottom center, Desktop: Right side */
+/* Profile Sheet Styles */
 .sheet {
   position: fixed;
-  bottom: 0;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 100%;
+  width: 90%;
   max-width: 500px;
-  background: linear-gradient(180deg, rgba(30, 30, 35, 0.95) 0%, rgba(20, 20, 25, 0.95) 100%);
+  height: 180px; /* Reduced height */
+  background: rgba(20, 20, 30, 0.95);
   backdrop-filter: blur(20px);
-  border-radius: 24px 24px 0 0;
-  padding: 20px 24px 24px 24px;
-  z-index: 9999;
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
-  max-height: 50vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  border-radius: 24px;
+  padding: 16px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sheetHandle {
@@ -136,159 +24,113 @@
   height: 4px;
   background: rgba(255, 255, 255, 0.3);
   border-radius: 2px;
-  margin: 0 auto 16px;
+  margin: 0 auto 8px;
 }
 
 .sheetProfile {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
+  gap: 12px;
+  padding-bottom: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sheetAvatar {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  border: 3px solid #ff69b4;
-  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .sheetBalance {
-  color: white;
-  font-size: 24px;
-  font-weight: 700;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-size: 18px;
+  font-weight: 600;
+  color: #4ade80;
+  margin-left: auto;
 }
 
 .sheetActions {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  flex: 1;
 }
 
 .sheetBtn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 18px;
-  padding: 20px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-  min-height: 100px;
-  touch-action: manipulation;
-  color: white;
-  font-size: 14px;
+  justify-content: center;
+  gap: 4px;
+  font-size: 11px;
   font-weight: 500;
-  position: relative;
-  overflow: hidden;
 }
 
-.sheetBtn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 105, 180, 0.1), rgba(147, 51, 234, 0.1));
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.sheetBtn:hover::before {
-  opacity: 1;
+.sheetBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 .sheetBtn:active {
-  transform: scale(0.95);
-  background: rgba(255, 105, 180, 0.2);
-  border-color: #ff69b4;
+  transform: translateY(0);
 }
 
 .sheetEmoji {
-  font-size: 36px;
+  font-size: 20px;
   line-height: 1;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .sheetCost {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 12px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 400;
-  margin-top: 2px;
 }
 
 .sheetFollowing {
-  background: rgba(255, 215, 0, 0.15);
-  border-color: rgba(255, 215, 0, 0.4);
+  background: rgba(74, 222, 128, 0.2);
+  border-color: rgba(74, 222, 128, 0.4);
 }
 
-.sheetFollowing:active {
-  background: rgba(255, 215, 0, 0.25);
+.sheetFollowing:hover {
+  background: rgba(74, 222, 128, 0.3);
 }
 
-.backdrop {
-  display: none;
-}
-
-/* Desktop: Right side panel, 440px */
+/* Desktop adjustments */
 @media (min-width: 768px) {
   .sheet {
-    right: 20px;
-    left: auto;
-    bottom: 20px;
-    top: 20px;
-    width: 440px;
-    max-width: 440px;
-    transform: none;
-    border-radius: 24px;
-    max-height: none;
-    padding: 28px;
-  }
-  
-  .sheetHandle {
-    display: none;
-  }
-  
-  .sheetProfile {
-    flex-direction: column;
-    text-align: center;
-    margin-bottom: 28px;
-    padding-bottom: 20px;
+    bottom: 30px;
+    max-width: 600px;
+    height: 200px;
+    padding: 20px;
   }
   
   .sheetAvatar {
-    width: 100px;
-    height: 100px;
-    border-width: 4px;
+    width: 60px;
+    height: 60px;
   }
   
   .sheetBalance {
-    font-size: 32px;
-  }
-  
-  .sheetActions {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    font-size: 20px;
   }
   
   .sheetBtn {
-    min-height: 140px;
-    padding: 28px 20px;
-    border-radius: 20px;
+    padding: 12px;
+    font-size: 12px;
   }
   
   .sheetEmoji {
-    font-size: 48px;
+    font-size: 24px;
   }
   
   .sheetCost {
-    font-size: 13px;
+    font-size: 11px;
   }
 }
