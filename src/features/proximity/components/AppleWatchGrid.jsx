@@ -81,7 +81,6 @@ export function AppleWatchGrid(props) {
       const box = cullingBox();
       
       // Center horizontally, position in upper-middle area
-      // Leave room for bottom sheet (220px on mobile, 250px on desktop)
       const sheetHeight = canvasRef.width >= 768 ? 250 : 220;
       const availableHeight = canvasRef.height - sheetHeight;
       const topMargin = (availableHeight - box.height) / 2 - 50; // Moved up 50px
@@ -162,31 +161,22 @@ export function AppleWatchGrid(props) {
         ctx.translate(circle.x, circle.y);
         ctx.scale(scale, scale);
         
-        if (scale > 0.8) {
-          ctx.shadowColor = circle.color;
-          ctx.shadowBlur = 20;
-        }
-        
+        // Draw background circle (no glow)
         ctx.fillStyle = circle.color;
         ctx.beginPath();
         ctx.arc(0, 0, RADIUS, 0, Math.PI * 2);
         ctx.fill();
-        ctx.shadowBlur = 0;
         
         const img = images.get(circle.id);
         if (img && img.complete) {
           ctx.save();
           ctx.beginPath();
-          ctx.arc(0, 0, RADIUS - 4, 0, Math.PI * 2);
+          // Make image fill entire circle (no gap)
+          ctx.arc(0, 0, RADIUS, 0, Math.PI * 2);
           ctx.clip();
-          ctx.drawImage(img, -RADIUS + 4, -RADIUS + 4, (RADIUS - 4) * 2, (RADIUS - 4) * 2);
+          // Draw image to fill entire circle
+          ctx.drawImage(img, -RADIUS, -RADIUS, RADIUS * 2, RADIUS * 2);
           ctx.restore();
-          
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.arc(0, 0, RADIUS - 4, 0, Math.PI * 2);
-          ctx.stroke();
         }
         
         ctx.restore();
