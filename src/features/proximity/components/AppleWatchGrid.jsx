@@ -138,12 +138,7 @@ export function AppleWatchGrid(props) {
       const box = cullingBox();
       const currentOffset = offset();
       
-      // Draw box border
-      ctx.strokeStyle = isDragging() 
-        ? 'rgba(255, 105, 180, 0.6)' 
-        : 'rgba(255, 255, 255, 0.4)';
-      ctx.lineWidth = 3;
-      ctx.strokeRect(box.x, box.y, box.width, box.height);
+      // NO BORDER - removed culling box border
       
       ctx.save();
       ctx.beginPath();
