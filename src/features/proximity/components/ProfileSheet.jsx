@@ -2,13 +2,14 @@ import { Show, createMemo, createSignal, createEffect } from "solid-js";
 import { useProfileActions } from "../hooks/useProfileActions";
 import { BlurredBackground } from "./BlurredBackground";
 import { DynamicIsland } from "../../dynamicIsland/components/DynamicIsland";
+import { BalanceWarning } from "../../dynamicIsland/components/BalanceWarning";
+import { LoadingButton } from "../../loading/components/LoadingButton";
 import { extractDominantColor } from "../utils/extractDominantColor";
 import { Menu } from "../../menu/Menu";
 import styles from "../proximity.module.css";
 
 /**
- * Bottom sheet displaying selected profile details and action buttons
- * Includes DynamicIsland positioned at top center
+ * Bottom sheet with smart balance-aware buttons
  */
 export function ProfileSheet(props) {
   const [glowColor, setGlowColor] = createSignal('139, 92, 246');
@@ -57,12 +58,12 @@ export function ProfileSheet(props) {
     <Show when={props.profile}>
       {(profile) => (
         <>
-          {/* Dynamic Island positioned above sheet */}
+          {/* Island container with DynamicIsland and BalanceWarning */}
           <div class={styles.islandContainer}>
             <DynamicIsland />
+            <BalanceWarning />
           </div>
           
-          {/* Profile Sheet */}
           <div 
             class={styles.sheet}
             onClick={(e) => e.stopPropagation()}
@@ -82,46 +83,56 @@ export function ProfileSheet(props) {
               </div>
               
               <div class={styles.sheetActions}>
-                <button 
-                  class={styles.sheetBtn} 
+                <LoadingButton
+                  class={styles.sheetBtn}
+                  isLoading={profileActions()?.isPulsing()}
+                  disabled={!profileActions()?.canAffordPulse()}
                   onClick={(e) => handleButtonClick(e, 'pulse')}
+                  loadingText="Sending..."
                   aria-label="Send pulse"
                 >
                   <span class={styles.sheetEmoji}>❤️</span>
                   <span>Pulse</span>
                   <span class={styles.sheetCost}>$1</span>
-                </button>
+                </LoadingButton>
                 
-                <button 
-                  class={styles.sheetBtn} 
+                <LoadingButton
+                  class={styles.sheetBtn}
+                  isLoading={profileActions()?.isRevealing()}
+                  disabled={!profileActions()?.canAffordReveal()}
                   onClick={(e) => handleButtonClick(e, 'reveal')}
+                  loadingText="Sending..."
                   aria-label="Reveal profile"
                 >
                   <span class={styles.sheetEmoji}>📸</span>
                   <span>Reveal</span>
                   <span class={styles.sheetCost}>$5</span>
-                </button>
+                </LoadingButton>
                 
-                <button 
-                  class={styles.sheetBtn} 
+                <LoadingButton
+                  class={styles.sheetBtn}
+                  isLoading={profileActions()?.isSlapping()}
                   onClick={(e) => handleButtonClick(e, 'slap')}
+                  loadingText="Sending..."
                   aria-label="Send slap"
                 >
                   <span class={styles.sheetEmoji}>👋</span>
                   <span>Slap</span>
                   <span class={styles.sheetCost}>Free</span>
-                </button>
+                </LoadingButton>
                 
-                <button 
+                <LoadingButton
                   class={`${styles.sheetBtn} ${profile().isFollowing ? styles.sheetFollowing : ''}`}
+                  isLoading={profileActions()?.isFollowing()}
                   onClick={(e) => handleButtonClick(e, 'follow')}
+                  loadingText={profile().isFollowing ? "Updating..." : "Following..."}
                   aria-label={profile().isFollowing ? "Unfollow" : "Follow"}
                 >
                   <span class={styles.sheetEmoji}>
                     {profile().isFollowing ? "⭐" : "+"}
                   </span>
                   <span>{profile().isFollowing ? "Following" : "Follow"}</span>
-                </button>
+                </LoadingButton>
               </div>
               
               <div class={styles.sheetFooter}>
