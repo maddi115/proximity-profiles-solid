@@ -2,20 +2,24 @@ import { Show, createMemo, createSignal, createEffect } from "solid-js";
 import { useProfileActions } from "../hooks/useProfileActions";
 import { BlurredBackground } from "./BlurredBackground";
 import { extractDominantColor } from "../utils/extractDominantColor";
+import { Menu } from "../../menu/Menu";
+import { Dashboard } from "../../menu/pages/Dashboard";
+import { UserProfile } from "../../menu/pages/UserProfile";
+import { Settings } from "../../menu/pages/Settings";
+import { ActivityHistory } from "../../menu/pages/ActivityHistory";
 import styles from "../proximity.module.css";
 
 /**
- * Bottom sheet displaying selected profile details and action buttons
+ * Bottom sheet with profile info and menu navigation
  */
 export function ProfileSheet(props) {
-  const [glowColor, setGlowColor] = createSignal('139, 92, 246'); // Default purple
+  const [glowColor, setGlowColor] = createSignal('139, 92, 246');
+  const [currentView, setCurrentView] = createSignal('profile'); // 'profile', 'dashboard', 'userProfile', 'settings', 'activity'
   
-  // Create actions hook at component level
   const profileActions = createMemo(() => {
     return props.profile ? useProfileActions(props.profile.id) : null;
   });
   
-  // Extract dominant color when profile changes (kept for potential future use)
   createEffect(async () => {
     const profile = props.profile;
     if (profile && profile.img) {
@@ -36,7 +40,6 @@ export function ProfileSheet(props) {
     const actions = profileActions();
     if (!actions) return;
     
-    // Call the action by name
     switch(actionName) {
       case 'pulse':
         actions.handlePulse(e);
@@ -53,6 +56,14 @@ export function ProfileSheet(props) {
     }
   };
   
+  const handleNavigate = (page) => {
+    setCurrentView(page);
+  };
+  
+  const handleBackToProfile = () => {
+    setCurrentView('profile');
+  };
+  
   return (
     <Show when={props.profile}>
       {(profile) => (
@@ -60,65 +71,88 @@ export function ProfileSheet(props) {
           class={styles.sheet}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Blurred background */}
           <BlurredBackground src={profile().img} blurAmount={20} scale={1.2} />
           
-          {/* Content overlay */}
           <div class={styles.sheetContent}>
-            {/* Handle removed */}
-            
-            <div class={styles.sheetProfile}>
-              <img 
-                src={profile().img} 
-                class={styles.sheetAvatar} 
-                alt={`${profile().name}'s avatar`}
-              />
-              <div class={styles.sheetBalance}>
-                ${Number(profile().balance || 0).toFixed(2)}
+            {/* Profile View */}
+            <Show when={currentView() === 'profile'}>
+              <div class={styles.sheetProfile}>
+                <img 
+                  src={profile().img} 
+                  class={styles.sheetAvatar} 
+                  alt={`${profile().name}'s avatar`}
+                />
+                <div class={styles.sheetBalance}>
+                  ${Number(profile().balance || 0).toFixed(2)}
+                </div>
               </div>
-            </div>
+              
+              <div class={styles.sheetActions}>
+                <button 
+                  class={styles.sheetBtn} 
+                  onClick={(e) => handleButtonClick(e, 'pulse')}
+                  aria-label="Send pulse"
+                >
+                  <span class={styles.sheetEmoji}>❤️</span>
+                  <span>Pulse</span>
+                  <span class={styles.sheetCost}>$1</span>
+                </button>
+                
+                <button 
+                  class={styles.sheetBtn} 
+                  onClick={(e) => handleButtonClick(e, 'reveal')}
+                  aria-label="Reveal profile"
+                >
+                  <span class={styles.sheetEmoji}>📸</span>
+                  <span>Reveal</span>
+                  <span class={styles.sheetCost}>$5</span>
+                </button>
+                
+                <button 
+                  class={styles.sheetBtn} 
+                  onClick={(e) => handleButtonClick(e, 'slap')}
+                  aria-label="Send slap"
+                >
+                  <span class={styles.sheetEmoji}>👋</span>
+                  <span>Slap</span>
+                  <span class={styles.sheetCost}>Free</span>
+                </button>
+                
+                <button 
+                  class={`${styles.sheetBtn} ${profile().isFollowing ? styles.sheetFollowing : ''}`}
+                  onClick={(e) => handleButtonClick(e, 'follow')}
+                  aria-label={profile().isFollowing ? "Unfollow" : "Follow"}
+                >
+                  <span class={styles.sheetEmoji}>
+                    {profile().isFollowing ? "⭐" : "+"}
+                  </span>
+                  <span>{profile().isFollowing ? "Following" : "Follow"}</span>
+                </button>
+              </div>
+            </Show>
             
-            <div class={styles.sheetActions}>
-              <button 
-                class={styles.sheetBtn} 
-                onClick={(e) => handleButtonClick(e, 'pulse')}
-                aria-label="Send pulse"
-              >
-                <span class={styles.sheetEmoji}>❤️</span>
-                <span>Pulse</span>
-                <span class={styles.sheetCost}>$1</span>
-              </button>
-              
-              <button 
-                class={styles.sheetBtn} 
-                onClick={(e) => handleButtonClick(e, 'reveal')}
-                aria-label="Reveal profile"
-              >
-                <span class={styles.sheetEmoji}>📸</span>
-                <span>Reveal</span>
-                <span class={styles.sheetCost}>$5</span>
-              </button>
-              
-              <button 
-                class={styles.sheetBtn} 
-                onClick={(e) => handleButtonClick(e, 'slap')}
-                aria-label="Send slap"
-              >
-                <span class={styles.sheetEmoji}>👋</span>
-                <span>Slap</span>
-                <span class={styles.sheetCost}>Free</span>
-              </button>
-              
-              <button 
-                class={`${styles.sheetBtn} ${profile().isFollowing ? styles.sheetFollowing : ''}`}
-                onClick={(e) => handleButtonClick(e, 'follow')}
-                aria-label={profile().isFollowing ? "Unfollow" : "Follow"}
-              >
-                <span class={styles.sheetEmoji}>
-                  {profile().isFollowing ? "⭐" : "+"}
-                </span>
-                <span>{profile().isFollowing ? "Following" : "Follow"}</span>
-              </button>
+            {/* Menu Pages */}
+            <Show when={currentView() === 'dashboard'}>
+              <Dashboard />
+            </Show>
+            <Show when={currentView() === 'userProfile'}>
+              <UserProfile />
+            </Show>
+            <Show when={currentView() === 'settings'}>
+              <Settings />
+            </Show>
+            <Show when={currentView() === 'activity'}>
+              <ActivityHistory />
+            </Show>
+            
+            {/* Footer with Menu and Back button */}
+            <div class={styles.sheetFooter}>
+              <Show when={currentView() !== 'profile'}>
+                <button class={styles.backBtn} onClick={handleBackToProfile}>
+                  ← Back
+                </button>
+              </Show>
+              <Menu onNavigate={handleNavigate} />
             </div>
           </div>
         </div>

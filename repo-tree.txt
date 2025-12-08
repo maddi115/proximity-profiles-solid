@@ -1,0 +1,53 @@
+.
+├── .gitignore
+├── README.md
+├── functions.json
+├── index.html
+├── package-lock.json
+├── package.json
+├── public
+│   └── vite.svg
+├── repo-tree.txt
+├── src
+│   ├── App.css
+│   ├── App.jsx
+│   ├── assets
+│   │   └── solid.svg
+│   ├── features
+│   │   └── proximity
+│   │       ├── ProximityMap.jsx
+│   │       ├── README.md
+│   │       ├── components
+│   │       │   ├── ActionSheet.jsx.unused
+│   │       │   ├── AppleWatchGrid.jsx
+│   │       │   ├── BlurredBackground.jsx
+│   │       │   ├── DynamicIsland.jsx
+│   │       │   ├── ProfileSheet.jsx
+│   │       │   ├── actionSheet.module.css
+│   │       │   ├── appleWatch.module.css
+│   │       │   ├── canvas
+│   │       │   │   ├── useCulling.js
+│   │       │   │   └── useSnapback.js
+│   │       │   ├── interactions
+│   │       │   │   └── useProfileClick.js
+│   │       │   ├── island.module.css
+│   │       │   └── layout
+│   │       │       └── honeycombLayout.js
+│   │       ├── constants.js
+│   │       ├── data.js
+│   │       ├── hooks
+│   │       │   ├── useProfileActions.js
+│   │       │   └── useProfileSelection.js
+│   │       ├── proximity.module.css
+│   │       ├── types.js
+│   │       ├── utils
+│   │       │   └── extractDominantColor.js
+│   │       └── utils.js
+│   ├── global.css
+│   ├── index.css
+│   ├── index.jsx
+│   └── store
+│       └── proximityStore.js
+└── vite.config.js
+
+13 directories, 38 files

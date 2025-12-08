@@ -1,0 +1,212 @@
+.pageContent {
+  padding: 20px 0 80px 0; /* Added 80px bottom padding for footer space */
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.pageContent::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.pageTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 20px 0;
+}
+
+/* Dashboard Stats */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.statValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Profile Section */
+.profileSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.avatarCircle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+  flex-shrink: 0;
+}
+
+.profileName {
+  font-size: 18px;
+  color: white;
+  margin: 0 0 4px 0;
+}
+
+.profileBio {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+}
+
+.balanceText {
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.statusText {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+
+/* Settings */
+.settingsGroup {
+  margin-bottom: 20px;
+}
+
+.groupTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.settingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+}
+
+.settingRow input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Activity */
+.activityList {
+  margin-bottom: 16px;
+}
+
+.activityItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.activityEmoji {
+  font-size: 20px;
+}
+
+.activityInfo {
+  flex: 1;
+}
+
+.activityAction {
+  font-size: 13px;
+  color: white;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.activityTime {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.activityCost {
+  font-size: 12px;
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.emptyText {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  font-style: italic;
+  margin: 20px 0 0 0;
+}
+
+/* Buttons */
+.actionBtn, .dangerBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  margin-top: 12px;
+}
+
+.actionBtn {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.actionBtn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.dangerBtn {
+  background: rgba(239, 68, 68, 0.2);
+  color: white;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.dangerBtn:hover {
+  background: rgba(239, 68, 68, 0.3);
+}

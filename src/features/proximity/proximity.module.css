@@ -161,3 +161,79 @@
     font-size: 22px;
   }
 }
+
+.sheetFooter {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  background: rgba(15, 15, 25, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: color 0.2s;
+  margin-right: 12px;
+}
+
+.backBtn:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+
+.backBtn:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+/* Make footer fixed at bottom with reserved space */
+.sheetContent {
+  position: relative;
+  padding-bottom: 60px; /* Reserve space for footer */
+}
+
+.sheetFooter {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  background: rgba(15, 15, 25, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: color 0.2s;
+  margin-right: 12px;
+}
+
+.backBtn:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+
+.backBtn:hover {
+  color: rgba(255, 255, 255, 1);
+}
