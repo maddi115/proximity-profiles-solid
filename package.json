@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@motionone/solid": "^10.16.4",
+    "@solidjs/router": "^0.15.4",
     "motion": "^12.23.25",
     "solid-js": "^1.9.10"
   },

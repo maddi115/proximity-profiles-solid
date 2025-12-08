@@ -1,6 +1,6 @@
-import styles from "./sheetPages.module.css";
+import styles from "./routes.module.css";
 
-export function Dashboard() {
+export default function Dashboard() {
   return (
     <div class={styles.pageContent}>
       <h2 class={styles.pageTitle}>Dashboard</h2>

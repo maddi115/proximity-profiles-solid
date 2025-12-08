@@ -1,13 +1,14 @@
 import { createSignal, Show } from "solid-js";
+import { useNavigate, useLocation } from "@solidjs/router";
 import styles from "./menu.module.css";
 
 /**
- * Menu dropdown with navigation to different pages
- * @param {Object} props
- * @param {Function} props.onNavigate - Callback when menu item is clicked
+ * Menu dropdown with router-based navigation
  */
-export function Menu(props) {
+export function Menu() {
   const [isOpen, setIsOpen] = createSignal(false);
+  const navigate = useNavigate();
+  const location = useLocation();
   
   const handleMouseEnter = () => {
     setIsOpen(true);
@@ -17,27 +18,25 @@ export function Menu(props) {
     setIsOpen(false);
   };
   
-  const handleMenuClick = (page) => {
-    if (page === 'logout') {
+  const handleMenuClick = (path) => {
+    if (path === 'logout') {
       console.log('Logging out...');
       // TODO: Implement logout logic
       setIsOpen(false);
       return;
     }
     
-    // Navigate to the selected page
-    props.onNavigate?.(page);
-    // Close menu after clicking
+    navigate(path);
     setIsOpen(false);
   };
   
   const menuItems = [
-    { label: "Front Page", value: "profile" },
-    { label: "Dashboard", value: "dashboard" },
-    { label: "My Profile", value: "userProfile" },
-    { label: "Settings", value: "settings" },
-    { label: "Activity History", value: "activity" },
-    { label: "Logout", value: "logout", danger: true }
+    { label: "Front Page", path: "/" },
+    { label: "Dashboard", path: "/dashboard" },
+    { label: "My Profile", path: "/profile" },
+    { label: "Settings", path: "/settings" },
+    { label: "Activity History", path: "/activity" },
+    { label: "Logout", path: "logout", danger: true }
   ];
   
   return (
@@ -55,7 +54,7 @@ export function Menu(props) {
           {menuItems.map((item) => (
             <button
               class={`${styles.dropdownItem} ${item.danger ? styles.dangerItem : ''}`}
-              onClick={() => handleMenuClick(item.value)}
+              onClick={() => handleMenuClick(item.path)}
             >
               {item.label}
             </button>

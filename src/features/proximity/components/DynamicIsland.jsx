@@ -1,4 +1,4 @@
-import { userProfile, closestProfile } from "../data";
+import { userProfile, closestProfile } from "../mockData";
 import styles from "./island.module.css"; // <-- NEW CSS MODULE IMPORT
 
 export function DynamicIsland() {

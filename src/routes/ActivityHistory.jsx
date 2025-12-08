@@ -1,6 +1,6 @@
-import styles from "./sheetPages.module.css";
+import styles from "./routes.module.css";
 
-export function ActivityHistory() {
+export default function ActivityHistory() {
   const activities = [
     { emoji: '❤️', action: 'Pulse to Alex', cost: '$1', time: '2m ago' },
     { emoji: '📸', action: 'Reveal from Jamie', cost: '$5', time: '1h ago' },

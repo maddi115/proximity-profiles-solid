@@ -1,5 +1,5 @@
 import { createSignal, createMemo } from "solid-js";
-import { store } from "../../../store/proximityStore";
+import { store } from "../store/proximityStore";
 
 /**
  * Hook to manage selected profile state
