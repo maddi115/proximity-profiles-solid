@@ -1,0 +1,200 @@
+.island {
+  background: rgba(20, 20, 30, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 12px 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* Single smooth transition for all properties */
+  transition: all 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+  
+  min-width: 120px;
+  transform-origin: center;
+  
+  /* Force hardware acceleration */
+  transform: translateZ(0);
+  will-change: width, padding, border-radius;
+}
+
+.island.expanded {
+  min-width: 320px;
+  padding: 16px;
+  border-radius: 28px;
+}
+
+/* Compact Mode */
+.compactMode {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: white;
+  
+  /* Smooth scale on hover */
+  transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+  transform: translateZ(0);
+}
+
+.compactMode:hover {
+  transform: translateZ(0) scale(1.05);
+}
+
+.compactMode:active {
+  transform: translateZ(0) scale(0.98);
+}
+
+.badge {
+  background: rgba(74, 222, 128, 0.3);
+  color: #4ade80;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Proximity Mode */
+.proximityMode {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: white;
+  
+  /* Fade in smoothly */
+  animation: fadeIn 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.collapseBtn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+  transform: translateZ(0);
+}
+
+.collapseBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateZ(0) scale(1.1);
+}
+
+.collapseBtn:active {
+  transform: translateZ(0) scale(0.95);
+}
+
+.historyBtn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  margin-top: 4px;
+  transform: translateZ(0);
+}
+
+.historyBtn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateZ(0) translateY(-1px);
+}
+
+.historyBtn:active {
+  transform: translateZ(0) translateY(0);
+}
+
+/* Notification Mode */
+.notificationMode {
+  /* Smooth fade in */
+  animation: notificationFade 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes notificationFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Queue Counter Badge */
+.queueCounter {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  
+  /* Smooth pop animation when appearing */
+  animation: counterPop 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  
+  /* Smooth transition when number changes */
+  transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes counterPop {
+  0% {
+    transform: scale(0) translateZ(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) translateZ(0);
+  }
+  100% {
+    transform: scale(1) translateZ(0);
+    opacity: 1;
+  }
+}
+
+/* Pulse animation when counter updates */
+.queueCounter:hover {
+  transform: scale(1.1) translateZ(0);
+}
+
+/* Make notification mode position relative for badge positioning */
+.notificationMode {
+  position: relative;
+  animation: notificationFade 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}

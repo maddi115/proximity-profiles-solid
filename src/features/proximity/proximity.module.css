@@ -177,3 +177,20 @@
     font-size: 22px;
   }
 }
+
+/* Dynamic Island Container - positioned above sheet */
+.islandContainer {
+  position: fixed;
+  bottom: 460px; /* Sheet height (387px) + spacing (33px) */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1001; /* Above sheet (1000) */
+  pointer-events: none; /* Don't block interactions */
+}
+
+/* Mobile adjustments for island */
+@media (max-width: 767px) {
+  .islandContainer {
+    bottom: 420px; /* Adjusted for mobile sheet height */
+  }
+}
