@@ -24,6 +24,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding-bottom: 60px;
 }
 
 .sheetProfile {
@@ -95,8 +96,7 @@
 .sheetBtn:hover {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
 }
 
 .sheetBtn:hover::before {
@@ -130,6 +130,22 @@
   border-color: rgba(74, 222, 128, 0.4);
 }
 
+/* Footer with Menu centered */
+.sheetFooter {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  background: rgba(15, 15, 25, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  z-index: 10;
+}
+
 /* Mobile adjustments */
 @media (max-width: 767px) {
   .sheet {
@@ -160,80 +176,4 @@
   .sheetEmoji {
     font-size: 22px;
   }
-}
-
-.sheetFooter {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 16px 20px;
-  background: rgba(15, 15, 25, 0.95);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  z-index: 10;
-}
-
-.backBtn {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 8px 12px;
-  transition: color 0.2s;
-  margin-right: 12px;
-}
-
-.backBtn:hover {
-  color: rgba(255, 255, 255, 1);
-}
-
-
-.backBtn:hover {
-  color: rgba(255, 255, 255, 1);
-}
-
-/* Make footer fixed at bottom with reserved space */
-.sheetContent {
-  position: relative;
-  padding-bottom: 60px; /* Reserve space for footer */
-}
-
-.sheetFooter {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 16px 20px;
-  background: rgba(15, 15, 25, 0.95);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  z-index: 10;
-}
-
-.backBtn {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 8px 12px;
-  transition: color 0.2s;
-  margin-right: 12px;
-}
-
-.backBtn:hover {
-  color: rgba(255, 255, 255, 1);
-}
-
-
-.backBtn:hover {
-  color: rgba(255, 255, 255, 1);
 }

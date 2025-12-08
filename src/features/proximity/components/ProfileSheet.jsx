@@ -14,7 +14,7 @@ import styles from "../proximity.module.css";
  */
 export function ProfileSheet(props) {
   const [glowColor, setGlowColor] = createSignal('139, 92, 246');
-  const [currentView, setCurrentView] = createSignal('profile'); // 'profile', 'dashboard', 'userProfile', 'settings', 'activity'
+  const [currentView, setCurrentView] = createSignal('profile');
   
   const profileActions = createMemo(() => {
     return props.profile ? useProfileActions(props.profile.id) : null;
@@ -60,10 +60,6 @@ export function ProfileSheet(props) {
     setCurrentView(page);
   };
   
-  const handleBackToProfile = () => {
-    setCurrentView('profile');
-  };
-  
   return (
     <Show when={props.profile}>
       {(profile) => (
@@ -74,7 +70,7 @@ export function ProfileSheet(props) {
           <BlurredBackground src={profile().img} blurAmount={20} scale={1.2} />
           
           <div class={styles.sheetContent}>
-            {/* Profile View */}
+            {/* Profile View (Front Page) */}
             <Show when={currentView() === 'profile'}>
               <div class={styles.sheetProfile}>
                 <img 
@@ -145,14 +141,12 @@ export function ProfileSheet(props) {
               <ActivityHistory />
             </Show>
             
-            {/* Footer with Menu and Back button */}
+            {/* Footer with Menu only */}
             <div class={styles.sheetFooter}>
-              <Show when={currentView() !== 'profile'}>
-                <button class={styles.backBtn} onClick={handleBackToProfile}>
-                  ← Back
-                </button>
-              </Show>
-              <Menu onNavigate={handleNavigate} />
+              <Menu 
+                onNavigate={handleNavigate} 
+                currentView={currentView()}
+              />
             </div>
           </div>
         </div>

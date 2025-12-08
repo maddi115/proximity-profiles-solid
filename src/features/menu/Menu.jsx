@@ -25,11 +25,14 @@ export function Menu(props) {
       return;
     }
     
+    // Navigate to the selected page
     props.onNavigate?.(page);
+    // Close menu after clicking
     setIsOpen(false);
   };
   
   const menuItems = [
+    { label: "Front Page", value: "profile" },
     { label: "Dashboard", value: "dashboard" },
     { label: "My Profile", value: "userProfile" },
     { label: "Settings", value: "settings" },
