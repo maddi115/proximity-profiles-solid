@@ -2,40 +2,37 @@ import { createStore } from "solid-js/store";
 
 /**
  * Activity Store
- * Tracks all user actions for history display
+ * Optimized: Stores only profile IDs, not full objects
  */
+
+const MAX_ACTIVITIES = 50; // Reduced from 100
 
 const [store, setStore] = createStore({
   activities: []
 });
 
 export const activityActions = {
-  /**
-   * Add a new activity
-   */
   addActivity(activity) {
     const newActivity = {
       id: Date.now().toString(),
       timestamp: new Date(),
-      ...activity
+      type: activity.type,
+      emoji: activity.emoji,
+      action: activity.action,
+      profileId: activity.targetProfile?.id, // Only store ID
+      cost: activity.cost
     };
     
-    // Add to beginning of array (newest first)
-    setStore("activities", [newActivity, ...store.activities]);
+    const newActivities = [newActivity, ...store.activities].slice(0, MAX_ACTIVITIES);
+    setStore("activities", newActivities);
     
-    console.log('📝 Activity logged:', newActivity);
+    console.log('📝 Activity logged:', newActivity.action, `(${store.activities.length}/${MAX_ACTIVITIES})`);
   },
   
-  /**
-   * Clear all activities
-   */
   clearActivities() {
     setStore("activities", []);
   },
   
-  /**
-   * Get activities for display
-   */
   getActivities() {
     return store.activities;
   }

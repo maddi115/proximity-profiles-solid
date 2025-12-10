@@ -1,16 +1,22 @@
 import { Show, For } from "solid-js";
 import { activityStore } from "../features/notifications/store/activityStore";
+import { store } from "../features/proximity/store/proximityStore";
+import { profiles } from "../features/proximity/mockData";
 import styles from "./routes.module.css";
 
-/**
- * Activity History - Shows all user actions
- */
 export default function ActivityHistory() {
   const activities = () => activityStore.activities;
   
+  // Fetch profile by ID when needed (not stored)
+  const getProfile = (profileId) => {
+    const storeProfile = store.profiles.find(p => p.id === profileId);
+    if (storeProfile) return storeProfile;
+    return profiles.find(p => p.id === profileId);
+  };
+  
   const formatTime = (timestamp) => {
     const now = new Date();
-    const diff = Math.floor((now - timestamp) / 1000); // seconds
+    const diff = Math.floor((now - timestamp) / 1000);
     
     if (diff < 60) return 'just now';
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
@@ -39,30 +45,34 @@ export default function ActivityHistory() {
       >
         <div class={styles.activityList}>
           <For each={activities()}>
-            {(activity) => (
-              <div class={styles.activityItem}>
-                <div class={styles.activityIconCircle}>
-                  <span class={styles.activityEmoji}>{activity.emoji}</span>
+            {(activity) => {
+              const profile = getProfile(activity.profileId);
+              return (
+                <div class={styles.activityItem}>
+                  <div class={styles.activityIconCircle}>
+                    <span class={styles.activityEmoji}>{activity.emoji}</span>
+                  </div>
+                  
+                  <div class={styles.activityInfo}>
+                    <div class={styles.activityAction}>{activity.action}</div>
+                    <div class={styles.activityTime}>{formatTime(activity.timestamp)}</div>
+                  </div>
+                  
+                  <Show when={profile}>
+                    <img 
+                      src={profile.img} 
+                      alt={profile.name}
+                      class={styles.activityProfilePic}
+                      loading="lazy"
+                    />
+                  </Show>
+                  
+                  <div class={styles.activityCost}>
+                    {getCostDisplay(activity)}
+                  </div>
                 </div>
-                
-                <div class={styles.activityInfo}>
-                  <div class={styles.activityAction}>{activity.action}</div>
-                  <div class={styles.activityTime}>{formatTime(activity.timestamp)}</div>
-                </div>
-                
-                <Show when={activity.targetProfile}>
-                  <img 
-                    src={activity.targetProfile.image} 
-                    alt={activity.targetProfile.name}
-                    class={styles.activityProfilePic}
-                  />
-                </Show>
-                
-                <div class={styles.activityCost}>
-                  {getCostDisplay(activity)}
-                </div>
-              </div>
-            )}
+              );
+            }}
           </For>
         </div>
       </Show>

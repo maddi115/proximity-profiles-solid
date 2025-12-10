@@ -1,9 +1,10 @@
 import { createStore } from "solid-js/store";
 
 /**
- * Notification Store
- * Manages notification queue and current display
+ * Notification Store with proper cleanup (NO LEAKS)
  */
+
+const MAX_QUEUE_SIZE = 5;
 
 const [store, setStore] = createStore({
   queue: [],
@@ -13,10 +14,15 @@ const [store, setStore] = createStore({
 
 let dismissTimeout = null;
 
+// Cleanup helper
+function clearDismissTimeout() {
+  if (dismissTimeout) {
+    clearTimeout(dismissTimeout);
+    dismissTimeout = null;
+  }
+}
+
 export const notificationActions = {
-  /**
-   * Show a notification (adds to queue or displays immediately)
-   */
   showNotification(notification) {
     const notif = {
       id: Date.now().toString(),
@@ -25,25 +31,26 @@ export const notificationActions = {
     };
     
     if (store.current) {
-      // Add to queue if something is showing
-      setStore("queue", [...store.queue, notif]);
+      const newQueue = [...store.queue, notif];
+      if (newQueue.length > MAX_QUEUE_SIZE) {
+        console.warn('⚠️ Queue full, dropping oldest');
+        newQueue.shift();
+      }
+      setStore("queue", newQueue);
     } else {
-      // Show immediately
       this._displayNotification(notif);
     }
   },
   
-  /**
-   * Internal: Display a notification
-   */
   _displayNotification(notification) {
-    // Small delay to ensure smooth transition
+    // Clear any existing timeout first
+    clearDismissTimeout();
+    
     setTimeout(() => {
       setStore("current", notification);
       setStore("isVisible", true);
     }, 50);
     
-    // Auto-dismiss if duration > 0
     if (notification.duration > 0) {
       dismissTimeout = setTimeout(() => {
         this.dismissCurrent();
@@ -51,37 +58,31 @@ export const notificationActions = {
     }
   },
   
-  /**
-   * Dismiss current notification and show next in queue
-   */
   dismissCurrent() {
-    if (dismissTimeout) {
-      clearTimeout(dismissTimeout);
-      dismissTimeout = null;
-    }
+    clearDismissTimeout();
     
     setStore("isVisible", false);
     
-    // Wait for fade out animation (450ms to match island transition)
     setTimeout(() => {
       setStore("current", null);
       
-      // Wait a bit before showing next
-      setTimeout(() => {
-        if (store.queue.length > 0) {
-          const next = store.queue[0];
-          setStore("queue", store.queue.slice(1));
-          this._displayNotification(next);
-        }
-      }, 100);
+      if (store.queue.length > 0) {
+        const next = store.queue[0];
+        setStore("queue", store.queue.slice(1));
+        setTimeout(() => this._displayNotification(next), 100);
+      }
     }, 450);
   },
   
-  /**
-   * Clear entire queue
-   */
   clearQueue() {
+    clearDismissTimeout();
     setStore("queue", []);
+  },
+  
+  // Cleanup method (call on app unmount if needed)
+  cleanup() {
+    clearDismissTimeout();
+    this.clearQueue();
   }
 };
 

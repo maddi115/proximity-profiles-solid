@@ -2,26 +2,11 @@ import { onCleanup } from "solid-js";
 import { loadingStore, loadingActions } from "../store/loadingStore";
 
 /**
- * useLoading Hook
- * Provides easy access to loading state management
- * 
- * Usage:
- * const { isLoading, startLoading, stopLoading, withLoading } = useLoading();
- * 
- * // Manual control
- * startLoading('my-operation');
- * // ... do work ...
- * stopLoading('my-operation');
- * 
- * // Automatic (recommended)
- * await withLoading('my-operation', async () => {
- *   await doSomething();
- * });
+ * useLoading Hook (silent mode)
  */
 export function useLoading() {
   const activeOperations = new Set();
   
-  // Cleanup on unmount
   onCleanup(() => {
     activeOperations.forEach(key => {
       loadingActions.stopLoading(key);
@@ -39,9 +24,6 @@ export function useLoading() {
     loadingActions.stopLoading(key);
   };
   
-  /**
-   * Wrap async function with automatic loading state
-   */
   const withLoading = async (key, asyncFn) => {
     try {
       startLoading(key);

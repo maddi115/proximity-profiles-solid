@@ -9,13 +9,16 @@ import { Menu } from "../../menu/Menu";
 import styles from "../proximity.module.css";
 
 /**
- * Bottom sheet with smart balance-aware buttons
+ * ProfileSheet - Optimized to prevent excessive re-renders
  */
 export function ProfileSheet(props) {
   const [glowColor, setGlowColor] = createSignal('139, 92, 246');
   
+  // Only create once per profile ID (not on every render)
+  const profileId = createMemo(() => props.profile?.id);
   const profileActions = createMemo(() => {
-    return props.profile ? useProfileActions(props.profile.id) : null;
+    const id = profileId();
+    return id ? useProfileActions(id) : null;
   });
   
   createEffect(async () => {
@@ -58,7 +61,6 @@ export function ProfileSheet(props) {
     <Show when={props.profile}>
       {(profile) => (
         <>
-          {/* Island container with DynamicIsland and BalanceWarning */}
           <div class={styles.islandContainer}>
             <DynamicIsland />
             <BalanceWarning />
@@ -76,6 +78,8 @@ export function ProfileSheet(props) {
                   src={profile().img} 
                   class={styles.sheetAvatar} 
                   alt={`${profile().name}'s avatar`}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div class={styles.sheetBalance}>
                   ${Number(profile().balance || 0).toFixed(2)}

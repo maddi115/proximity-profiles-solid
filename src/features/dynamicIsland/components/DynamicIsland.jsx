@@ -1,4 +1,4 @@
-import { Show, onMount, onCleanup, createSignal } from "solid-js";
+import { Show, createEffect, onMount } from "solid-js";
 import { islandStore, islandActions } from "../store/islandStore";
 import { notificationStore } from "../../notifications/store/notificationStore";
 import { proximityHitsStore } from "../../proximity/store/proximityHitsStore";
@@ -10,72 +10,39 @@ import { IslandModes } from "../types";
 import styles from "./island.module.css";
 
 /**
- * DynamicIsland - Orchestrates proximity and notifications
+ * DynamicIsland - Fully reactive (NO POLLING)
  */
 export function DynamicIsland() {
-  // Track proximity
   useProximityTracking();
-  
-  let lastNotificationId = null;
-  let checkInterval;
-  
-  // Track total remaining (current + queued)
-  const [totalRemaining, setTotalRemaining] = createSignal(0);
-  
-  onMount(() => {
-    console.log('🏝️ DynamicIsland mounted!');
-    
-    // Poll notification state
-    checkInterval = setInterval(() => {
-      const current = notificationStore.current;
-      const queueLength = notificationStore.queue.length;
-      
-      // Calculate total remaining (current + queue)
-      const remaining = (current ? 1 : 0) + queueLength;
-      setTotalRemaining(remaining);
-      
-      // New notification appeared
-      if (current && current.id !== lastNotificationId) {
-        lastNotificationId = current.id;
-        console.log('📢 New notification:', current.message, '| Remaining:', remaining);
-        islandActions.showNotification();
-      }
-      
-      // Notification dismissed
-      if (!current && lastNotificationId) {
-        console.log('✅ Notification cleared | Remaining:', remaining);
-        lastNotificationId = null;
-        islandActions.returnFromNotification();
-      }
-    }, 50);
-  });
-  
-  onCleanup(() => {
-    if (checkInterval) clearInterval(checkInterval);
-  });
   
   const nearbyCount = () => proximityHitsStore.currentHits.length;
   const queueCount = () => notificationStore.queue.length;
+  
+  // REACTIVE: Auto-responds to notifications
+  createEffect(() => {
+    const current = notificationStore.current;
+    const isVisible = notificationStore.isVisible;
+    
+    if (current && isVisible) {
+      islandActions.showNotification();
+    } else if (!current && islandStore.currentMode === IslandModes.NOTIFICATION) {
+      islandActions.returnFromNotification();
+    }
+  });
   
   return (
     <div class={`${styles.island} ${islandStore.isExpanded ? styles.expanded : ''}`}>
       <Show when={islandStore.currentMode === IslandModes.COMPACT}>
         <CompactMode 
           nearbyCount={nearbyCount()}
-          onExpand={() => {
-            console.log('📍 Expanding to proximity mode');
-            islandActions.expand();
-          }}
+          onExpand={() => islandActions.expand()}
         />
       </Show>
       
       <Show when={islandStore.currentMode === IslandModes.PROXIMITY}>
         <ProximityMode 
           hits={proximityHitsStore.currentHits}
-          onCollapse={() => {
-            console.log('⬇️ Collapsing to compact');
-            islandActions.collapse();
-          }}
+          onCollapse={() => islandActions.collapse()}
           onSelectProfile={(id) => console.log('Select profile:', id)}
           onShowHistory={() => console.log('Show history')}
         />

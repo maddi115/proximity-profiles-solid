@@ -2,39 +2,54 @@ import { onMount, onCleanup } from "solid-js";
 import { proximityHitsStore, proximityHitsActions } from "../store/proximityHitsStore";
 
 /**
- * Hook to track proximity (would use BLE/GPS in real app)
- * For now, simulates with mock data
+ * Proximity tracking with proper cleanup (NO LEAKS)
  */
 export function useProximityTracking() {
-  let interval;
+  let interval = null;
+  let isActive = true;
   
   onMount(() => {
-    // TODO: Real BLE/GPS tracking
-    // For now, simulate with mock data
+    console.log('🎯 Proximity tracking started');
     simulateProximity();
-  });
-  
-  onCleanup(() => {
-    if (interval) clearInterval(interval);
+    
+    // Page Visibility API
+    const handleVisibilityChange = () => {
+      isActive = !document.hidden;
+      console.log(`🔄 Proximity tracking ${isActive ? 'resumed' : 'paused'}`);
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // CRITICAL: Cleanup everything
+    onCleanup(() => {
+      console.log('🧹 Proximity tracking cleanup');
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    });
   });
   
   function simulateProximity() {
-    // Mock: Add some nearby people
     const mockProfiles = ['1', '2', '3'];
     
+    // Initial positions
     mockProfiles.forEach((id, index) => {
       proximityHitsActions.updateProximity(
         id,
-        20 + (index * 15) // 20ft, 35ft, 50ft
+        20 + (index * 15)
       );
     });
     
-    // Simulate distance changes every 5 seconds
+    // Update only when page is visible
     interval = setInterval(() => {
-      mockProfiles.forEach(id => {
-        const distance = Math.floor(Math.random() * 80) + 20; // 20-100ft
-        proximityHitsActions.updateProximity(id, distance);
-      });
+      if (isActive) {
+        mockProfiles.forEach(id => {
+          const distance = Math.floor(Math.random() * 80) + 20;
+          proximityHitsActions.updateProximity(id, distance);
+        });
+      }
     }, 5000);
   }
   

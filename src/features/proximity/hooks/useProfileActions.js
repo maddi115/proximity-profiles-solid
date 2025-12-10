@@ -8,12 +8,15 @@ import { profiles } from "../mockData";
 import { createHeart } from "../utils";
 
 /**
- * Hook for profile interaction actions with balance checks
+ * Profile actions with proper cleanup (NO SPAM)
  */
 export function useProfileActions(profileId) {
   const [hearts, setHearts] = createSignal([]);
   const { showNotification } = useNotifications();
   const { isLoading, withLoading } = useLoading();
+  
+  // Track timeouts for cleanup
+  const heartTimeouts = new Set();
   
   const getProfile = () => {
     const storeProfile = store.profiles.find(p => p.id === profileId);
@@ -42,11 +45,7 @@ export function useProfileActions(profileId) {
           type: 'pulse',
           emoji: '❤️',
           action: `Pulse sent to ${profile?.name || 'user'}`,
-          targetProfile: {
-            id: profileId,
-            name: profile?.name,
-            image: profile?.img
-          },
+          targetProfile: { id: profileId },
           cost: 1
         });
         
@@ -63,9 +62,13 @@ export function useProfileActions(profileId) {
         
         const heart = createHeart(e.clientX, e.clientY);
         setHearts([...hearts(), heart]);
-        setTimeout(() => {
+        
+        const timeout = setTimeout(() => {
           setHearts(hearts().filter(h => h !== heart));
+          heartTimeouts.delete(timeout);
         }, 2000);
+        
+        heartTimeouts.add(timeout);
       });
     } catch (error) {
       handleError(error, { 
@@ -94,11 +97,7 @@ export function useProfileActions(profileId) {
           type: 'reveal',
           emoji: '📸',
           action: `Reveal sent to ${profile?.name || 'user'}`,
-          targetProfile: {
-            id: profileId,
-            name: profile?.name,
-            image: profile?.img
-          },
+          targetProfile: { id: profileId },
           cost: 5
         });
         
@@ -135,11 +134,7 @@ export function useProfileActions(profileId) {
           type: 'slap',
           emoji: '👋',
           action: `Slap sent to ${profile?.name || 'user'}`,
-          targetProfile: {
-            id: profileId,
-            name: profile?.name,
-            image: profile?.img
-          },
+          targetProfile: { id: profileId },
           cost: 0
         });
         
@@ -177,11 +172,7 @@ export function useProfileActions(profileId) {
           type: isFollowing ? 'follow' : 'unfollow',
           emoji: isFollowing ? '⭐' : '➖',
           action: isFollowing ? `Following ${profile?.name || 'user'}` : `Unfollowed ${profile?.name || 'user'}`,
-          targetProfile: {
-            id: profileId,
-            name: profile?.name,
-            image: profile?.img
-          },
+          targetProfile: { id: profileId },
           cost: 0
         });
         
@@ -204,7 +195,10 @@ export function useProfileActions(profileId) {
     }
   };
 
+  // Cleanup (silent - no spam)
   onCleanup(() => {
+    heartTimeouts.forEach(timeout => clearTimeout(timeout));
+    heartTimeouts.clear();
     setHearts([]);
   });
 
@@ -215,12 +209,10 @@ export function useProfileActions(profileId) {
     handleFollow,
     hearts,
     balance: () => store.balance,
-    // Loading states
     isPulsing: () => isLoading(`pulse-${profileId}`),
     isRevealing: () => isLoading(`reveal-${profileId}`),
     isSlapping: () => isLoading(`slap-${profileId}`),
     isFollowing: () => isLoading(`follow-${profileId}`),
-    // Balance checks
     canAffordPulse: () => canAfford(1),
     canAffordReveal: () => canAfford(5)
   };
