@@ -209,5 +209,5 @@ export const authActions = {
   }
 };
 
-export { store as authStore };
-export default authStore;
+// FIXED: Export store, not undefined authStore
+export const authStore = store;

@@ -1,6 +1,14 @@
-import { createSignal, Show } from "solid-js";
-import { useNavigate, useLocation } from "@solidjs/router";
-import styles from "./menu.module.css";
+import { createSignal, For, Show } from 'solid-js';
+import { useNavigate, useLocation } from '@solidjs/router';
+import styles from './menu.module.css';
+
+const menuItems = [
+  { label: 'Home', path: '/', icon: '🏠' },
+  { label: 'Dashboard', path: '/dashboard', icon: '📊' },
+  { label: 'My Profile', path: '/my-profile', icon: '👤' },
+  { label: 'Activity', path: '/activity', icon: '📝' },
+  { label: 'Settings', path: '/settings', icon: '⚙️' },
+];
 
 /**
  * Menu dropdown with router-based navigation
@@ -9,36 +17,25 @@ export function Menu() {
   const [isOpen, setIsOpen] = createSignal(false);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const handleMouseEnter = () => {
     setIsOpen(true);
   };
-  
+
   const handleMouseLeave = () => {
     setIsOpen(false);
   };
-  
+
   const handleMenuClick = (path) => {
+    setIsOpen(false);
     if (path === 'logout') {
       console.log('Logging out...');
       // TODO: Implement logout logic
-      setIsOpen(false);
       return;
     }
-    
     navigate(path);
-    setIsOpen(false);
   };
-  
-  const menuItems = [
-    { label: "Front Page", path: "/" },
-    { label: "Dashboard", path: "/dashboard" },
-    { label: "My Profile", path: "/profile" },
-    { label: "Settings", path: "/settings" },
-    { label: "Activity History", path: "/activity" },
-    { label: "Logout", path: "logout", danger: true }
-  ];
-  
+
   return (
     <div 
       class={styles.menuContainer}
@@ -46,19 +43,22 @@ export function Menu() {
       onMouseLeave={handleMouseLeave}
     >
       <button class={styles.menuButton}>
-        Menu
+        ☰ Menu
       </button>
-      
+
       <Show when={isOpen()}>
         <div class={styles.dropdown}>
-          {menuItems.map((item) => (
-            <button
-              class={`${styles.dropdownItem} ${item.danger ? styles.dangerItem : ''}`}
-              onClick={() => handleMenuClick(item.path)}
-            >
-              {item.label}
-            </button>
-          ))}
+          <For each={menuItems}>
+            {(item) => (
+              <button 
+                class={styles.dropdownItem}
+                onClick={() => handleMenuClick(item.path)}
+              >
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+              </button>
+            )}
+          </For>
         </div>
       </Show>
     </div>

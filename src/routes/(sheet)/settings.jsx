@@ -1,43 +1,35 @@
-import { settingsStore, settingsActions } from "../features/settings/store/settingsStore";
-import { ThemeToggle } from "../features/settings/components/ThemeToggle";
-import { SettingsSection } from "../features/settings/components/SettingsSection";
-import { Card } from "../features/profile/components/Card";
-import styles from "./routes.module.css";
+import { settingsStore, settingsActions } from '../../features/settings/store/settingsStore';
+import { SettingsSection } from '../../features/settings/components/SettingsSection';
+import { ThemeToggle } from '../../features/settings/components/ThemeToggle';
+import styles from '../routes.module.css';
 
-/**
- * Settings - User preferences and account settings
- */
 export default function Settings() {
   const handleLogout = () => {
     console.log('🚪 Logging out...');
-    // TODO: Clear auth token, redirect to login
     alert('Logout functionality coming soon!');
   };
-  
+
   return (
     <div class={styles.pageContent}>
-      <h2 class={styles.pageTitle}>Settings</h2>
-      
-      <Card title="Appearance">
-        <ThemeToggle />
-      </Card>
-      
-      <Card title="Notifications">
+      <h1 class={styles.pageTitle}>Settings</h1>
+
+      <div class={styles.settingsGroup}>
+        <h3 class={styles.groupTitle}>Notifications</h3>
         <SettingsSection
           label="Pulse Notifications"
-          description="Get notified when someone sends you a pulse"
+          description="Get notified when someone pulses you"
           checked={settingsStore.notifications.pulse}
           onToggle={() => settingsActions.toggleNotification('pulse')}
         />
         <SettingsSection
           label="Reveal Notifications"
-          description="Get notified when your profile is revealed"
+          description="Get notified when someone reveals you"
           checked={settingsStore.notifications.reveal}
           onToggle={() => settingsActions.toggleNotification('reveal')}
         />
         <SettingsSection
           label="Slap Notifications"
-          description="Get notified when you receive a slap"
+          description="Get notified when someone slaps you"
           checked={settingsStore.notifications.slap}
           onToggle={() => settingsActions.toggleNotification('slap')}
         />
@@ -53,12 +45,13 @@ export default function Settings() {
           checked={settingsStore.notifications.sound}
           onToggle={() => settingsActions.toggleNotification('sound')}
         />
-      </Card>
-      
-      <Card title="Privacy">
+      </div>
+
+      <div class={styles.settingsGroup}>
+        <h3 class={styles.groupTitle}>Privacy</h3>
         <SettingsSection
           label="Show Location"
-          description="Allow others to see your approximate location"
+          description="Allow others to see your proximity"
           checked={settingsStore.privacy.showLocation}
           onToggle={() => settingsActions.togglePrivacy('showLocation')}
         />
@@ -74,26 +67,25 @@ export default function Settings() {
           checked={settingsStore.privacy.allowReveals}
           onToggle={() => settingsActions.togglePrivacy('allowReveals')}
         />
-      </Card>
-      
-      <Card title="Account">
+      </div>
+
+      <div class={styles.settingsGroup}>
+        <h3 class={styles.groupTitle}>Appearance</h3>
+        <ThemeToggle />
+      </div>
+
+      <div class={styles.settingsGroup}>
+        <h3 class={styles.groupTitle}>Account</h3>
         <div class={styles.accountInfo}>
           <div class={styles.accountItem}>
-            <div class={styles.accountLabel}>Email</div>
-            <div class={styles.accountValue}>{settingsStore.account.email}</div>
-          </div>
-          <div class={styles.accountItem}>
-            <div class={styles.accountLabel}>Status</div>
-            <div class={styles.accountValue}>
-              {settingsStore.account.emailVerified ? '✓ Verified' : '⚠️ Unverified'}
-            </div>
+            <span class={styles.accountLabel}>Email</span>
+            <span class={styles.accountValue}>{settingsStore.account.email}</span>
           </div>
         </div>
-        
         <button class={styles.logoutBtn} onClick={handleLogout}>
-          🚪 Logout
+          Logout
         </button>
-      </Card>
+      </div>
     </div>
   );
 }

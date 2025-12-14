@@ -1,20 +1,24 @@
 import { Router, Route } from "@solidjs/router";
-import { lazy } from "solid-js";
-import MainLayout from "./layouts/MainLayout";
-import SheetLayout from "./layouts/SheetLayout";
+import { lazy, onMount } from "solid-js";
+import { authActions } from "./features/auth/store/authStore";
 
-// Lazy load routes - only load when accessed
+// Layouts
+import MainLayout from "./routes/_layout";
+import SheetLayout from "./routes/(sheet)/_layout";
+
+// Routes
 const Home = lazy(() => import("./routes/index"));
-const Dashboard = lazy(() => import("./routes/Dashboard"));
-const UserProfile = lazy(() => import("./routes/UserProfile"));
-const Settings = lazy(() => import("./routes/Settings"));
-const ActivityHistory = lazy(() => import("./routes/ActivityHistory"));
+const Dashboard = lazy(() => import("./routes/(sheet)/dashboard"));
+const MyProfile = lazy(() => import("./routes/(sheet)/my-profile"));
+const Settings = lazy(() => import("./routes/(sheet)/settings"));
+const ActivityHistory = lazy(() => import("./routes/(sheet)/activity"));
 
-/**
- * App - Root with lazy-loaded routes
- * Reduces initial bundle size and memory usage
- */
 function App() {
+  onMount(() => {
+    authActions.initialize();
+    authActions.setupAuthListener();
+  });
+
   return (
     <Router>
       <Route path="/" component={MainLayout}>
@@ -22,7 +26,7 @@ function App() {
         
         <Route path="/" component={SheetLayout}>
           <Route path="/dashboard" component={Dashboard} />
-          <Route path="/profile" component={UserProfile} />
+          <Route path="/my-profile" component={MyProfile} />
           <Route path="/settings" component={Settings} />
           <Route path="/activity" component={ActivityHistory} />
         </Route>
