@@ -1,32 +1,37 @@
-import styles from "./proximity.module.css";
+import { For, Show } from 'solid-js';
+import styles from './proximityList.module.css';
 
 /**
- * ProximityList - Displays list of nearby people
- * Reusable in DynamicIsland, full page, or anywhere
+ * ProximityList - List view of nearby profiles
  */
 export function ProximityList(props) {
   return (
-    <div class={styles.proximityList}>
-      {props.hits.length === 0 ? (
-        <div class={styles.emptyState}>No one nearby</div>
-      ) : (
-        props.hits.map(hit => (
-          <div 
-            class={styles.proximityItem}
-            onClick={() => props.onSelect?.(hit.profileId)}
-          >
-            <span class={styles.proximityIcon}>👤</span>
-            <div class={styles.proximityInfo}>
-              <div class={styles.proximityName}>
-                Profile {hit.profileId}
+    <Show
+      when={props.profiles?.length > 0}
+      fallback={
+        <div class={styles.emptyState}>
+          No one nearby
+        </div>
+      }
+    >
+      <div class={styles.proximityList}>
+        <For each={props.profiles}>
+          {(profile) => (
+            <div 
+              class={styles.proximityItem}
+              onClick={() => props.onProfileClick?.(profile)}
+            >
+              <div class={styles.proximityIcon}>
+                {profile.emoji || '👤'}
               </div>
-              <div class={styles.proximityDistance}>
-                📍 {hit.distance}ft away
+              <div class={styles.proximityInfo}>
+                <div class={styles.proximityName}>{profile.name}</div>
+                <div class={styles.proximityDistance}>{profile.distance}</div>
               </div>
             </div>
-          </div>
-        ))
-      )}
-    </div>
+          )}
+        </For>
+      </div>
+    </Show>
   );
 }
