@@ -1,7 +1,7 @@
 import { Show, createSignal } from 'solid-js';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../../../../features/auth/hooks/useAuth';
+import { LoginModal } from '../../../../features/auth/components/LoginModal';
 import styles from './authButton.module.css';
-import { LoginModal } from './LoginModal';
 
 export function AuthButton() {
   const auth = useAuth();
@@ -9,10 +9,8 @@ export function AuthButton() {
 
   const handleClick = async () => {
     if (auth.isAuthenticated()) {
-      // Logout
       await auth.signOut();
     } else {
-      // Show login modal
       setShowModal(true);
     }
   };

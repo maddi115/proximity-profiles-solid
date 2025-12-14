@@ -1,9 +1,8 @@
+import { SheetFooter } from './footer/SheetFooter';
 import styles from './sheetLayout.module.css';
-import { Menu } from '../../features/menu/Menu';
-import { AuthButton } from '../../features/auth/components/AuthButton';
 
 /**
- * Sheet Layout - Bottom sheet overlay for menu pages
+ * SheetLayout - Bottom sheet overlay for menu pages
  */
 export default function SheetLayout(props) {
   return (
@@ -14,10 +13,7 @@ export default function SheetLayout(props) {
             {props.children}
           </div>
 
-          <div class={styles.sheetFooter}>
-            <Menu />
-            <AuthButton />
-          </div>
+          <SheetFooter />
         </div>
       </div>
     </div>
