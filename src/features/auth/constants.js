@@ -1,0 +1,12 @@
+export const AUTH_EVENTS = {
+  SIGNED_IN: 'SIGNED_IN',
+  SIGNED_OUT: 'SIGNED_OUT',
+  TOKEN_REFRESHED: 'TOKEN_REFRESHED',
+  USER_UPDATED: 'USER_UPDATED'
+};
+
+export const OAUTH_PROVIDERS = {
+  GOOGLE: 'google',
+  GITHUB: 'github',
+  DISCORD: 'discord'
+};
