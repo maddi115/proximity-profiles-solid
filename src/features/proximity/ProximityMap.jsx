@@ -1,38 +1,33 @@
-import { onMount } from "solid-js";
-import { AppleWatchGrid } from "./components/AppleWatchGrid";
-import { ProfileSheet } from "./components/ProfileSheet";
-import { useProfileSelection } from "./hooks/useProfileSelection";
-import { profiles } from "./mockData";
-import { proximityActions } from "./store/proximityStore";
+import { onMount } from 'solid-js';
+import { AppleWatchGrid } from './components/AppleWatchGrid';
+import { profiles } from './mockData';
+import { proximityActions } from './store/proximityStore';
+import { selectedProfileActions } from './store/selectedProfileStore';
 
 /**
  * ProximityMap - Main proximity profiles view
- * 
- * COMPONENTS:
- * - AppleWatchGrid: Interactive honeycomb profile grid
- * - ProfileSheet: Bottom sheet with selected profile details (includes DynamicIsland)
- * 
- * PERSISTENCE:
- * This component is rendered in MainLayout and persists across all routes.
+ * Updates selectedProfileStore when profiles are clicked or centered
  */
 export function ProximityMap() {
-  const selection = useProfileSelection(profiles[0]);
-  
   onMount(() => {
     proximityActions.initializeProfiles(profiles);
   });
-  
+
+  const handleProfileClick = (profile) => {
+    console.log('👆 Profile clicked:', profile.id);
+    selectedProfileActions.selectProfile(profile);
+  };
+
+  const handleCenterProfileChange = (id) => {
+    console.log('🎯 Center profile changed:', id);
+    selectedProfileActions.selectProfileById(id);
+  };
+
   return (
-    <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
-      {/* Center: Apple Watch honeycomb grid */}
-      <AppleWatchGrid 
-        profiles={profiles} 
-        onProfileClick={selection.selectProfile}
-        onCenterProfileChange={(id) => selection.selectProfileById(id, profiles)}
-      />
-      
-      {/* Bottom: Profile sheet with actions and DynamicIsland */}
-      <ProfileSheet profile={selection.profileWithStoreData()} />
-    </div>
+    <AppleWatchGrid
+      profiles={profiles}
+      onProfileClick={handleProfileClick}
+      onCenterProfileChange={handleCenterProfileChange}
+    />
   );
 }
