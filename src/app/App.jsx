@@ -1,15 +1,15 @@
 import { Router, Route, Navigate } from "@solidjs/router";
 import { lazy, onMount } from "solid-js";
-import { authActions } from "./features/auth/store/authStore";
+import { authActions } from "../features/auth/store/authStore";
 
-import MainLayout from "./routes/_layout";
-import SheetLayout from "./routes/(sheet)/_layout";
+import MainLayout from "../routes/_layout";
+import SheetLayout from "../routes/(sheet)/_layout";
 
-const Home = lazy(() => import("./routes/(sheet)/home/index"));
-const Dashboard = lazy(() => import("./routes/(sheet)/dashboard"));
-const MyProfile = lazy(() => import("./routes/(sheet)/my-profile"));
-const Settings = lazy(() => import("./routes/(sheet)/settings"));
-const ActivityHistory = lazy(() => import("./routes/(sheet)/activity"));
+const Home = lazy(() => import("../routes/(sheet)/home/index"));
+const Dashboard = lazy(() => import("../routes/(sheet)/dashboard"));
+const MyProfile = lazy(() => import("../routes/(sheet)/my-profile"));
+const Settings = lazy(() => import("../routes/(sheet)/settings"));
+const ActivityHistory = lazy(() => import("../routes/(sheet)/activity"));
 
 function App() {
   onMount(() => {
@@ -21,7 +21,7 @@ function App() {
     <Router>
       <Route path="/" component={MainLayout}>
         <Route path="/" component={() => <Navigate href="/home" />} />
-        
+
         <Route path="/" component={SheetLayout}>
           <Route path="/home" component={Home} />
           <Route path="/dashboard" component={Dashboard} />

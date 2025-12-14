@@ -1,15 +1,22 @@
 import { For, Show } from 'solid-js';
 import { activityStore } from '../../features/notifications/store/activityStore';
-import { store } from '../../features/proximity/store/proximityStore';
+import { store as proximityStore } from '../../features/proximity/store/proximityStore';
 import { profiles } from '../../features/proximity/mockData';
 import styles from '../routes.module.css';
 
 export default function ActivityHistory() {
   const activities = () => activityStore.activities;
 
-  const getProfile = (profileId) => {
-    const storeProfile = store.profiles.find(p => p.id === profileId);
-    if (storeProfile) return storeProfile;
+  const getProfile = (activity) => {
+    // Get profileId from targetProfile.id
+    const profileId = activity.targetProfile?.id;
+    if (!profileId) return null;
+    
+    const storeProfile = proximityStore.profiles.find(p => p.id === profileId);
+    if (storeProfile) {
+      const mockProfile = profiles.find(p => p.id === profileId);
+      return { ...mockProfile, ...storeProfile };
+    }
     return profiles.find(p => p.id === profileId);
   };
 
@@ -22,12 +29,35 @@ export default function ActivityHistory() {
     return `${Math.floor(diff / 86400)}d ago`;
   };
 
+  const getActionEmoji = (type) => {
+    switch (type) {
+      case 'pulse': return '❤️';
+      case 'reveal': return '📸';
+      case 'slap': return '👋';
+      case 'follow': return '⭐';
+      case 'unfollow': return '➖';
+      default: return '❓';
+    }
+  };
+
+  const getActionText = (type) => {
+    switch (type) {
+      case 'pulse': return 'Pulsed';
+      case 'reveal': return 'Revealed';
+      case 'slap': return 'Slapped';
+      case 'follow': return 'Followed';
+      case 'unfollow': return 'Unfollowed';
+      default: return type || 'Unknown';
+    }
+  };
+
   const getCostDisplay = (activity) => {
-    switch (activity.action) {
+    switch (activity.type) {
       case 'pulse': return '-$1.00';
       case 'reveal': return '-$5.00';
       case 'slap': return 'Free';
       case 'follow': return 'Free';
+      case 'unfollow': return 'Free';
       default: return '';
     }
   };
@@ -49,16 +79,19 @@ export default function ActivityHistory() {
         <div class={styles.activityList}>
           <For each={activities()}>
             {(activity) => {
-              const profile = getProfile(activity.profileId);
+              const profile = getProfile(activity);
               return (
                 <div class={styles.activityItem}>
-                  <img src={profile?.img} class={styles.activityProfilePic} alt={profile?.name} />
+                  <img 
+                    src={profile?.img} 
+                    class={styles.activityProfilePic} 
+                    alt={profile?.name} 
+                  />
                   <div class={styles.activityInfo}>
+                    <div class={styles.activityName}>{profile?.name}</div>
                     <div class={styles.activityAction}>
-                      {activity.action === 'pulse' && '❤️ Pulsed'}
-                      {activity.action === 'reveal' && '📸 Revealed'}
-                      {activity.action === 'slap' && '👋 Slapped'}
-                      {activity.action === 'follow' && '⭐ Followed'}
+                      <span class={styles.activityEmoji}>{getActionEmoji(activity.type)}</span>
+                      {getActionText(activity.type)}
                     </div>
                     <div class={styles.activityTime}>{formatTime(activity.timestamp)}</div>
                   </div>

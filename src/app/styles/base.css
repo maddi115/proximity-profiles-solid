@@ -1,0 +1,29 @@
+/* Base Styles */
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* Disable text selection for better app feel */
+* {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Allow selection in inputs */
+input, textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}

@@ -1,0 +1,54 @@
+/* Floating Hearts Animation */
+@keyframes float-up {
+  0% {
+    transform: translateY(0) translateX(0) scale(0.5);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-100px) translateX(var(--drift-x)) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-200px) translateX(var(--drift-x)) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.floating-heart {
+  position: fixed;
+  font-size: 24px;
+  pointer-events: none;
+  z-index: var(--z-hearts);
+  animation: float-up 3s ease-out forwards;
+}
+
+/* Slide Up Animation */
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Fade In Animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Utility classes for animations */
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
