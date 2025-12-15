@@ -5,20 +5,31 @@
   pointer-events: none;
 }
 
+/* Full-width padded container so the card can’t “collapse” on resize */
 .sheetOverlay {
   position: absolute;
+  left: 0;
+  right: 0;
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+
   pointer-events: auto;
+
   display: flex;
   justify-content: center;
+
+  /* modern + safe padding so edges never clip */
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-bottom: 0;
+  box-sizing: border-box;
 }
 
 .sheetCard {
-  width: 490px;
-  height: 490px;
+  /* Responsive width: never > 490px, never wider than viewport minus padding */
+  width: min(490px, calc(100dvw - 24px));
+  max-width: 490px;
 
+  height: 490px;
   position: relative;
 
   background: rgba(15, 15, 25, 0.95);
@@ -26,6 +37,7 @@
   border-radius: 48px 48px 0 0;
   box-shadow: 0 -8px 48px rgba(0, 0, 0, 0.4);
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 /* Scrollable content */
@@ -34,8 +46,9 @@
   overflow-y: auto;
   padding: 20px;
 
-  /* 👇 reserve space for absolute footer */
+  /* reserve space for absolute footer */
   padding-bottom: 96px;
+  box-sizing: border-box;
 }
 
 /* Scrollbar polish */
@@ -50,9 +63,9 @@
 /* Mobile */
 @media (max-width: 767px) {
   .sheetCard {
-    width: 95%;
-    max-width: 490px;
+    width: min(490px, calc(100dvw - 24px));
     height: 420px;
+    border-radius: 36px 36px 0 0;
   }
 
   .sheetScrollContent {
