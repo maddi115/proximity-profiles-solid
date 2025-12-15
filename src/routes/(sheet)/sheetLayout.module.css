@@ -17,10 +17,9 @@
 
 .sheetCard {
   width: 490px;
-  height: 387px;
+  height: 490px;
 
-  display: grid;
-  grid-template-rows: 1fr auto;
+  position: relative;
 
   background: rgba(15, 15, 25, 0.95);
   backdrop-filter: blur(20px);
@@ -29,10 +28,14 @@
   overflow: hidden;
 }
 
-/* Scrollable content row */
+/* Scrollable content */
 .sheetScrollContent {
+  height: 100%;
   overflow-y: auto;
   padding: 20px;
+
+  /* 👇 reserve space for absolute footer */
+  padding-bottom: 96px;
 }
 
 /* Scrollbar polish */
@@ -49,10 +52,11 @@
   .sheetCard {
     width: 95%;
     max-width: 490px;
-    height: 340px;
+    height: 420px;
   }
 
   .sheetScrollContent {
     padding: 16px;
+    padding-bottom: 88px;
   }
 }
