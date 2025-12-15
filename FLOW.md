@@ -28,19 +28,25 @@ getProfile()
   → proximityStore.profiles.find()
   → profiles.find()
 
+### src/routes/(sheet)/auth/login.jsx
+LoginPage()
+
 ### src/routes/(sheet)/dashboard.jsx
 Dashboard()
 
 ### src/routes/(sheet)/footer/auth-button/AuthButton.jsx
 AuthButton()
   → useAuth()
-  → createSignal()
+  → useNavigate()
+  → createMemo()
+  → auth.isLoading()
   → auth.isAuthenticated()
-  → showModal()
+  → label()
 handleClick()
+  → auth.isLoading()
   → auth.isAuthenticated()
   → auth.signOut()
-  → setShowModal()
+  → navigate()
 
 ### src/routes/(sheet)/footer/menu/Menu.jsx
 handleMenuClick()
@@ -554,6 +560,9 @@ App()
   → onMount()
 
 ### src/features/auth/components/LoginForm.jsx
+handleGoogle()
+  → auth.clearError()
+  → auth.signInWithOAuth()
 handleSubmit()
   → e.preventDefault()
   → setIsLoading()
@@ -572,21 +581,7 @@ LoginForm()
   → isLoading()
 
 ### src/features/auth/components/LoginModal.jsx
-handleSubmit()
-  → e.preventDefault()
-  → setIsLoading()
-  → auth.clearError()
-  → auth.signIn()
-  → email()
-  → password()
-  → props.onClose()
 LoginModal()
-  → useAuth()
-  → createSignal()
-  → email()
-  → password()
-  → auth.error()
-  → isLoading()
 
 ### src/features/auth/components/ProtectedRoute.jsx
 ProtectedRoute()

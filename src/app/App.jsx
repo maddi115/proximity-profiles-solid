@@ -11,6 +11,8 @@ const MyProfile = lazy(() => import("../routes/(sheet)/my-profile"));
 const Settings = lazy(() => import("../routes/(sheet)/settings"));
 const ActivityHistory = lazy(() => import("../routes/(sheet)/activity"));
 const Login = lazy(() => import("../routes/(sheet)/auth/login"));
+const Messages = lazy(() => import("../routes/(sheet)/home/messages/index"));
+const ViewingProfile = lazy(() => import("../routes/(sheet)/home/messages/viewing-profile"));
 
 function App() {
   onMount(() => {
@@ -26,6 +28,8 @@ function App() {
         <Route path="/" component={SheetLayout}>
           <Route path="/auth/login" component={Login} />
           <Route path="/home" component={Home} />
+          <Route path="/home/messages" component={Messages} />
+          <Route path="/home/messages/viewing-profile" component={ViewingProfile} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/my-profile" component={MyProfile} />
           <Route path="/settings" component={Settings} />

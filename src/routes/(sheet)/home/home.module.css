@@ -7,6 +7,38 @@
   gap: 24px;
 }
 
+.messagesBtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.messagesBtn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.messagesBtn:active {
+  transform: scale(0.95);
+}
+
+.messageIcon {
+  font-size: 24px;
+}
+
 .backgroundContainer {
   position: absolute;
   top: -20px;
@@ -126,12 +158,12 @@
   .actions {
     grid-template-columns: 1fr;
   }
-  
+
   .avatar {
     width: 100px;
     height: 100px;
   }
-  
+
   .balance {
     font-size: 20px;
   }
