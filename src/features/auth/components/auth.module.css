@@ -1,87 +1,84 @@
-/* Auth content fits in sheet, not fullscreen */
+/* Shadcn-ish: soft surface, subtle borders, clean type */
 .authContent {
-  padding: 20px;
-  max-width: 500px;
+  padding: 16px;
+  max-width: 520px;
   margin: 0 auto;
 }
 
 .authHeader {
-  text-align: center;
-  margin-bottom: 32px;
+  text-align: left;
+  margin-bottom: 12px;
 }
 
 .authTitle {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
 }
 
 .authSubtitle {
-  font-size: 14px;
-  color: #666;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.72);
   margin: 0;
 }
 
 .authForm {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .input {
-  padding: 14px 16px;
-  border: 2px solid #e0e0e0;
+  width: 100%;
+  padding: 10px 12px;
   border-radius: 12px;
-  font-size: 15px;
-  transition: all 0.2s;
-  background: white;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.22);
+  color: #fff;
+  font-size: 14px;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
 }
 
 .input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.hint {
-  font-size: 12px;
-  color: #666;
-  margin: 0;
+  border-color: rgba(167, 139, 250, 0.9);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.22);
+  background: rgba(0, 0, 0, 0.28);
 }
 
 .submitBtn {
-  padding: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
+  padding: 11px 12px;
   border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 800;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
   cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 8px;
+  transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
 }
 
 .submitBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-}
-
-.submitBtn:active {
-  transform: translateY(0);
 }
 
 .submitBtn:disabled {
@@ -91,60 +88,73 @@
 }
 
 .error {
-  padding: 12px;
-  background: #fee;
-  border: 1px solid #fcc;
-  border-radius: 8px;
-  color: #c33;
-  font-size: 14px;
+  padding: 10px;
+  background: rgba(255, 0, 0, 0.12);
+  border: 1px solid rgba(255, 0, 0, 0.18);
+  border-radius: 10px;
+  color: #ff6b6b;
+  font-size: 12px;
   text-align: center;
 }
 
 .authFooter {
-  margin-top: 24px;
-  text-align: center;
+  margin-top: 12px;
+  text-align: left;
 }
 
 .authFooter p {
   margin: 0;
-  font-size: 14px;
-  color: #666;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .link {
-  color: #667eea;
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.2s;
-}
-
-.link:hover {
-  color: #764ba2;
+  color: rgba(255, 255, 255, 0.92);
   text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 800;
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .authTitle {
-    color: #fff;
-  }
+/* Divider */
+.divider {
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+}
 
-  .authSubtitle,
-  .authFooter p {
-    color: #999;
-  }
+.divider::before,
+.divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: rgba(255, 255, 255, 0.12);
+}
 
-  .label {
-    color: #ddd;
-  }
+/* OAuth base */
+.oauthBtn {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  opacity: 1; /* force full opacity */
+  transition: transform 0.15s, filter 0.15s, box-shadow 0.15s;
+}
 
-  .input {
-    background: #2a2a2a;
-    border-color: #444;
-    color: #fff;
-  }
+/* Pink Google button */
+.oauthBtnGoogle {
+  background: linear-gradient(135deg, #ff4fd8, #ff2d6f);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #0b0b12;
+  box-shadow: 0 10px 24px rgba(255, 45, 111, 0.22);
+}
 
-  .input:focus {
-    border-color: #667eea;
-  }
+.oauthBtnGoogle:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
 }

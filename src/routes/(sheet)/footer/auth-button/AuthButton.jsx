@@ -1,11 +1,11 @@
-import { Show, createSignal, createMemo } from 'solid-js';
+import { Show, createMemo } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
 import { useAuth } from '../../../../features/auth/hooks/useAuth';
-import { LoginModal } from '../../../../features/auth/components/LoginModal';
 import styles from './authButton.module.css';
 
 export function AuthButton() {
   const auth = useAuth();
-  const [showModal, setShowModal] = createSignal(false);
+  const navigate = useNavigate();
 
   const label = createMemo(() => {
     const user = auth.user();
@@ -18,29 +18,20 @@ export function AuthButton() {
     if (auth.isAuthenticated()) {
       await auth.signOut();
     } else {
-      setShowModal(true);
+      navigate('/auth/login');
     }
   };
 
   return (
-    <>
-      <button
-        class={styles.authBtn}
-        onClick={handleClick}
-        disabled={auth.isLoading()}
-        title={auth.isAuthenticated() ? label() : 'Login'}
-      >
-        <Show
-          when={auth.isAuthenticated()}
-          fallback={<>🔐 Login</>}
-        >
-          🚪 Logout <span style={{ 'font-size': '0.85em', opacity: 0.85 }}>({label()})</span>
-        </Show>
-      </button>
-
-      <Show when={showModal()}>
-        <LoginModal onClose={() => setShowModal(false)} />
+    <button
+      class={styles.authBtn}
+      onClick={handleClick}
+      disabled={auth.isLoading()}
+      title={auth.isAuthenticated() ? label() : 'Login'}
+    >
+      <Show when={auth.isAuthenticated()} fallback={<>🔐 Login</>}>
+        🚪 Logout <span style={{ 'font-size': '0.85em', opacity: 0.85 }}>({label()})</span>
       </Show>
-    </>
+    </button>
   );
 }
