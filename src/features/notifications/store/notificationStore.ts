@@ -1,21 +1,23 @@
 import { createStore } from "solid-js/store";
+import { Notification, NotificationInput } from "../../../types/notification";
 
-/**
- * Notification Store with proper cleanup (NO LEAKS)
- */
+interface NotificationStore {
+  queue: Notification[];
+  current: Notification | null;
+  isVisible: boolean;
+}
 
 const MAX_QUEUE_SIZE = 5;
 
-const [store, setStore] = createStore({
+const [store, setStore] = createStore<NotificationStore>({
   queue: [],
   current: null,
   isVisible: false
 });
 
-let dismissTimeout = null;
+let dismissTimeout: ReturnType<typeof setTimeout> | null = null;
 
-// Cleanup helper
-function clearDismissTimeout() {
+function clearDismissTimeout(): void {
   if (dismissTimeout) {
     clearTimeout(dismissTimeout);
     dismissTimeout = null;
@@ -23,13 +25,13 @@ function clearDismissTimeout() {
 }
 
 export const notificationActions = {
-  showNotification(notification) {
-    const notif = {
+  showNotification(notification: NotificationInput): void {
+    const notif: Notification = {
       id: Date.now().toString(),
       duration: 3000,
       ...notification
     };
-    
+
     if (store.current) {
       const newQueue = [...store.queue, notif];
       if (newQueue.length > MAX_QUEUE_SIZE) {
@@ -41,31 +43,28 @@ export const notificationActions = {
       this._displayNotification(notif);
     }
   },
-  
-  _displayNotification(notification) {
-    // Clear any existing timeout first
+
+  _displayNotification(notification: Notification): void {
     clearDismissTimeout();
     
     setTimeout(() => {
       setStore("current", notification);
       setStore("isVisible", true);
     }, 50);
-    
+
     if (notification.duration > 0) {
       dismissTimeout = setTimeout(() => {
         this.dismissCurrent();
       }, notification.duration);
     }
   },
-  
-  dismissCurrent() {
+
+  dismissCurrent(): void {
     clearDismissTimeout();
-    
     setStore("isVisible", false);
-    
+
     setTimeout(() => {
       setStore("current", null);
-      
       if (store.queue.length > 0) {
         const next = store.queue[0];
         setStore("queue", store.queue.slice(1));
@@ -73,14 +72,13 @@ export const notificationActions = {
       }
     }, 450);
   },
-  
-  clearQueue() {
+
+  clearQueue(): void {
     clearDismissTimeout();
     setStore("queue", []);
   },
-  
-  // Cleanup method (call on app unmount if needed)
-  cleanup() {
+
+  cleanup(): void {
     clearDismissTimeout();
     this.clearQueue();
   }

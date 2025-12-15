@@ -1,10 +1,12 @@
 import { createStore } from "solid-js/store";
+import { UserProfile, UserProfileUpdate } from "../../../types/user";
 
-/**
- * Profile Store - User profile data
- */
+interface ProfileStore {
+  user: UserProfile;
+  isEditing: boolean;
+}
 
-const [store, setStore] = createStore({
+const [store, setStore] = createStore<ProfileStore>({
   user: {
     id: "0",
     username: "proximityuser",
@@ -26,28 +28,28 @@ const [store, setStore] = createStore({
 });
 
 export const profileActions = {
-  updateProfile(updates) {
+  updateProfile(updates: UserProfileUpdate): void {
     setStore("user", updates);
     console.log("✅ Profile updated");
   },
-  
-  updateAvatar(avatarUrl) {
+
+  updateAvatar(avatarUrl: string): void {
     setStore("user", "avatar", avatarUrl);
   },
-  
-  updateBio(bio) {
+
+  updateBio(bio: string): void {
     setStore("user", "bio", bio);
   },
-  
-  updateName(name) {
+
+  updateName(name: string): void {
     setStore("user", "name", name);
   },
-  
-  incrementStat(statName) {
+
+  incrementStat(statName: keyof UserProfile['stats']): void {
     setStore("user", "stats", statName, (val) => val + 1);
   },
-  
-  setEditing(isEditing) {
+
+  setEditing(isEditing: boolean): void {
     setStore("isEditing", isEditing);
   }
 };

@@ -7,12 +7,12 @@ export function ProfileActions(props) {
   const profileActions = createMemo(() => {
     return props.profile?.id ? useProfileActions(props.profile.id) : null;
   });
-  
+
   const handleButtonClick = (e, actionName) => {
     e.preventDefault();
     const actions = profileActions();
     if (!actions) return;
-    
+
     switch(actionName) {
       case 'pulse': actions.handlePulse(e); break;
       case 'reveal': actions.handleReveal(e); break;
@@ -20,7 +20,7 @@ export function ProfileActions(props) {
       case 'follow': actions.handleFollow(e); break;
     }
   };
-  
+
   return (
     <div class={styles.actions}>
       <LoadingButton
@@ -34,7 +34,7 @@ export function ProfileActions(props) {
         <span>Pulse</span>
         <span class={styles.cost}>$1</span>
       </LoadingButton>
-      
+
       <LoadingButton
         class={styles.actionBtn}
         isLoading={profileActions()?.isRevealing()}
@@ -46,7 +46,7 @@ export function ProfileActions(props) {
         <span>Reveal</span>
         <span class={styles.cost}>$5</span>
       </LoadingButton>
-      
+
       <LoadingButton
         class={styles.actionBtn}
         isLoading={profileActions()?.isSlapping()}
@@ -57,17 +57,17 @@ export function ProfileActions(props) {
         <span>Slap</span>
         <span class={styles.cost}>Free</span>
       </LoadingButton>
-      
+
       <LoadingButton
-        class={`${styles.actionBtn} ${props.profile.isFollowing ? styles.following : ''}`}
+        class={`${styles.actionBtn} ${props.profile?.isFollowing ? styles.following : ''}`}
         isLoading={profileActions()?.isFollowing()}
         onClick={(e) => handleButtonClick(e, 'follow')}
-        loadingText={props.profile.isFollowing ? "Updating..." : "Following..."}
+        loadingText={props.profile?.isFollowing ? "Updating..." : "Following..."}
       >
         <span class={styles.emoji}>
-          {props.profile.isFollowing ? "⭐" : "+"}
+          {props.profile?.isFollowing ? "⭐" : "+"}
         </span>
-        <span>{props.profile.isFollowing ? "Following" : "Follow"}</span>
+        <span>{props.profile?.isFollowing ? "Following" : "Follow"}</span>
       </LoadingButton>
     </div>
   );

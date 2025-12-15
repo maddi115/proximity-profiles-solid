@@ -9,43 +9,77 @@ Legend:
 
 ## Boot & Routing Flow
 
-### src/App.jsx
-App()
-
-### src/layouts/DashboardLayout.jsx
-DashboardLayout()
-
-### src/layouts/MainLayout.jsx
+### src/routes/_layout.jsx
 MainLayout()
 
-### src/layouts/SheetLayout.jsx
+### src/routes/(sheet)/_layout.jsx
 SheetLayout()
 
-### src/main.jsx
-mainEntry()
-  → render()
-  → App()
-
-### src/routes/ActivityHistory.jsx
+### src/routes/(sheet)/activity.jsx
 ActivityHistory()
   → activities()
 formatTime()
+getActionEmoji()
+getActionText()
 getCostDisplay()
 getProfile()
-  → store.profiles.find()
+  → proximityStore.profiles.find()
   → profiles.find()
 
-### src/routes/Dashboard.jsx
+### src/routes/(sheet)/dashboard.jsx
 Dashboard()
 
-### src/routes/index.jsx
+### src/routes/(sheet)/footer/auth-button/AuthButton.jsx
+AuthButton()
+  → useAuth()
+  → createSignal()
+  → auth.isAuthenticated()
+  → showModal()
+handleClick()
+  → auth.isAuthenticated()
+  → auth.signOut()
+  → setShowModal()
+
+### src/routes/(sheet)/footer/menu/Menu.jsx
+handleMenuClick()
+  → setIsOpen()
+  → navigate()
+handleMouseEnter()
+  → setIsOpen()
+handleMouseLeave()
+  → setIsOpen()
+Menu()
+  → createSignal()
+  → useNavigate()
+  → useLocation()
+  → isOpen()
+
+### src/routes/(sheet)/footer/SheetFooter.jsx
+SheetFooter()
+
+### src/routes/(sheet)/home/index.jsx
 Home()
+  → createMemo()
+  → profile()
 
-### src/routes/Settings.jsx
-handleLogout()  // DEV LOGGING
-Settings()
+### src/routes/(sheet)/home/ProfileActions.jsx
+handleButtonClick()
+  → e.preventDefault()
+  → profileActions()
+  → actions.handlePulse()
+  → actions.handleReveal()
+  → actions.handleSlap()
+  → actions.handleFollow()
+ProfileActions()
+  → createMemo()
+  → profileActions()
 
-### src/routes/UserProfile.jsx
+### src/routes/(sheet)/home/SelectedProfileCard.jsx
+SelectedProfileCard()
+  → Number.toFixed()
+  → Number()
+
+### src/routes/(sheet)/my-profile.jsx
 formatTime()
 recentActivities()
   → activityStore.activities.slice()
@@ -53,8 +87,11 @@ toggleEdit()
   → profileActions.setEditing()
 UserProfile()
   → recentActivities()
-  → recentActivities.map()
   → profileStore.user.joinedDate.toLocaleDateString()
+
+### src/routes/(sheet)/settings.jsx
+handleLogout()  // DEV LOGGING
+Settings()
 
 ## Dynamic Island Flow
 
@@ -213,23 +250,8 @@ generateHoneycombPositions()
 getGridBounds()
   → positions.forEach()
 
-### src/features/proximity/components/ProfileSheet.jsx
-handleButtonClick()
-  → e.preventDefault()
-  → e.stopPropagation()
-  → profileActions()
-  → actions.handlePulse()
-  → actions.handleReveal()
-  → actions.handleSlap()
-  → actions.handleFollow()
-ProfileSheet()
-  → createSignal()
-  → createMemo()
-  → createEffect()
-
 ### src/features/proximity/components/ProximityList.jsx
 ProximityList()
-  → props.hits.map()
 
 ### src/features/proximity/components/reallyclosetome-futurefeature.jsx
 DynamicIsland()
@@ -280,10 +302,12 @@ generateCircleLayout()  // MOCK / SIMULATION
   → positions.push()
 
 ### src/features/proximity/ProximityMap.jsx
+handleCenterProfileChange()  // DEV LOGGING
+  → selectedProfileActions.selectProfileById()
+handleProfileClick()  // DEV LOGGING
+  → selectedProfileActions.selectProfile()
 ProximityMap()
-  → useProfileSelection()
   → onMount()
-  → selection.profileWithStoreData()
 
 ### src/features/proximity/store/proximityHitsStore.js
 // STORE (stateful, writes via setStore)
@@ -314,6 +338,15 @@ ProximityMap()
 <object>.toggleFollow()
   → setStore()
 
+### src/features/proximity/store/selectedProfileStore.js
+// STORE (stateful, writes via setStore)
+
+<object>.selectProfile()  // DEV LOGGING
+  → setSelectedProfile()
+<object>.selectProfileById()
+  → profiles.find()
+  → setSelectedProfile()
+
 ### src/features/proximity/utils.js
 calculateDistance()
   → parseCoord()
@@ -337,12 +370,13 @@ useNotifications()
   → notificationActions.dismissCurrent.bind()
   → notificationActions.clearQueue.bind()
 
-### src/features/notifications/store/activityStore.js
+### src/features/notifications/store/activityStore.ts
 // STORE (stateful, writes via setStore)
 
 <object>.addActivity()  // DEV LOGGING
   → Date.now.toString()
   → Date.now()
+  → ActivitySchema.parse()
   → <?>.slice()
   → setStore()
 <object>.clearActivities()
@@ -474,24 +508,10 @@ withLoading()
 <object>.stopLoading()  // DEV LOGGING
   → setStore()
 
-## Menu & Navigation Flow
-
-### src/features/menu/Menu.jsx
-handleMenuClick()  // DEV LOGGING
-  → setIsOpen()
-  → navigate()
-handleMouseEnter()
-  → setIsOpen()
-handleMouseLeave()
-  → setIsOpen()
-Menu()
-  → createSignal()
-  → useNavigate()
-  → useLocation()
-  → isOpen()
-  → menuItems.map()
-
 ## Utils & Infra Flow
+
+### src/features/auth/utils/supabaseClient.js
+createMockClient()  // DEV LOGGING
 
 ### src/features/errors/types.js
 <class>.constructor()
@@ -516,4 +536,122 @@ handleError()
 
 ### src/utils/memoryMonitor.js
 logMemory()  // DEV LOGGING
+
+## Misc Flow
+
+### src/app/App.jsx
+App()
+  → onMount()
+
+### src/features/auth/components/LoginForm.jsx
+handleSubmit()
+  → e.preventDefault()
+  → setIsLoading()
+  → auth.clearError()
+  → auth.signIn()
+  → email()
+  → password()
+  → navigate()
+LoginForm()
+  → useNavigate()
+  → useAuth()
+  → createSignal()
+  → email()
+  → password()
+  → auth.error()
+  → isLoading()
+
+### src/features/auth/components/LoginModal.jsx
+handleSubmit()
+  → e.preventDefault()
+  → setIsLoading()
+  → auth.clearError()
+  → auth.signIn()
+  → email()
+  → password()
+  → props.onClose()
+LoginModal()
+  → useAuth()
+  → createSignal()
+  → email()
+  → password()
+  → auth.error()
+  → isLoading()
+
+### src/features/auth/components/ProtectedRoute.jsx
+ProtectedRoute()
+  → useAuth()
+  → createMemo()
+  → isReady()
+  → isAuthed()
+
+### src/features/auth/components/SignupForm.jsx
+handleSubmit()
+  → e.preventDefault()
+  → setIsLoading()
+  → auth.clearError()
+  → auth.signUp()
+  → email()
+  → password()
+  → username()
+  → navigate()
+SignupForm()
+  → useNavigate()
+  → useAuth()
+  → createSignal()
+  → username()
+  → email()
+  → password()
+  → auth.error()
+  → isLoading()
+
+### src/features/auth/hooks/useAuth.js
+useAuth()
+  → authActions.signUp.bind()
+  → authActions.signIn.bind()
+  → authActions.signOut.bind()
+  → authActions.signInWithOAuth.bind()
+  → authActions.resetPassword.bind()
+  → authActions.updateProfile.bind()
+  → authActions.clearError.bind()
+
+### src/features/auth/store/authStore.js
+// STORE (stateful, writes via setStore)
+
+<object>._syncProfile()
+  → <?>()
+  → profileActions.updateProfile()
+<object>.clearError()
+  → setStore()
+<object>.initialize()  // DEV LOGGING
+  → setStore()
+  → supabase.auth.getSession()
+  → <?>._syncProfile()
+<object>.resetPassword()  // DEV LOGGING
+  → setStore()
+  → supabase.auth.resetPasswordForEmail()
+<object>.setupAuthListener()
+  → supabase.auth.onAuthStateChange()
+<object>.signIn()  // DEV LOGGING
+  → setStore()
+  → supabase.auth.signInWithPassword()
+  → <?>._syncProfile()
+<object>.signInWithOAuth()  // DEV LOGGING
+  → supabase.auth.signInWithOAuth()
+  → setStore()
+<object>.signOut()  // DEV LOGGING
+  → setStore()
+  → supabase.auth.signOut()
+<object>.signUp()  // DEV LOGGING
+  → setStore()
+  → supabase.auth.signUp()
+<object>.updateProfile()  // DEV LOGGING
+  → supabase.auth.updateUser()
+  → setStore()
+
+### src/types/activity.ts
+createActivity()
+  → Date.now.toString()
+  → Date.now()
+  → ActivitySchema.parse()
 

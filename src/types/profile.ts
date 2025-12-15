@@ -1,22 +1,25 @@
 import { z } from 'zod';
 
 export const ProfileSchema = z.object({
-  id: z.string(),
+  id: z.number(),
   name: z.string(),
-  img: z.string().url(),
-  balance: z.number().min(0),
-  distance: z.string(),
-  emoji: z.string().optional(),
+  img: z.string(),
+  distance: z.number().optional(),
+  age: z.number().optional(),
+  bio: z.string().optional(),
   isFollowing: z.boolean().default(false),
+  online: z.boolean().default(false),
   x: z.number().optional(),
   y: z.number().optional()
 });
 
 export type Profile = z.infer<typeof ProfileSchema>;
 
-export const ProximityProfileSchema = ProfileSchema.extend({
-  x: z.number(),
-  y: z.number()
-});
+// Helper to validate profiles
+export function validateProfile(data: unknown): Profile {
+  return ProfileSchema.parse(data);
+}
 
-export type ProximityProfile = z.infer<typeof ProximityProfileSchema>;
+export function validateProfiles(data: unknown[]): Profile[] {
+  return data.map(validateProfile);
+}
