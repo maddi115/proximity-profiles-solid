@@ -1,48 +1,47 @@
 import { createStore } from "solid-js/store";
-import { IslandModes } from "../types";
+import { IslandModes, IslandMode } from "../types";
 
-/**
- * DynamicIsland Store - Simplified for smoother transitions
- */
+interface IslandStore {
+  currentMode: IslandMode;
+  isExpanded: boolean;
+  previousMode: IslandMode;
+}
 
-const [store, setStore] = createStore({
+const [store, setStore] = createStore<IslandStore>({
   currentMode: IslandModes.COMPACT,
   isExpanded: false,
   previousMode: IslandModes.COMPACT
 });
 
 export const islandActions = {
-  expand() {
+  expand(): void {
     setStore({
       previousMode: store.currentMode,
       currentMode: IslandModes.PROXIMITY,
       isExpanded: true
     });
   },
-  
-  collapse() {
+
+  collapse(): void {
     setStore({
       previousMode: store.currentMode,
       currentMode: IslandModes.COMPACT,
       isExpanded: false
     });
   },
-  
-  showNotification() {
-    // Only save previous mode if not already in notification
+
+  showNotification(): void {
     if (store.currentMode !== IslandModes.NOTIFICATION) {
       setStore("previousMode", store.currentMode);
     }
-    
     setStore({
       currentMode: IslandModes.NOTIFICATION,
       isExpanded: true
     });
   },
-  
-  returnFromNotification() {
+
+  returnFromNotification(): void {
     const shouldBeExpanded = store.previousMode !== IslandModes.COMPACT;
-    
     setStore({
       currentMode: store.previousMode,
       isExpanded: shouldBeExpanded

@@ -1,63 +1,49 @@
 import { createStore } from "solid-js/store";
+import { ProximityHit, ProximityHistoryEntry } from "../../../types/proximity";
 
-/**
- * Proximity Hits Store
- * Tracks current nearby people and historical encounters
- */
+interface ProximityHitsStore {
+  currentHits: ProximityHit[];
+  history: ProximityHistoryEntry[];
+}
 
-const [store, setStore] = createStore({
-  currentHits: [],  // People nearby RIGHT NOW
-  history: []       // Historical encounters
+const [store, setStore] = createStore<ProximityHitsStore>({
+  currentHits: [],
+  history: []
 });
 
 export const proximityHitsActions = {
-  /**
-   * Update proximity for a profile
-   */
-  updateProximity(profileId, distance) {
+  updateProximity(profileId: string, distance: number): void {
     const existingIndex = store.currentHits.findIndex(h => h.profileId === profileId);
-    
-    const hit = {
+    const hit: ProximityHit = {
       profileId,
       distance,
       timestamp: new Date()
     };
-    
+
     if (existingIndex >= 0) {
-      // Update existing
       setStore("currentHits", existingIndex, hit);
     } else {
-      // Add new
       setStore("currentHits", [...store.currentHits, hit]);
     }
-    
-    // Update history
+
     this.addToHistory(profileId, distance);
   },
-  
-  /**
-   * Remove profile from current hits (they left range)
-   */
-  removeFromCurrent(profileId) {
+
+  removeFromCurrent(profileId: string): void {
     setStore("currentHits", store.currentHits.filter(h => h.profileId !== profileId));
   },
-  
-  /**
-   * Add or update history entry
-   */
-  addToHistory(profileId, distance) {
+
+  addToHistory(profileId: string, distance: number): void {
     const existingIndex = store.history.findIndex(h => h.profileId === profileId);
     const now = new Date();
-    
+
     if (existingIndex >= 0) {
-      // Update existing
       setStore("history", existingIndex, {
         lastSeen: now,
         closestDistance: Math.min(store.history[existingIndex].closestDistance, distance),
         encounters: store.history[existingIndex].encounters + 1
       });
     } else {
-      // Add new
       setStore("history", [...store.history, {
         profileId,
         firstSeen: now,
@@ -67,18 +53,12 @@ export const proximityHitsActions = {
       }]);
     }
   },
-  
-  /**
-   * Clear all history
-   */
-  clearHistory() {
+
+  clearHistory(): void {
     setStore("history", []);
   },
-  
-  /**
-   * Clear current hits (for testing)
-   */
-  clearCurrent() {
+
+  clearCurrent(): void {
     setStore("currentHits", []);
   }
 };

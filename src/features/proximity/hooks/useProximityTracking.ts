@@ -1,25 +1,31 @@
-import { onMount, onCleanup } from "solid-js";
+import { onMount, onCleanup, Accessor } from "solid-js";
 import { proximityHitsStore, proximityHitsActions } from "../store/proximityHitsStore";
+import { ProximityHit, ProximityHistoryEntry } from "../../../types/proximity";
+
+interface UseProximityTrackingReturn {
+  currentHits: Accessor<ProximityHit[]>;
+  history: Accessor<ProximityHistoryEntry[]>;
+}
 
 /**
  * Proximity tracking with proper cleanup (NO LEAKS)
  */
-export function useProximityTracking() {
-  let interval = null;
+export function useProximityTracking(): UseProximityTrackingReturn {
+  let interval: ReturnType<typeof setInterval> | null = null;
   let isActive = true;
-  
+
   onMount(() => {
     console.log('🎯 Proximity tracking started');
     simulateProximity();
-    
+
     // Page Visibility API
-    const handleVisibilityChange = () => {
+    const handleVisibilityChange = (): void => {
       isActive = !document.hidden;
       console.log(`🔄 Proximity tracking ${isActive ? 'resumed' : 'paused'}`);
     };
-    
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     // CRITICAL: Cleanup everything
     onCleanup(() => {
       console.log('🧹 Proximity tracking cleanup');
@@ -30,10 +36,10 @@ export function useProximityTracking() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     });
   });
-  
-  function simulateProximity() {
+
+  function simulateProximity(): void {
     const mockProfiles = ['1', '2', '3'];
-    
+
     // Initial positions
     mockProfiles.forEach((id, index) => {
       proximityHitsActions.updateProximity(
@@ -41,7 +47,7 @@ export function useProximityTracking() {
         20 + (index * 15)
       );
     });
-    
+
     // Update only when page is visible
     interval = setInterval(() => {
       if (isActive) {
@@ -52,7 +58,7 @@ export function useProximityTracking() {
       }
     }, 5000);
   }
-  
+
   return {
     currentHits: () => proximityHitsStore.currentHits,
     history: () => proximityHitsStore.history

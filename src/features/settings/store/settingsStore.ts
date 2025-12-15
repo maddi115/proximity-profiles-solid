@@ -1,11 +1,15 @@
 import { createStore } from "solid-js/store";
+import { Theme, NotificationSettings, PrivacySettings, AccountSettings } from "../../../types/settings";
 
-/**
- * Settings Store - User preferences
- */
+interface SettingsStore {
+  theme: Theme;
+  notifications: NotificationSettings;
+  privacy: PrivacySettings;
+  account: AccountSettings;
+}
 
-const [store, setStore] = createStore({
-  theme: 'dark', // 'dark' or 'light'
+const [store, setStore] = createStore<SettingsStore>({
+  theme: 'dark',
   notifications: {
     pulse: true,
     reveal: true,
@@ -25,20 +29,20 @@ const [store, setStore] = createStore({
 });
 
 export const settingsActions = {
-  setTheme(theme) {
+  setTheme(theme: Theme): void {
     setStore("theme", theme);
     console.log(`🎨 Theme changed to: ${theme}`);
   },
-  
-  toggleNotification(type) {
+
+  toggleNotification(type: keyof NotificationSettings): void {
     setStore("notifications", type, (val) => !val);
   },
-  
-  togglePrivacy(setting) {
+
+  togglePrivacy(setting: keyof PrivacySettings): void {
     setStore("privacy", setting, (val) => !val);
   },
-  
-  updateEmail(email) {
+
+  updateEmail(email: string): void {
     setStore("account", "email", email);
   }
 };
