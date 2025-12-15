@@ -22,7 +22,9 @@ formatTime()
 getActionEmoji()
 getActionText()
 getCostDisplay()
+  → activity.cost.toFixed()
 getProfile()
+  → getProfileIdAsNumber()
   → proximityStore.profiles.find()
   → profiles.find()
 
@@ -119,7 +121,7 @@ NotificationMode()
 ### src/features/dynamicIsland/components/modes/ProximityMode.jsx
 ProximityMode()
 
-### src/features/dynamicIsland/store/islandStore.js
+### src/features/dynamicIsland/store/islandStore.ts
 // STORE (stateful, writes via setStore)
 
 <object>.collapse()
@@ -256,20 +258,28 @@ ProximityList()
 ### src/features/proximity/components/reallyclosetome-futurefeature.jsx
 DynamicIsland()
 
-### src/features/proximity/hooks/useProfileActions.js
+### src/features/proximity/hooks/useProfileActions.ts
 getProfile()
   → store.profiles.find()
   → profiles.find()
-handleFollow()
+handleFollow()  // DEV LOGGING
+  → e.preventDefault()
+  → setIsFollowing()
   → withLoading()
   → handleError()
-handlePulse()
+handlePulse()  // DEV LOGGING
+  → e.preventDefault()
+  → setIsPulsing()
   → withLoading()
   → handleError()
-handleReveal()
+handleReveal()  // DEV LOGGING
+  → e.preventDefault()
+  → setIsRevealing()
   → withLoading()
   → handleError()
-handleSlap()
+handleSlap()  // DEV LOGGING
+  → e.preventDefault()
+  → setIsSlapping()
   → withLoading()
   → handleError()
 useProfileActions()
@@ -278,7 +288,7 @@ useProfileActions()
   → useLoading()
   → onCleanup()
 
-### src/features/proximity/hooks/useProfileSelection.js
+### src/features/proximity/hooks/useProfileSelection.ts
 selectProfile()
   → setSelectedProfile()
 selectProfileById()
@@ -288,7 +298,7 @@ useProfileSelection()
   → createSignal()
   → createMemo()
 
-### src/features/proximity/hooks/useProximityTracking.js
+### src/features/proximity/hooks/useProximityTracking.ts
 handleVisibilityChange()  // DEV LOGGING
 simulateProximity()  // MOCK / SIMULATION
   → mockProfiles.forEach()
@@ -309,7 +319,7 @@ handleProfileClick()  // DEV LOGGING
 ProximityMap()
   → onMount()
 
-### src/features/proximity/store/proximityHitsStore.js
+### src/features/proximity/store/proximityHitsStore.ts
 // STORE (stateful, writes via setStore)
 
 <object>.addToHistory()
@@ -327,7 +337,7 @@ ProximityMap()
   → setStore()
   → <?>.addToHistory()
 
-### src/features/proximity/store/proximityStore.js
+### src/features/proximity/store/proximityStore.ts
 // STORE (stateful, writes via setStore)
 
 <object>.initializeProfiles()
@@ -338,7 +348,7 @@ ProximityMap()
 <object>.toggleFollow()
   → setStore()
 
-### src/features/proximity/store/selectedProfileStore.js
+### src/features/proximity/store/selectedProfileStore.ts
 // STORE (stateful, writes via setStore)
 
 <object>.selectProfile()  // DEV LOGGING
@@ -364,7 +374,7 @@ parseCoord()
 ### src/features/notifications/components/NotificationView.jsx
 NotificationView()
 
-### src/features/notifications/hooks/useNotifications.js
+### src/features/notifications/hooks/useNotifications.ts
 useNotifications()
   → notificationActions.showNotification.bind()
   → notificationActions.dismissCurrent.bind()
@@ -382,7 +392,7 @@ useNotifications()
 <object>.clearActivities()
   → setStore()
 
-### src/features/notifications/store/notificationStore.js
+### src/features/notifications/store/notificationStore.ts
 // STORE (stateful, writes via setStore)
 
 <object>._displayNotification()
@@ -429,7 +439,7 @@ ProfileHeader()
 ProfileStats()
   → profileStore.user.balance.toFixed()
 
-### src/features/profile/store/profileStore.js
+### src/features/profile/store/profileStore.ts
 // STORE (stateful, writes via setStore)
 
 <object>.incrementStat()
@@ -455,7 +465,7 @@ ThemeToggle()
 toggleTheme()
   → settingsActions.setTheme()
 
-### src/features/settings/store/settingsStore.js
+### src/features/settings/store/settingsStore.ts
 // STORE (stateful, writes via setStore)
 
 <object>.setTheme()  // DEV LOGGING
@@ -479,7 +489,7 @@ LoadingButton()
 ### src/features/loading/components/LoadingSpinner.jsx
 LoadingSpinner()
 
-### src/features/loading/hooks/useLoading.js
+### src/features/loading/hooks/useLoading.ts
 isLoading()
   → loadingActions.isLoading()
 startLoading()
@@ -495,7 +505,7 @@ withLoading()
   → asyncFn()
   → stopLoading()
 
-### src/features/loading/store/loadingStore.js
+### src/features/loading/store/loadingStore.ts
 // STORE (stateful, writes via setStore)
 
 <object>.clearAll()
@@ -605,7 +615,7 @@ SignupForm()
   → auth.error()
   → isLoading()
 
-### src/features/auth/hooks/useAuth.js
+### src/features/auth/hooks/useAuth.ts
 useAuth()
   → authActions.signUp.bind()
   → authActions.signIn.bind()
@@ -615,7 +625,7 @@ useAuth()
   → authActions.updateProfile.bind()
   → authActions.clearError.bind()
 
-### src/features/auth/store/authStore.js
+### src/features/auth/store/authStore.ts
 // STORE (stateful, writes via setStore)
 
 <object>._syncProfile()
@@ -653,5 +663,14 @@ useAuth()
 createActivity()
   → Date.now.toString()
   → Date.now()
+  → String()
   → ActivitySchema.parse()
+getProfileIdAsNumber()
+  → parseInt()
+
+### src/types/profile.ts
+validateProfile()
+  → ProfileSchema.parse()
+validateProfiles()
+  → data.map()
 

@@ -122,7 +122,8 @@ export const authActions = {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider as any,
-        options: { redirectTo: window.location.origin }
+        options: { redirectTo: `${window.location.origin}/home` }
+
       });
       if (error) throw error;
       return { success: true };
@@ -175,28 +176,44 @@ export const authActions = {
     });
   },
 
-  setupAuthListener() {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('🔐 Auth event:', event);
-      if (event === 'SIGNED_IN' && session) {
-        setStore({
-          user: session.user,
-          session: session,
-          isAuthenticated: true
-        });
-        this._syncProfile(session.user);
-      } else if (event === 'SIGNED_OUT') {
-        setStore({
-          user: null,
-          session: null,
-          isAuthenticated: false
-        });
-      } else if (event === 'TOKEN_REFRESHED' && session) {
-        setStore("session", session);
-      }
-    });
-    return authListener;
-  },
+setupAuthListener() {
+  const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    console.log('🔐 Auth event:', event);
+
+    // Treat INITIAL_SESSION like a normal session set
+    if ((event === 'INITIAL_SESSION' || event === 'SIGNED_IN') && session) {
+      setStore({
+        user: session.user,
+        session: session,
+        isAuthenticated: true,
+        error: null
+      });
+      this._syncProfile(session.user);
+      return;
+    }
+
+    if (event === 'SIGNED_OUT') {
+      setStore({
+        user: null,
+        session: null,
+        isAuthenticated: false
+      });
+      return;
+    }
+
+    if ((event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') && session) {
+      setStore({
+        user: session.user,
+        session: session,
+        isAuthenticated: true
+      });
+      return;
+    }
+  });
+
+  return authListener;
+},
+
 
   clearError(): void {
     setStore("error", null);

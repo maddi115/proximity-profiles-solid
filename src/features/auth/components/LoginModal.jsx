@@ -22,6 +22,11 @@ export function LoginModal(props) {
     }
   };
 
+  const handleGoogleSignIn = () => {
+    auth.clearError();
+    auth.signInWithOAuth('google');
+  };
+
   return (
     <>
       <div class={styles.backdrop} onClick={props.onClose} />
@@ -69,6 +74,17 @@ export function LoginModal(props) {
             Sign In
           </LoadingButton>
         </form>
+
+        {/* OAuth */}
+        <div class={styles.oauthSection}>
+          <button
+            type="button"
+            class={styles.oauthBtn}
+            onClick={handleGoogleSignIn}
+          >
+            Continue with Google
+          </button>
+        </div>
       </div>
     </>
   );
