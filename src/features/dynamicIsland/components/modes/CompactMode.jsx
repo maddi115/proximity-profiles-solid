@@ -1,13 +1,34 @@
+import { authStore } from "../../../auth/store/authStore";
 import styles from "../island.module.css";
 
 /**
- * CompactMode - Small pill showing nearby count
+ * CompactMode - Shows avatars with "really close to" text
  */
 export function CompactMode(props) {
+  const myAvatar = () => {
+    if (authStore.user?.user_metadata?.avatar_url) {
+      return authStore.user.user_metadata.avatar_url;
+    }
+    // Fallback if not logged in
+    return 'https://api.dicebear.com/7.x/avataaars/svg?seed=user123';
+  };
+  
+  // Placeholder avatar for other user
+  const placeholderAvatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=placeholder456';
+
   return (
     <div class={styles.compactMode} onClick={props.onExpand}>
-      <span class={styles.badge}>{props.nearbyCount}</span>
-      <span class={styles.label}>nearby</span>
+      <img 
+        src={myAvatar()} 
+        class={styles.avatarCompact}
+        alt="You" 
+      />
+      <span class={styles.proximityText}>really close to</span>
+      <img 
+        src={placeholderAvatar} 
+        class={styles.avatarCompact}
+        alt="Nearby user" 
+      />
     </div>
   );
 }
