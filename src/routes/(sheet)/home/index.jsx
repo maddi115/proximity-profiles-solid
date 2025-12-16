@@ -12,6 +12,7 @@ export default function Home() {
   const location = useLocation();
   
   const isOnMessagesPage = () => location.pathname.includes('/messages');
+  const isOnFollowingPage = () => location.pathname.includes('/following');
   
   const profile = createMemo(() => {
     const selected = selectedProfile();
@@ -19,24 +20,27 @@ export default function Home() {
     return storeProfile ? { ...selected, ...storeProfile } : selected;
   });
 
-  const handleButtonClick = () => {
-    if (isOnMessagesPage()) {
-      navigate('/home');
-    } else {
-      navigate('/home/messages');
-    }
-  };
-
   return (
     <Show when={profile()}>
       {(p) => (
         <div class={styles.homeContent}>
-          <button 
-            class={styles.messagesBtn}
-            onClick={handleButtonClick}
-          >
-            {isOnMessagesPage() ? '← Back Home' : 'Messages'}
-          </button>
+          <div class={styles.navContainer}>
+            <span class={styles.pageLabel}>(home)</span>
+            <div class={styles.buttonGroup}>
+              <button 
+                class={styles.navBtn}
+                onClick={() => navigate('/home/following')}
+              >
+                Followings
+              </button>
+              <button 
+                class={styles.navBtn}
+                onClick={() => navigate('/home/messages')}
+              >
+                Messages
+              </button>
+            </div>
+          </div>
 
           <div class={styles.backgroundContainer}>
             <BlurredBackground src={p().img} blurAmount={20} scale={1.2} />

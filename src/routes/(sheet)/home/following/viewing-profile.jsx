@@ -4,19 +4,12 @@ import { SelectedProfileCard } from '../SelectedProfileCard';
 import { ProfileActions } from '../ProfileActions';
 import { BlurredBackground } from '../../../../features/proximity/components/BlurredBackground';
 import styles from '../home.module.css';
-import messageStyles from './messages.module.css';
+import followingStyles from './following.module.css';
 
 export default function ViewingProfile() {
   const location = useLocation();
   const navigate = useNavigate();
   const profile = () => location.state?.profile;
-  const message = () => location.state?.message;
-
-  const getActionText = () => {
-    const msg = message();
-    if (!msg) return '';
-    return `${msg.emoji} ${msg.action}`;
-  };
 
   return (
     <Show when={profile()}>
@@ -24,18 +17,18 @@ export default function ViewingProfile() {
         <div class={styles.homeContent}>
           <button 
             class={styles.messagesBtn}
-            onClick={() => navigate('/home/messages')}
+            onClick={() => navigate('/home/following')}
           >
-            ← Back to Messages
+            ← Back to Following
           </button>
 
           <div class={styles.backgroundContainer}>
             <BlurredBackground src={p().img} blurAmount={20} scale={1.2} />
           </div>
           
-          <div class={messageStyles.contextBanner}>
-            <span class={messageStyles.contextText}>
-              From message: {getActionText()}
+          <div class={followingStyles.contextBanner}>
+            <span class={followingStyles.contextText}>
+              ⭐ Following
             </span>
           </div>
 
