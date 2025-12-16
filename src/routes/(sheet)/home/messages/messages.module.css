@@ -4,6 +4,72 @@
   margin-bottom: 20px;
 }
 
+/* Conversation List Styles */
+.conversationList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.conversationCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.conversationCard:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(4px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.conversationAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.emoji {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.action {
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  flex-shrink: 0;
+}
+
+.timestamp {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin-left: auto;
+}
+
+.messageCount {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  flex-shrink: 0;
+}
+
+/* Individual Message Styles */
 .messageItem {
   display: flex;
   align-items: center;
@@ -68,4 +134,5 @@
   font-size: 13px;
   color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }

@@ -4,27 +4,23 @@ import { messagesActions } from '../../../../features/messages/store/messagesSto
 import { store as proximityStore } from '../../../../features/proximity/store/proximityStore';
 import { profiles } from '../../../../features/proximity/mockData';
 import { authStore } from '../../../../features/auth/store/authStore';
-import { getProfileIdAsNumber } from '../../../../types/activity';
 import styles from '../../../routes.module.css';
 import homeStyles from '../home.module.css';
 import messageStyles from './messages.module.css';
 
 export default function Messages() {
   const navigate = useNavigate();
-  const messages = createMemo(() => messagesActions.getAllMessages());
+  const conversations = createMemo(() => messagesActions.getGroupedConversations());
   const currentUser = () => authStore.user;
 
-  const getProfile = (activity) => {
-    const profileId = getProfileIdAsNumber(activity);
-    if (!profileId) return null;
-
-    const storeProfile = proximityStore.profiles.find(p => p.id === profileId);
+  const getProfile = (profileId) => {
+    const id = typeof profileId === 'string' ? parseInt(profileId, 10) : profileId;
+    const storeProfile = proximityStore.profiles.find(p => p.id === id);
     if (storeProfile) {
-      const mockProfile = profiles.find(p => p.id === profileId);
+      const mockProfile = profiles.find(p => p.id === id);
       return { ...mockProfile, ...storeProfile };
     }
-
-    return profiles.find(p => p.id === profileId);
+    return profiles.find(p => p.id === id);
   };
 
   const formatTime = (timestamp) => {
@@ -37,16 +33,19 @@ export default function Messages() {
     return `${Math.floor(diff / 86400)}d ago`;
   };
 
-  const handleMessageClick = (message) => {
-    const profile = getProfile(message);
-    navigate('/home/messages/viewing-profile', { 
-      state: { profile, message } 
+  const handleConversationClick = (conversation) => {
+    const profile = getProfile(conversation.profileId);
+    navigate('/home/messages/conversation', {
+      state: { profile, conversation }
     });
   };
 
+  const myAvatar = () => currentUser()?.user_metadata?.avatar_url || 
+    `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser()?.id}`;
+
   return (
     <div class={styles.pageContent}>
-      <button 
+      <button
         class={homeStyles.messagesBtn}
         onClick={() => navigate('/home')}
       >
@@ -58,7 +57,7 @@ export default function Messages() {
       </div>
 
       <Show
-        when={messages().length > 0}
+        when={conversations().length > 0}
         fallback={
           <div class={styles.emptyState}>
             <div class={styles.emptyIcon}>💬</div>
@@ -67,67 +66,38 @@ export default function Messages() {
           </div>
         }
       >
-        <div class={styles.activityList}>
-          <For each={messages()}>
-            {(message) => {
-              const profile = getProfile(message);
-              const myAvatar = currentUser()?.user_metadata?.avatar_url || 
-                              `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser()?.id}`;
-              
+        <div class={messageStyles.conversationList}>
+          <For each={conversations()}>
+            {(conversation) => {
+              const profile = getProfile(conversation.profileId);
+              const latest = conversation.latestMessage;
+              const isSent = latest.direction === 'sent';
+
               return (
-                <div 
-                  class={messageStyles.messageItem}
-                  onClick={() => handleMessageClick(message)}
+                <div
+                  class={messageStyles.conversationCard}
+                  onClick={() => handleConversationClick(conversation)}
                 >
-                  {message.direction === 'sent' ? (
-                    <>
-                      <img
-                        src={myAvatar}
-                        class={styles.activityProfilePic}
-                        alt="You"
-                      />
-                      <div class={styles.activityInfo}>
-                        <div class={messageStyles.messageFlow}>
-                          <span class={messageStyles.fromName}>You</span>
-                          <span class={messageStyles.arrow}>→</span>
-                          <span class={styles.activityEmoji}>{message.emoji}</span>
-                          <span class={messageStyles.actionText}>{message.action}</span>
-                          <span class={messageStyles.arrow}>→</span>
-                          <span class={messageStyles.toName}>{profile?.name}</span>
-                        </div>
-                        <div class={styles.activityTime}>{formatTime(message.timestamp)}</div>
-                      </div>
-                      <img
-                        src={profile?.img}
-                        class={styles.activityProfilePic}
-                        alt={profile?.name}
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <img
-                        src={profile?.img}
-                        class={styles.activityProfilePic}
-                        alt={profile?.name}
-                      />
-                      <div class={styles.activityInfo}>
-                        <div class={messageStyles.messageFlow}>
-                          <span class={messageStyles.fromName}>{profile?.name}</span>
-                          <span class={messageStyles.arrow}>→</span>
-                          <span class={styles.activityEmoji}>{message.emoji}</span>
-                          <span class={messageStyles.actionText}>{message.action}</span>
-                          <span class={messageStyles.arrow}>→</span>
-                          <span class={messageStyles.toName}>You</span>
-                        </div>
-                        <div class={styles.activityTime}>{formatTime(message.timestamp)}</div>
-                      </div>
-                      <img
-                        src={myAvatar}
-                        class={styles.activityProfilePic}
-                        alt="You"
-                      />
-                    </>
-                  )}
+                  <img
+                    src={isSent ? myAvatar() : profile?.img}
+                    class={messageStyles.conversationAvatar}
+                    alt={isSent ? "You" : profile?.name}
+                  />
+                  
+                  <span class={messageStyles.emoji}>{latest.emoji}</span>
+                  <span class={messageStyles.action}>{latest.action}</span>
+                  
+                  <img
+                    src={isSent ? profile?.img : myAvatar()}
+                    class={messageStyles.conversationAvatar}
+                    alt={isSent ? profile?.name : "You"}
+                  />
+                  
+                  <span class={messageStyles.timestamp}>{formatTime(latest.timestamp)}</span>
+                  
+                  <span class={messageStyles.messageCount}>
+                    {conversation.messageCount} {conversation.messageCount === 1 ? 'message' : 'messages'}
+                  </span>
                 </div>
               );
             }}

@@ -12,6 +12,7 @@ const Settings = lazy(() => import("../routes/(sheet)/settings"));
 const ActivityHistory = lazy(() => import("../routes/(sheet)/activity"));
 const Login = lazy(() => import("../routes/(sheet)/auth/login"));
 const Messages = lazy(() => import("../routes/(sheet)/home/messages/index"));
+const Conversation = lazy(() => import("../routes/(sheet)/home/messages/conversation"));
 const MessagesViewingProfile = lazy(() => import("../routes/(sheet)/home/messages/viewing-profile"));
 const Following = lazy(() => import("../routes/(sheet)/home/following/index"));
 const FollowingViewingProfile = lazy(() => import("../routes/(sheet)/home/following/viewing-profile"));
@@ -31,6 +32,7 @@ function App() {
           <Route path="/auth/login" component={Login} />
           <Route path="/home" component={Home} />
           <Route path="/home/messages" component={Messages} />
+          <Route path="/home/messages/conversation" component={Conversation} />
           <Route path="/home/messages/viewing-profile" component={MessagesViewingProfile} />
           <Route path="/home/following" component={Following} />
           <Route path="/home/following/viewing-profile" component={FollowingViewingProfile} />
