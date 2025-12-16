@@ -16,6 +16,7 @@ const Conversation = lazy(() => import("../routes/(sheet)/home/messages/conversa
 const MessagesViewingProfile = lazy(() => import("../routes/(sheet)/home/messages/viewing-profile"));
 const Following = lazy(() => import("../routes/(sheet)/home/following/index"));
 const FollowingViewingProfile = lazy(() => import("../routes/(sheet)/home/following/viewing-profile"));
+const SuperClose = lazy(() => import("../routes/(sheet)/home/super-close/index"));
 
 function App() {
   onMount(() => {
@@ -31,6 +32,7 @@ function App() {
         <Route path="/" component={SheetLayout}>
           <Route path="/auth/login" component={Login} />
           <Route path="/home" component={Home} />
+          <Route path="/home/super-close" component={SuperClose} />
           <Route path="/home/messages" component={Messages} />
           <Route path="/home/messages/conversation" component={Conversation} />
           <Route path="/home/messages/viewing-profile" component={MessagesViewingProfile} />

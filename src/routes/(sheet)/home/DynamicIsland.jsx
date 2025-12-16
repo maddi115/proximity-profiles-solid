@@ -1,4 +1,5 @@
 import { Show, createEffect } from "solid-js";
+import { useNavigate } from "@solidjs/router";
 import { islandStore, islandActions } from "../../../features/dynamicIsland/store/islandStore";
 import { notificationStore } from "../../../features/notifications/store/notificationStore";
 import { proximityHitsStore } from "../../../features/proximity/store/proximityHitsStore";
@@ -10,6 +11,7 @@ import { IslandModes } from "../../../features/dynamicIsland/types";
 import styles from './home.module.css';
 
 export function DynamicIsland() {
+  const navigate = useNavigate();
   useProximityTracking();
   const nearbyCount = () => proximityHitsStore.currentHits.length;
   const queueCount = () => notificationStore.queue.length;
@@ -24,12 +26,23 @@ export function DynamicIsland() {
     }
   });
 
+  const handleIslandClick = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (islandStore.currentMode === IslandModes.COMPACT) {
+      navigate('/home/super-close');
+    }
+  };
+
   return (
-    <div class={`${styles.dynamicIsland} ${islandStore.isExpanded ? styles.islandExpanded : ''}`}>
+    <div 
+      class={`${styles.dynamicIsland} ${islandStore.isExpanded ? styles.islandExpanded : ''}`}
+      onClick={handleIslandClick}
+      style={{ cursor: islandStore.currentMode === IslandModes.COMPACT ? 'pointer' : 'default' }}
+    >
       <Show when={islandStore.currentMode === IslandModes.COMPACT}>
         <CompactMode
           nearbyCount={nearbyCount()}
-          onExpand={() => islandActions.expand()}
         />
       </Show>
       <Show when={islandStore.currentMode === IslandModes.PROXIMITY}>

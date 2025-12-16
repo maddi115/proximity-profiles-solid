@@ -17,7 +17,7 @@ export function CompactMode(props) {
   const placeholderAvatar = 'https://api.dicebear.com/7.x/avataaars/svg?seed=placeholder456';
 
   return (
-    <div class={styles.compactMode} onClick={props.onExpand}>
+    <div class={styles.compactMode}>
       <img 
         src={myAvatar()} 
         class={styles.avatarCompact}

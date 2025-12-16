@@ -11,8 +11,7 @@ export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const isOnMessagesPage = () => location.pathname.includes('/messages');
-  const isOnFollowingPage = () => location.pathname.includes('/following');
+  const isOnSuperClosePage = () => location.pathname.includes('/super-close');
   
   const profile = createMemo(() => {
     const selected = selectedProfile();
@@ -25,7 +24,9 @@ export default function Home() {
       {(p) => (
         <div class={styles.homeContent}>
           <div class={styles.topRow}>
-            <SelectedProfileCard profile={p()} />
+            <Show when={!isOnSuperClosePage()}>
+              <SelectedProfileCard profile={p()} />
+            </Show>
             <DynamicIsland />
           </div>
 
@@ -46,7 +47,9 @@ export default function Home() {
             </div>
           </div>
 
-          <ProfileActions profile={p()} />
+          <Show when={!isOnSuperClosePage()}>
+            <ProfileActions profile={p()} />
+          </Show>
         </div>
       )}
     </Show>
