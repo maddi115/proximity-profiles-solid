@@ -6,6 +6,7 @@ import { profiles } from '../../../../features/proximity/mockData';
 import { authStore } from '../../../../features/auth/store/authStore';
 import { getProfileIdAsNumber } from '../../../../types/activity';
 import styles from '../../../routes.module.css';
+import homeStyles from '../home.module.css';
 import messageStyles from './messages.module.css';
 
 export default function Messages() {
@@ -45,6 +46,13 @@ export default function Messages() {
 
   return (
     <div class={styles.pageContent}>
+      <button 
+        class={homeStyles.messagesBtn}
+        onClick={() => navigate('/home')}
+      >
+        ← Back Home
+      </button>
+
       <div class={messageStyles.header}>
         <h1 class={styles.pageTitle}>Messages</h1>
       </div>
