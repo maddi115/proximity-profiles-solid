@@ -4,7 +4,7 @@ import { selectedProfile } from "../../../features/proximity/store/selectedProfi
 import { store as proximityStore } from "../../../features/proximity/store/proximityStore";
 import { SelectedProfileCard } from "./SelectedProfileCard";
 import { ProfileActions } from "./ProfileActions";
-import { BlurredBackground } from "../../../features/proximity/components/BlurredBackground";
+import { DynamicIsland } from "./DynamicIsland";
 import styles from './home.module.css';
 
 export default function Home() {
@@ -24,8 +24,12 @@ export default function Home() {
     <Show when={profile()}>
       {(p) => (
         <div class={styles.homeContent}>
+          <div class={styles.topRow}>
+            <SelectedProfileCard profile={p()} />
+            <DynamicIsland />
+          </div>
+
           <div class={styles.navContainer}>
-            <span class={styles.pageLabel}>(home)</span>
             <div class={styles.buttonGroup}>
               <button 
                 class={styles.navBtn}
@@ -42,10 +46,6 @@ export default function Home() {
             </div>
           </div>
 
-          <div class={styles.backgroundContainer}>
-            <BlurredBackground src={p().img} blurAmount={20} scale={1.2} />
-          </div>
-          <SelectedProfileCard profile={p()} />
           <ProfileActions profile={p()} />
         </div>
       )}

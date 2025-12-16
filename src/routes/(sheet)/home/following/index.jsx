@@ -10,14 +10,14 @@ export default function Following() {
   const followingProfiles = createMemo(() => followingActions.getFollowingProfiles());
 
   const handleProfileClick = (profile) => {
-    navigate('/home/following/viewing-profile', { 
-      state: { profile } 
+    navigate('/home/following/viewing-profile', {
+      state: { profile }
     });
   };
 
   return (
     <div class={styles.pageContent}>
-      <button 
+      <button
         class={homeStyles.messagesBtn}
         onClick={() => navigate('/home')}
       >
@@ -42,7 +42,7 @@ export default function Following() {
         <div class={followingStyles.followingList}>
           <For each={followingProfiles()}>
             {(profile) => (
-              <div 
+              <div
                 class={followingStyles.profileCard}
                 onClick={() => handleProfileClick(profile)}
               >
@@ -54,10 +54,6 @@ export default function Following() {
                 <div class={followingStyles.profileInfo}>
                   <div class={followingStyles.profileName}>{profile.name}</div>
                   <div class={followingStyles.profileStats}>
-                    <span class={followingStyles.stat}>
-                      <span class={followingStyles.statIcon}>💰</span>
-                      ${(profile.balance || 0).toFixed(2)}
-                    </span>
                     {profile.distance && (
                       <span class={followingStyles.stat}>
                         <span class={followingStyles.statIcon}>📍</span>

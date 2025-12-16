@@ -1,11 +1,10 @@
 import { ProximityMap } from '../features/proximity/ProximityMap';
-import { DynamicIsland } from '../features/dynamicIsland/components/DynamicIsland';
 import { BalanceWarning } from '../features/dynamicIsland/components/BalanceWarning';
 import styles from './mainLayout.module.css';
 
 /**
  * Main App Layout - Top-level wrapper
- * ProximityMap + DynamicIsland renders once and persists across all routes
+ * ProximityMap renders once and persists across all routes
  */
 export default function MainLayout(props) {
   return (
@@ -13,9 +12,8 @@ export default function MainLayout(props) {
       {/* PERSISTENT: ProximityMap renders once and stays visible */}
       <ProximityMap />
       
-      {/* PERSISTENT: Dynamic Island floats above everything */}
+      {/* PERSISTENT: Balance Warning floats above everything */}
       <div class={styles.islandContainer}>
-        <DynamicIsland />
         <BalanceWarning />
       </div>
       
