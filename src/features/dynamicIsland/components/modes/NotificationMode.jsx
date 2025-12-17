@@ -8,12 +8,11 @@ import styles from "../island.module.css";
  */
 export function NotificationMode(props) {
   return (
-    <div 
-      class={styles.notificationMode} 
+    <div
+      class={styles.notificationMode}
       key={props.notification?.id}
       style={{
-        "max-width": "100%",
-        "overflow": "hidden"
+        "max-width": "100%"
       }}
     >
       <div style={{

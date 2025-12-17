@@ -199,25 +199,25 @@
   }
 }
 
-/* Queue Counter Badge */
+/* Queue Counter Badge - Bottom-right OUTSIDE island */
 .queueCounter {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  inset: auto -6px -6px auto;
   background: rgba(239, 68, 68, 0.9);
   color: white;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  min-width: 20px;
-  height: 20px;
-  border-radius: 10px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 6px;
+  padding: 0 5px;
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
   animation: counterPop 0.3s cubic-bezier(0.32, 0.72, 0, 1);
   transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 10;
 }
 
 @keyframes counterPop {
