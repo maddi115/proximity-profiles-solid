@@ -22,7 +22,7 @@
 .compactMode {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
   color: white;
   transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1);
@@ -40,8 +40,8 @@
 }
 
 .avatarCompact {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid rgba(255, 255, 255, 0.2);
@@ -50,7 +50,7 @@
 }
 
 .proximityText {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.7);
   white-space: nowrap;
@@ -179,9 +179,14 @@
   transform: translateZ(0) translateY(0);
 }
 
-/* Notification Mode */
+/* Notification Mode - COMPACT: fits inside island pill */
 .notificationMode {
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   animation: notificationFade 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
 

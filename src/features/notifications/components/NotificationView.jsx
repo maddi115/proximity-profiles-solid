@@ -16,7 +16,7 @@ export function NotificationView(props) {
       default: return '';
     }
   };
-  
+
   return (
     <Show when={props.notification}>
       {(notification) => (
@@ -24,19 +24,16 @@ export function NotificationView(props) {
           {notification().icon && (
             <span class={styles.icon}>{notification().icon}</span>
           )}
-          
           <span class={styles.message}>{notification().message}</span>
-          
           {notification().profile && (
-            <img 
-              src={notification().profile.image} 
+            <img
+              src={notification().profile.image}
               alt={notification().profile.name}
               class={styles.profilePic}
             />
           )}
-          
           {notification().action && (
-            <button 
+            <button
               class={styles.actionBtn}
               onClick={notification().action.handler}
             >

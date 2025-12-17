@@ -117,17 +117,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 24px;
+  padding: 8px 16px;
   background: #000000;
   border: 1px solid hsl(0, 0%, 15%);
   border-radius: 999px;
-  box-shadow: 
+  box-shadow:
     inset 0 1px 2px rgba(255, 255, 255, 0.05),
     0 4px 16px rgba(0, 0, 0, 0.6),
     0 2px 8px rgba(0, 0, 0, 0.4);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: none;
   flex-shrink: 0;
-  flex-grow: 1;
+  width: fit-content;
   max-width: 280px;
   min-height: 37px;
   backdrop-filter: blur(20px);
@@ -135,17 +135,7 @@
   z-index: 10;
   pointer-events: auto;
   cursor: pointer;
-}
-
-.islandExpanded {
-  padding: 16px 32px;
-  min-height: 44px;
-  border-radius: 28px;
-  border-color: hsl(0, 0%, 20%);
-  box-shadow: 
-    inset 0 1px 3px rgba(255, 255, 255, 0.08),
-    0 8px 24px rgba(0, 0, 0, 0.7),
-    0 4px 12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
 }
 
 .actions {
@@ -225,14 +215,9 @@
   }
 
   .dynamicIsland {
-    max-width: 140px;
-    padding: 8px 16px;
+    padding: 6px 12px;
+    max-width: 180px;
     min-height: 32px;
-  }
-
-  .islandExpanded {
-    padding: 10px 20px;
-    min-height: 36px;
   }
 
   .actions {

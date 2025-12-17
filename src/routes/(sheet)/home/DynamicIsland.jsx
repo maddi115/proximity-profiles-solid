@@ -35,8 +35,8 @@ export function DynamicIsland() {
   };
 
   return (
-    <div 
-      class={`${styles.dynamicIsland} ${islandStore.isExpanded ? styles.islandExpanded : ''}`}
+    <div
+      class={styles.dynamicIsland}
       onClick={handleIslandClick}
       style={{ cursor: islandStore.currentMode === IslandModes.COMPACT ? 'pointer' : 'default' }}
     >

@@ -36,7 +36,7 @@ export const islandActions = {
     }
     setStore({
       currentMode: IslandModes.NOTIFICATION,
-      isExpanded: true
+      isExpanded: false  // Changed from true to false - keep compact!
     });
   },
 
