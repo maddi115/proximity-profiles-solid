@@ -4,7 +4,6 @@ import styles from './menu.module.css';
 
 const menuItems = [
   { label: 'Home', path: '/home', icon: '🎯' },
-  { label: 'Dashboard', path: '/dashboard', icon: '📊' },
   { label: 'My Profile', path: '/my-profile', icon: '👤' },
   { label: 'Activity', path: '/activity', icon: '📝' },
   { label: 'Settings', path: '/settings', icon: '⚙️' },
@@ -29,7 +28,7 @@ export function Menu() {
   };
 
   return (
-    <div 
+    <div
       class={styles.menuContainer}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -42,7 +41,7 @@ export function Menu() {
         <div class={styles.dropdown}>
           <For each={menuItems}>
             {(item) => (
-              <button 
+              <button
                 class={styles.dropdownItem}
                 onClick={() => handleMenuClick(item.path)}
               >

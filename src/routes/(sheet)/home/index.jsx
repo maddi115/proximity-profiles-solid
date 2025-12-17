@@ -5,13 +5,17 @@ import { store as proximityStore } from "../../../features/proximity/store/proxi
 import { SelectedProfileCard } from "./SelectedProfileCard";
 import { ProfileActions } from "./ProfileActions";
 import { DynamicIsland } from "./DynamicIsland";
+import { StoryButton } from "./StoryButton";
 import styles from './home.module.css';
 
 export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const isOnSuperClosePage = () => location.pathname.includes('/super-close');
+  const isOnSubPage = () => {
+    return location.pathname.includes('/super-close') || 
+           location.pathname.includes('/my-story');
+  };
   
   const profile = createMemo(() => {
     const selected = selectedProfile();
@@ -24,7 +28,7 @@ export default function Home() {
       {(p) => (
         <div class={styles.homeContent}>
           <div class={styles.topRow}>
-            <Show when={!isOnSuperClosePage()}>
+            <Show when={!isOnSubPage()}>
               <SelectedProfileCard profile={p()} />
             </Show>
             <DynamicIsland />
@@ -47,8 +51,9 @@ export default function Home() {
             </div>
           </div>
 
-          <Show when={!isOnSuperClosePage()}>
+          <Show when={!isOnSubPage()}>
             <ProfileActions profile={p()} />
+            <StoryButton />
           </Show>
         </div>
       )}

@@ -6,7 +6,6 @@ import MainLayout from "../routes/_layout";
 import SheetLayout from "../routes/(sheet)/_layout";
 
 const Home = lazy(() => import("../routes/(sheet)/home/index"));
-const Dashboard = lazy(() => import("../routes/(sheet)/dashboard"));
 const MyProfile = lazy(() => import("../routes/(sheet)/my-profile"));
 const Settings = lazy(() => import("../routes/(sheet)/settings"));
 const ActivityHistory = lazy(() => import("../routes/(sheet)/activity"));
@@ -17,6 +16,7 @@ const MessagesViewingProfile = lazy(() => import("../routes/(sheet)/home/message
 const Following = lazy(() => import("../routes/(sheet)/home/following/index"));
 const FollowingViewingProfile = lazy(() => import("../routes/(sheet)/home/following/viewing-profile"));
 const SuperClose = lazy(() => import("../routes/(sheet)/home/super-close/index"));
+const MyStory = lazy(() => import("../routes/(sheet)/home/my-story/index"));
 
 function App() {
   onMount(() => {
@@ -33,12 +33,12 @@ function App() {
           <Route path="/auth/login" component={Login} />
           <Route path="/home" component={Home} />
           <Route path="/home/super-close" component={SuperClose} />
+          <Route path="/home/my-story" component={MyStory} />
           <Route path="/home/messages" component={Messages} />
           <Route path="/home/messages/conversation" component={Conversation} />
           <Route path="/home/messages/viewing-profile" component={MessagesViewingProfile} />
           <Route path="/home/following" component={Following} />
           <Route path="/home/following/viewing-profile" component={FollowingViewingProfile} />
-          <Route path="/dashboard" component={Dashboard} />
           <Route path="/my-profile" component={MyProfile} />
           <Route path="/settings" component={Settings} />
           <Route path="/activity" component={ActivityHistory} />

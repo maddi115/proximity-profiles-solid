@@ -1,0 +1,133 @@
+.backBtn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: hsl(0, 0%, 12%);
+  border: 1px solid hsl(0, 0%, 18%);
+  color: white;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  z-index: 30;
+}
+
+.backBtn:hover {
+  background: hsl(0, 0%, 15%);
+  border-color: hsl(0, 0%, 22%);
+  transform: translateY(-1px);
+}
+
+.backBtn:active {
+  background: hsl(0, 0%, 10%);
+  transform: translateY(0);
+}
+
+.islandWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 10;
+}
+
+.header {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.header > * {
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.actionContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 24px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.actionButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  background: hsl(0, 0%, 11%);
+  border: 1px solid hsl(0, 0%, 18%);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.actionButton:hover {
+  background: hsl(0, 0%, 13%);
+  border-color: hsl(0, 0%, 22%);
+  transform: translateY(-2px);
+}
+
+.actionButton:active {
+  background: hsl(0, 0%, 10%);
+  transform: translateY(0);
+}
+
+.iconWrapper {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.buttonLabel {
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.preview {
+  margin-top: 24px;
+  padding: 16px;
+  background: hsl(0, 0%, 11%);
+  border: 1px solid hsl(0, 0%, 18%);
+  border-radius: 5px;
+  text-align: center;
+}
+
+.previewText {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin: 0;
+}
+
+@media (width <= 767px) {
+  .actionContainer {
+    max-width: 100%;
+  }
+
+  .actionButton {
+    padding: 16px 20px;
+  }
+
+  .iconWrapper {
+    font-size: 40px;
+  }
+
+  .buttonLabel {
+    font-size: 14px;
+  }
+}
