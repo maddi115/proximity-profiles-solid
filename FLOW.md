@@ -65,9 +65,76 @@ Menu()
 ### src/routes/(sheet)/footer/SheetFooter.jsx
 SheetFooter()
 
+### src/routes/(sheet)/home/DynamicIsland.jsx
+DynamicIsland()
+  → useNavigate()
+  → useProximityTracking()
+  → createEffect()
+  → nearbyCount()
+  → queueCount()
+handleIslandClick()
+  → e.stopPropagation()
+  → e.preventDefault()
+  → navigate()
+
+### src/routes/(sheet)/home/following/index.jsx
+Following()
+  → useNavigate()
+  → createMemo()
+  → followingProfiles()
+handleProfileClick()
+  → navigate()
+
+### src/routes/(sheet)/home/following/viewing-profile.jsx
+ViewingProfile()
+  → useLocation()
+  → useNavigate()
+  → profile()
+
 ### src/routes/(sheet)/home/index.jsx
 Home()
+  → useNavigate()
+  → useLocation()
   → createMemo()
+  → profile()
+isOnSuperClosePage()
+  → location.pathname.includes()
+
+### src/routes/(sheet)/home/messages/conversation.jsx
+Conversation()
+  → useNavigate()
+  → useLocation()
+  → profile()
+  → conversation()
+formatTime()
+handleMessageClick()
+  → navigate()
+  → profile()
+myAvatar()
+  → currentUser()
+
+### src/routes/(sheet)/home/messages/index.jsx
+formatTime()
+getProfile()
+  → parseInt()
+  → proximityStore.profiles.find()
+  → profiles.find()
+handleConversationClick()
+  → getProfile()
+  → navigate()
+Messages()
+  → useNavigate()
+  → createMemo()
+  → conversations()
+myAvatar()
+  → currentUser()
+
+### src/routes/(sheet)/home/messages/viewing-profile.jsx
+getActionText()
+  → message()
+ViewingProfile()
+  → useLocation()
+  → useNavigate()
   → profile()
 
 ### src/routes/(sheet)/home/ProfileActions.jsx
@@ -84,8 +151,14 @@ ProfileActions()
 
 ### src/routes/(sheet)/home/SelectedProfileCard.jsx
 SelectedProfileCard()
-  → Number.toFixed()
-  → Number()
+
+### src/routes/(sheet)/home/super-close/index.jsx
+formatTime()
+getProfile()
+  → profiles.find()
+handleWaveAndPassBy()  // DEV LOGGING
+SuperClose()
+  → useNavigate()
 
 ### src/routes/(sheet)/my-profile.jsx
 formatTime()
@@ -120,6 +193,7 @@ DynamicIsland()
 
 ### src/features/dynamicIsland/components/modes/CompactMode.jsx
 CompactMode()
+  → myAvatar()
 
 ### src/features/dynamicIsland/components/modes/NotificationMode.jsx
 NotificationMode()
@@ -653,6 +727,32 @@ useAuth()
 <object>.updateProfile()  // DEV LOGGING
   → supabase.auth.updateUser()
   → setStore()
+
+### src/features/following/store/followingStore.ts
+// STORE (stateful, writes via setStore)
+
+<object>.getFollowingCount()
+  → proximityStore.profiles.filter()
+<object>.getFollowingProfiles()
+  → proximityStore.profiles.filter.map()
+  → proximityStore.profiles.filter()
+
+### src/features/messages/store/messagesStore.ts
+// STORE (stateful, writes via setStore)
+
+<object>.getAllMessages()
+  → activityStore.activities.map()
+<object>.getConversationWith()
+  → <?>.getAllMessages.filter.sort()
+  → <?>.getAllMessages.filter()
+  → <?>.getAllMessages()
+<object>.getGroupedConversations()
+  → <?>.getAllMessages()
+  → messages.forEach()
+  → Array.from.map.sort()
+  → Array.from.map()
+  → Array.from()
+  → grouped.entries()
 
 ### src/types/activity.ts
 createActivity()
