@@ -1,15 +1,17 @@
-import { For, Show } from 'solid-js';
+import { For, Show, createSignal } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { proximityHitsStore } from '../../../../features/proximity/store/proximityHitsStore';
 import { profiles } from '../../../../features/proximity/mockData';
 import { useProfileActions } from '../../../../features/proximity/hooks/useProfileActions';
-import { DynamicIsland } from '../DynamicIsland';
+import { DynamicIsland } from '../dynamicIsland';
 import styles from '../../../routes.module.css';
 import homeStyles from '../home.module.css';
 import superCloseStyles from './super-close.module.css';
 
 export default function SuperClose() {
   const navigate = useNavigate();
+  const [selectedPhoto, setSelectedPhoto] = createSignal(null);
+  let cameraInputRef;
   
   const getProfile = (hit) => {
     const profile = profiles.find(p => p.id === hit.profileId);
@@ -31,6 +33,23 @@ export default function SuperClose() {
     // TODO: Implement wave action
   };
 
+  const handleCameraClick = () => {
+    cameraInputRef.click();
+  };
+
+  const handlePhotoSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedPhoto(e.target.result);
+      };
+      reader.readAsDataURL(file);
+      console.log('Photo selected:', file.name);
+      // TODO: Handle photo upload
+    }
+  };
+
   return (
     <div class={styles.pageContent}>
       <button
@@ -47,6 +66,36 @@ export default function SuperClose() {
       <div class={superCloseStyles.header}>
         <h1 class={styles.pageTitle}>Super Close History</h1>
         <p class={superCloseStyles.subtitle}>People you've been really close to</p>
+      </div>
+
+      <div class={superCloseStyles.cameraSection}>
+        <button 
+          class={superCloseStyles.cameraButton}
+          onClick={handleCameraClick}
+        >
+          <div class={superCloseStyles.cameraIcon}>📷</div>
+        </button>
+        <p class={superCloseStyles.cameraText}>
+          send them a picture only they can see while you're passing by
+        </p>
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          style="display: none;"
+          onChange={handlePhotoSelect}
+        />
+        
+        <Show when={selectedPhoto()}>
+          <div class={superCloseStyles.photoPreview}>
+            <img 
+              src={selectedPhoto()} 
+              alt="Selected photo" 
+              class={superCloseStyles.previewImage}
+            />
+          </div>
+        </Show>
       </div>
 
       <Show

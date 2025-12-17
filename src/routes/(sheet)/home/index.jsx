@@ -4,7 +4,7 @@ import { selectedProfile } from "../../../features/proximity/store/selectedProfi
 import { store as proximityStore } from "../../../features/proximity/store/proximityStore";
 import { SelectedProfileCard } from "./SelectedProfileCard";
 import { ProfileActions } from "./ProfileActions";
-import { DynamicIsland } from "./DynamicIsland";
+import { DynamicIsland } from "./dynamicIsland";
 import { StoryButton } from "./StoryButton";
 import styles from './home.module.css';
 

@@ -1,4 +1,3 @@
-import { NotificationView } from "../../../notifications/components/NotificationView";
 import { Show } from "solid-js";
 import styles from "../island.module.css";
 

@@ -1,6 +1,6 @@
 import { createSignal } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { DynamicIsland } from '../DynamicIsland';
+import { DynamicIsland } from '../dynamicIsland';
 import styles from '../../../routes.module.css';
 import myStoryStyles from './my-story.module.css';
 

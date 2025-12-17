@@ -1,14 +1,14 @@
 import { Show, createEffect } from "solid-js";
 import { useNavigate } from "@solidjs/router";
-import { islandStore, islandActions } from "../../../features/dynamicIsland/store/islandStore";
-import { notificationStore } from "../../../features/notifications/store/notificationStore";
-import { proximityHitsStore } from "../../../features/proximity/store/proximityHitsStore";
-import { useProximityTracking } from "../../../features/proximity/hooks/useProximityTracking";
-import { CompactMode } from "../../../features/dynamicIsland/components/modes/CompactMode";
-import { ProximityMode } from "../../../features/dynamicIsland/components/modes/ProximityMode";
-import { NotificationMode } from "../../../features/dynamicIsland/components/modes/NotificationMode";
-import { IslandModes } from "../../../features/dynamicIsland/types";
-import styles from './home.module.css';
+import { islandStore, islandActions } from "./store/islandStore";
+import { notificationStore } from "../../../../features/notifications/store/notificationStore";
+import { proximityHitsStore } from "../../../../features/proximity/store/proximityHitsStore";
+import { useProximityTracking } from "../../../../features/proximity/hooks/useProximityTracking";
+import { CompactMode } from "./modes/CompactMode";
+import { ProximityMode } from "./modes/ProximityMode";
+import { NotificationMode } from "./modes/NotificationMode";
+import { IslandModes } from "./types";
+import styles from '../home.module.css';
 
 export function DynamicIsland() {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { ProximityList } from "../../../proximity/components/ProximityList";
+import { ProximityList } from "../../../../../features/proximity/components/ProximityList";
 import styles from "../island.module.css";
 
 /**
@@ -11,15 +11,13 @@ export function ProximityMode(props) {
         <span>Nearby</span>
         <button class={styles.collapseBtn} onClick={props.onCollapse}>✕</button>
       </div>
-      
-      <ProximityList 
+      <ProximityList
         hits={props.hits}
         onSelect={props.onSelectProfile}
       />
-      
       {props.hits.length > 0 && (
         <button class={styles.historyBtn} onClick={props.onShowHistory}>
-          View History →
+          View History
         </button>
       )}
     </div>
