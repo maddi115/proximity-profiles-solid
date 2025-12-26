@@ -8,6 +8,22 @@
   background: transparent;
 }
 
+.locationText {
+  position: absolute;
+  top: -16px;
+  left: 0;
+  right: 0;
+  padding: 8px 0;
+  font-size: 17px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: 0.02em;
+  text-align: center;
+  z-index: 100;
+  pointer-events: none;
+}
+
 .topRow {
   display: flex;
   align-items: center;
@@ -134,7 +150,6 @@
   position: relative;
   z-index: 10;
   pointer-events: auto;
-  cursor: pointer;
 }
 
 .actions {
@@ -206,6 +221,11 @@
 }
 
 @media (max-width: 768px) {
+  .locationText {
+    font-size: 14px;
+    padding: 6px 0;
+  }
+
   .topRow {
     flex-direction: row;
     justify-content: space-between;

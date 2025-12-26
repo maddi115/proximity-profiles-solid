@@ -15,8 +15,8 @@ const Conversation = lazy(() => import("../routes/(sheet)/home/messages/conversa
 const MessagesViewingProfile = lazy(() => import("../routes/(sheet)/home/messages/viewing-profile"));
 const Following = lazy(() => import("../routes/(sheet)/home/following/index"));
 const FollowingViewingProfile = lazy(() => import("../routes/(sheet)/home/following/viewing-profile"));
-const SuperClose = lazy(() => import("../routes/(sheet)/home/super-close/index"));
 const MyStory = lazy(() => import("../routes/(sheet)/home/my-story/index"));
+const WelcomePage = lazy(() => import("../routes/(sheet)/welcome-page/index"));
 
 function App() {
   onMount(() => {
@@ -27,12 +27,12 @@ function App() {
   return (
     <Router>
       <Route path="/" component={MainLayout}>
-        <Route path="/" component={() => <Navigate href="/home" />} />
+        <Route path="/" component={() => <Navigate href="/welcome-page" />} />
 
         <Route path="/" component={SheetLayout}>
           <Route path="/auth/login" component={Login} />
+          <Route path="/welcome-page" component={WelcomePage} />
           <Route path="/home" component={Home} />
-          <Route path="/home/super-close" component={SuperClose} />
           <Route path="/home/my-story" component={MyStory} />
           <Route path="/home/messages" component={Messages} />
           <Route path="/home/messages/conversation" component={Conversation} />

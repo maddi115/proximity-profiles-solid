@@ -13,8 +13,7 @@ export default function Home() {
   const location = useLocation();
   
   const isOnSubPage = () => {
-    return location.pathname.includes('/super-close') || 
-           location.pathname.includes('/my-story');
+    return location.pathname.includes('/my-story');
   };
   
   const profile = createMemo(() => {
@@ -27,6 +26,10 @@ export default function Home() {
     <Show when={profile()}>
       {(p) => (
         <div class={styles.homeContent}>
+          <div class={styles.locationText}>
+            Live at LA Memorial Coliseum
+          </div>
+
           <div class={styles.topRow}>
             <Show when={!isOnSubPage()}>
               <SelectedProfileCard profile={p()} />
