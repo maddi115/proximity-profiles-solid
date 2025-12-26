@@ -1,6 +1,7 @@
 import { Router, Route, Navigate } from "@solidjs/router";
 import { lazy, onMount } from "solid-js";
 import { authActions } from "../features/auth/store/authStore";
+import { ProtectedRoute } from "../features/auth/components/ProtectedRoute";
 
 import MainLayout from "../routes/_layout";
 import SheetLayout from "../routes/(sheet)/_layout";
@@ -32,16 +33,18 @@ function App() {
         <Route path="/" component={SheetLayout}>
           <Route path="/auth/login" component={Login} />
           <Route path="/welcome-page" component={WelcomePage} />
-          <Route path="/home" component={Home} />
-          <Route path="/home/my-story" component={MyStory} />
-          <Route path="/home/messages" component={Messages} />
-          <Route path="/home/messages/conversation" component={Conversation} />
-          <Route path="/home/messages/viewing-profile" component={MessagesViewingProfile} />
-          <Route path="/home/following" component={Following} />
-          <Route path="/home/following/viewing-profile" component={FollowingViewingProfile} />
-          <Route path="/my-profile" component={MyProfile} />
-          <Route path="/settings" component={Settings} />
-          <Route path="/activity" component={ActivityHistory} />
+          
+          {/* Protected routes - require authentication */}
+          <Route path="/home" component={() => <ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/home/my-story" component={() => <ProtectedRoute><MyStory /></ProtectedRoute>} />
+          <Route path="/home/messages" component={() => <ProtectedRoute><Messages /></ProtectedRoute>} />
+          <Route path="/home/messages/conversation" component={() => <ProtectedRoute><Conversation /></ProtectedRoute>} />
+          <Route path="/home/messages/viewing-profile" component={() => <ProtectedRoute><MessagesViewingProfile /></ProtectedRoute>} />
+          <Route path="/home/following" component={() => <ProtectedRoute><Following /></ProtectedRoute>} />
+          <Route path="/home/following/viewing-profile" component={() => <ProtectedRoute><FollowingViewingProfile /></ProtectedRoute>} />
+          <Route path="/my-profile" component={() => <ProtectedRoute><MyProfile /></ProtectedRoute>} />
+          <Route path="/settings" component={() => <ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/activity" component={() => <ProtectedRoute><ActivityHistory /></ProtectedRoute>} />
         </Route>
       </Route>
     </Router>

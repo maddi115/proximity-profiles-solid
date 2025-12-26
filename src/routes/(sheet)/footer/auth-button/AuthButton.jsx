@@ -14,9 +14,10 @@ export function AuthButton() {
 
   const handleClick = async () => {
     if (auth.isLoading()) return;
-
+    
     if (auth.isAuthenticated()) {
       await auth.signOut();
+      navigate('/welcome-page');
     } else {
       navigate('/auth/login');
     }
