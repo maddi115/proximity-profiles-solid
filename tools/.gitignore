@@ -1,0 +1,4 @@
+
+# CocoIndex & LanceDB
+.lancedb/
+.cocoindex/

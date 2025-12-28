@@ -1,40 +1,110 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-.env
-
-# Environment variables
+# ============================================
+# Environment Variables (CRITICAL - HAS API KEYS!)
+# ============================================
 .env
 .env.local
-.env.development
-.env.production
+.env.*.local
+*.env
 
-# Python virtual environment
-venv/
-venv
-__pycache__/
-*.pyc
+# ============================================
+# Database & Embeddings (LOCAL DATA)
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+codebase_index/
+.cache/
 
-# Python virtual environment
-venv/
+# ============================================
+# Vector Embeddings (TOO BIG FOR GIT)
+# ============================================
+*.npy
+*.pkl
+*.pickle
+embeddings/
+vectors/
+
+# ============================================
+# AI Model Cache (HUGE FILES)
+# ============================================
+.transformers_cache/
+.sentence_transformers/
+models/
+*.bin
+*.safetensors
+*.onnx
+
+# ============================================
+# IDE & Editors
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ============================================
+# Logs & Temporary Files
+# ============================================
+*.log
+logs/
+*.tmp
+*.temp
+temp/
+tmp/
+
+# ============================================
+# Backup Files
+# ============================================
+*.backup
+*.bak
+*_old.py
+*_broken.py
+*_v2.py
+.backups/
+
+# ============================================
+# Node/NPM (if you have frontend build)
+# ============================================
+node_modules/
+package-lock.json
+yarn.lock
+.npm/
+
+# ============================================
+# OS Generated
+# ============================================
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# ============================================
+# Testing
+# ============================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ============================================
+# Transcripts (contains session data)
+# ============================================
+/mnt/transcripts/
+*.transcript.txt
