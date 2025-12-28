@@ -29,3 +29,12 @@ dist-ssr
 .env.local
 .env.development
 .env.production
+
+# Python virtual environment
+venv/
+venv
+__pycache__/
+*.pyc
+
+# Python virtual environment
+venv/
