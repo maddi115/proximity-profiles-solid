@@ -1,87 +1,120 @@
-"""Main CLI loop and user interaction"""
+"""Main entry point for AgentWinter"""
+import sys
 from .config import get_anthropic_client, get_embedding_model, get_db_url, COLORS
 from .auto_refresh import auto_refresh
 from .context import build_full_context
 from .parser import parse_all_files
 from .indexer import build_index
 from .query import process_query
+from .file_watcher import FileWatcher
 
-def refresh_all():
-    """Refresh context, parse files, build index"""
-    print(f"{COLORS['CYAN']}🔄 Refreshing...{COLORS['RESET']}")
-    
-    # Build context
+def rebuild_context_and_index():
+    """Rebuild context, parsed files, and symbol index"""
     context = build_full_context()
-    print(f"{COLORS['CYAN']}{context}{COLORS['RESET']}")
-    
-    # Parse files
-    print(f"{COLORS['YELLOW']}🌳 Parsing...{COLORS['RESET']}")
     parsed_files, parsed_count, total_files = parse_all_files()
-    
-    # Build index
     symbol_index = build_index(parsed_files)
-    
-    print(f"{COLORS['GREEN']}✅ Parsed {parsed_count}/{total_files} files, {len(symbol_index)} symbols{COLORS['RESET']}\n")
-    
     return context, parsed_files, symbol_index
+
+def handle_file_change(file_path, event_type, context_ref, parsed_files_ref, symbol_index_ref):
+    """Handle file change events"""
+    print(f"\n{COLORS['YELLOW']}📝 {event_type.title()}: {file_path}{COLORS['RESET']}")
+    print(f"{COLORS['CYAN']}🔄 Re-parsing...{COLORS['RESET']}")
+    
+    try:
+        # Re-parse all files
+        new_context, new_parsed_files, new_symbol_index = rebuild_context_and_index()
+        
+        # Update references (can't reassign, must modify in place)
+        context_ref['value'] = new_context
+        parsed_files_ref.clear()
+        parsed_files_ref.update(new_parsed_files)
+        symbol_index_ref.clear()
+        symbol_index_ref.update(new_symbol_index)
+        
+        print(f"{COLORS['GREEN']}✅ Updated! ({len(new_symbol_index)} symbols){COLORS['RESET']}\n")
+    except Exception as e:
+        print(f"{COLORS['RED']}⚠️  Re-parse failed: {e}{COLORS['RESET']}\n")
 
 def main():
     """Main entry point"""
-    # Setup
-    anthropic_client = get_anthropic_client()
+    # Check for --watch flag
+    watch_mode = '--watch' in sys.argv
+    
+    # Initial setup
+    context, parsed_files, symbol_index = rebuild_context_and_index()
+    
+    # Auto-refresh CocoIndex and static docs
+    auto_refresh()
+    
+    print("="*70)
+    print(f"{COLORS['CYAN']}💡 AGENTWINTER - Project Context Aware{COLORS['RESET']}")
+    print("="*70)
+    
+    # Start file watcher if in watch mode
+    watcher = None
+    if watch_mode:
+        try:
+            # Use dict for context to allow mutation in callback
+            context_ref = {'value': context}
+            
+            watcher = FileWatcher(
+                watch_path='src/',
+                on_change_callback=lambda path, event: handle_file_change(
+                    path, event, context_ref, parsed_files, symbol_index
+                )
+            )
+            watcher.start()
+        except Exception as e:
+            print(f"{COLORS['YELLOW']}⚠️  File watching unavailable: {e}{COLORS['RESET']}")
+            print(f"{COLORS['YELLOW']}   Running in normal mode{COLORS['RESET']}")
+    
+    # Get API clients
+    client = get_anthropic_client()
     embedding_model = get_embedding_model()
     db_url = get_db_url()
     
-    # Initial refresh
-    context, parsed_files, symbol_index = refresh_all()
-    auto_refresh()
-    
-    # CLI header
-    print(f"\n{COLORS['YELLOW']}{'='*70}{COLORS['RESET']}")
-    print(f"{COLORS['YELLOW']}{COLORS['BOLD']}💡 AGENTWINTER - Project Context Aware{COLORS['RESET']}")
-    print(f"{COLORS['YELLOW']}{'='*70}{COLORS['RESET']}\n")
-    
-    conversation_history = []
-    
     # Main loop
-    while True:
-        try:
-            query = input(f"{COLORS['BOLD']}{COLORS['GREEN']}>{COLORS['RESET']} ").strip()
+    try:
+        while True:
+            query = input(f"\n{COLORS['BOLD']}> {COLORS['RESET']}")
             
-            if not query:
+            if not query.strip():
                 continue
             
-            if query.lower() in ['quit', 'exit', 'q']:
-                print(f"\n{COLORS['CYAN']}👋 Goodbye!{COLORS['RESET']}\n")
+            if query.lower() in ['exit', 'quit', 'q']:
                 break
             
-            if query.lower() == '!refresh-tree':
-                context, parsed_files, symbol_index = refresh_all()
+            if query == '!refresh':
+                print(f"{COLORS['CYAN']}🔄 Refreshing...{COLORS['RESET']}")
+                if watch_mode:
+                    context, parsed_files, symbol_index = rebuild_context_and_index()
+                    context_ref['value'] = context
+                else:
+                    context, parsed_files, symbol_index = rebuild_context_and_index()
+                print(f"{COLORS['GREEN']}✅ Refreshed!{COLORS['RESET']}")
                 continue
             
-            if query.lower() == 'reindex':
-                print(f"\n{COLORS['CYAN']}Run: python tools/index_codebase.py{COLORS['RESET']}\n")
-                continue
+            # Use context from ref if in watch mode
+            current_context = context_ref['value'] if watch_mode else context
             
             # Process query
-            answer = process_query(
-                query, 
-                context, 
-                symbol_index, 
-                parsed_files, 
-                anthropic_client, 
-                embedding_model, 
+            process_query(
+                query,
+                current_context,
+                symbol_index,
+                parsed_files,
+                client,
+                embedding_model,
                 db_url
             )
-            
-            # Save to history
-            conversation_history.append({"role": "user", "content": query})
-            conversation_history.append({"role": "assistant", "content": answer})
-        
-        except KeyboardInterrupt:
-            print(f"\n\n{COLORS['CYAN']}👋 Goodbye!{COLORS['RESET']}\n")
-            break
-        except Exception as e:
-            print(f"\n{COLORS['RED']}⚠️  {e}{COLORS['RESET']}\n")
-            import traceback
-            traceback.print_exc()
+    
+    except KeyboardInterrupt:
+        print(f"\n\n{COLORS['YELLOW']}👋 Goodbye!{COLORS['RESET']}")
+    
+    finally:
+        # Stop file watcher
+        if watcher:
+            watcher.stop()
+
+if __name__ == "__main__":
+    main()
