@@ -160,3 +160,11 @@ dist/
 build/
 *.egg
 
+
+# Auto-refresh markers
+.coco_last_index
+docs/.last_generated
+
+# Auto-refresh markers
+.coco_last_index
+tools/docs/.last_generated

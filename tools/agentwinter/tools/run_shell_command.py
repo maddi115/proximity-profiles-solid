@@ -2,22 +2,21 @@
 import subprocess
 import os
 
-# Safe commands allowlist
 ALLOWED_COMMANDS = [
     './analyze-project.sh',
     'analyze-project.sh',
     'cat TOOLS.md',
-    'cat ARCHITECTURE.md',
-    'cat FLOW.md',
-    'cat tools/SAFETY-GUARDRAILS.md',  # ← ADD THIS
+    'cat tools/docs/ARCHITECTURE.md',
+    'cat tools/docs/FLOW.md',
+    'cat tools/SAFETY-GUARDRAILS.md',
     'ls',
+    'ls tools/docs',
     'tree src',
     'git status',
     'git diff',
 ]
 
 def is_command_allowed(command):
-    """Check if command starts with any allowed command"""
     cmd = command.strip()
     for allowed in ALLOWED_COMMANDS:
         if cmd.startswith(allowed):
@@ -25,15 +24,6 @@ def is_command_allowed(command):
     return False
 
 def run_shell_command(command):
-    """Execute a safe shell command
-    
-    Args:
-        command: Shell command to execute
-    
-    Returns:
-        dict with output and status
-    """
-    
     if not is_command_allowed(command):
         return {
             "error": f"Command not allowed: {command}",
