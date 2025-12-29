@@ -9,6 +9,7 @@ ALLOWED_COMMANDS = [
     'cat TOOLS.md',
     'cat ARCHITECTURE.md',
     'cat FLOW.md',
+    'cat tools/SAFETY-GUARDRAILS.md',  # ← ADD THIS
     'ls',
     'tree src',
     'git status',
