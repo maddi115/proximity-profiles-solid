@@ -1,0 +1,10 @@
+#!/bin/bash
+# Format Python files with autopep8
+# Usage: ./format-autopep8 [path]
+# Example: ./format-autopep8 tools/agentwinter/
+
+TARGET=${1:-"tools/agentwinter/"}
+
+echo "🎨 Formatting with autopep8: $TARGET"
+autopep8 --in-place --aggressive --recursive "$TARGET"
+echo "✅ Autopep8 formatting complete!"

@@ -9,9 +9,7 @@ response = client.messages.create(
     messages=[
         {
             "role": "user",
-            "content": [
-                {"type": "text", "text": "Say hello in one sentence."}
-            ]
+            "content": [{"type": "text", "text": "Say hello in one sentence."}],
         }
     ],
 )
@@ -19,4 +17,3 @@ response = client.messages.create(
 for block in response.content:
     if block.type == "text":
         print(block.text)
-

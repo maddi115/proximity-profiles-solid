@@ -7,6 +7,7 @@ from .semantic_search import semantic_search
 from .run_treesitter_query import run_treesitter_query
 from .run_shell_command import run_shell_command
 from .dependency_graph import dependency_graph
+from .format_code import format_code
 from .git_history import (
     git_log,
     git_blame,
@@ -160,6 +161,27 @@ TOOLS = [
             "required": ["graph_type"],
         },
     },
+    {
+        "name": "format_code",
+        "description": "Format Python code files. Use for: 'format the code', 'run black', 'fix formatting', 'clean up python files'.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "formatter": {
+                    "type": "string",
+                    "enum": ["black", "autopep8", "ruff", "all"],
+                    "default": "all",
+                    "description": "Formatter to use: 'black' (most popular), 'autopep8' (PEP8), 'ruff' (fast), 'all' (runs all)",
+                },
+                "target_path": {
+                    "type": "string",
+                    "default": "tools/agentwinter/",
+                    "description": "Path to format (default: tools/agentwinter/)",
+                },
+            },
+            "required": [],
+        },
+    },
 ]
 
 
@@ -212,6 +234,12 @@ def execute_tool(
             tool_input.get("target"),
             symbol_index,
             parsed_files,
+        )
+
+    elif tool_name == "format_code":
+        return format_code(
+            tool_input.get("formatter", "all"),
+            tool_input.get("target_path", "tools/agentwinter/"),
         )
 
     return {"error": f"Unknown tool: {tool_name}"}

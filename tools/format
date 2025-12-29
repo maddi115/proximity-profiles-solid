@@ -1,0 +1,5 @@
+#!/bin/bash
+# Quick format command
+# Usage: ./tools/format [path]
+
+./tools/scripts/format-all "${1:-tools/agentwinter/}"

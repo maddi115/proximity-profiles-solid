@@ -1,0 +1,10 @@
+#!/bin/bash
+# Format Python files with black
+# Usage: ./format-black [path]
+# Example: ./format-black tools/agentwinter/
+
+TARGET=${1:-"tools/agentwinter/"}
+
+echo "🎨 Formatting with black: $TARGET"
+black "$TARGET"
+echo "✅ Black formatting complete!"

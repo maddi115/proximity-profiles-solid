@@ -1,0 +1,21 @@
+#!/bin/bash
+# Format Python files with all formatters
+# Usage: ./format-all [path]
+# Example: ./format-all tools/agentwinter/
+
+TARGET=${1:-"tools/agentwinter/"}
+
+echo "🎨 Running ALL formatters on: $TARGET"
+echo ""
+
+echo "1️⃣ Black..."
+black "$TARGET"
+
+echo ""
+echo "2️⃣ Ruff (lint + format)..."
+ruff check --fix "$TARGET" 2>/dev/null || true
+ruff format "$TARGET"
+
+echo ""
+echo "✅ All formatting complete!"
+echo "📊 Summary: black + ruff applied to $TARGET"

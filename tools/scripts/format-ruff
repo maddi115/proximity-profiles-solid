@@ -1,0 +1,14 @@
+#!/bin/bash
+# Format and lint Python files with ruff
+# Usage: ./format-ruff [path]
+# Example: ./format-ruff tools/agentwinter/
+
+TARGET=${1:-"tools/agentwinter/"}
+
+echo "🎨 Linting with ruff: $TARGET"
+ruff check --fix "$TARGET"
+
+echo "🎨 Formatting with ruff: $TARGET"
+ruff format "$TARGET"
+
+echo "✅ Ruff formatting and linting complete!"

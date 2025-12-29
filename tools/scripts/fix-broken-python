@@ -1,0 +1,53 @@
+#!/bin/bash
+# Fix broken Python files - even with syntax errors!
+# Usage: ./fix-broken-python [file]
+
+FILE=${1:-"tools/agentwinter/tools/__init__.py"}
+
+echo "🔧 Attempting to fix: $FILE"
+
+# Step 1: Try autopep8 (more forgiving than black)
+echo "   Trying autopep8..."
+autopep8 --in-place --aggressive --aggressive "$FILE" 2>/dev/null
+
+# Step 2: Try Python's tokenize to detect issues
+echo "   Checking syntax..."
+python3 << PYTHON
+import sys
+import re
+
+with open("$FILE", 'r') as f:
+    lines = f.readlines()
+
+fixed = []
+in_function = False
+
+for i, line in enumerate(lines):
+    # Fix common issue: elif after return with wrong indent
+    if '        elif tool_name ==' in line and i > 0:
+        # Previous line was likely end of return
+        if ')' in lines[i-1]:
+            fixed.append('    ' + line.lstrip())
+            continue
+    
+    # Fix return statements after elif
+    if 'elif tool_name ==' in lines[i-1] and 'return ' in line:
+        # Should be indented 4 more than elif
+        if line.strip().startswith('return'):
+            fixed.append('        ' + line.lstrip())
+            continue
+    
+    fixed.append(line)
+
+with open("$FILE", 'w') as f:
+    f.writelines(fixed)
+
+print("   Fixed common indentation issues")
+PYTHON
+
+# Step 3: Now try black
+echo "   Applying black..."
+black "$FILE" 2>/dev/null && echo "✅ File fixed and formatted!" || echo "⚠️  Some issues remain, but file improved"
+
+# Step 4: Check if it's valid Python now
+python3 -m py_compile "$FILE" 2>/dev/null && echo "✅ Valid Python syntax!" || echo "❌ Still has syntax errors - manual fix needed"
