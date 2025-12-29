@@ -1,20 +1,22 @@
 """Execute safe shell commands"""
+
 import subprocess
 import os
 
 ALLOWED_COMMANDS = [
-    './analyze-project.sh',
-    'analyze-project.sh',
-    'cat TOOLS.md',
-    'cat tools/docs/ARCHITECTURE.md',
-    'cat tools/docs/FLOW.md',
-    'cat tools/SAFETY-GUARDRAILS.md',
-    'ls',
-    'ls tools/docs',
-    'tree src',
-    'git status',
-    'git diff',
+    "./analyze-project.sh",
+    "analyze-project.sh",
+    "cat TOOLS.md",
+    "cat tools/docs/ARCHITECTURE.md",
+    "cat tools/docs/FLOW.md",
+    "cat tools/SAFETY-GUARDRAILS.md",
+    "ls",
+    "ls tools/docs",
+    "tree src",
+    "git status",
+    "git diff",
 ]
+
 
 def is_command_allowed(command):
     cmd = command.strip()
@@ -23,14 +25,15 @@ def is_command_allowed(command):
             return True
     return False
 
+
 def run_shell_command(command):
     if not is_command_allowed(command):
         return {
             "error": f"Command not allowed: {command}",
             "allowed_commands": ALLOWED_COMMANDS,
-            "hint": "Only whitelisted safe commands can be executed"
+            "hint": "Only whitelisted safe commands can be executed",
         }
-    
+
     try:
         result = subprocess.run(
             command,
@@ -38,17 +41,17 @@ def run_shell_command(command):
             capture_output=True,
             text=True,
             cwd=os.getcwd(),
-            timeout=60
+            timeout=60,
         )
-        
+
         return {
             "command": command,
             "output": result.stdout,
             "error_output": result.stderr,
             "success": result.returncode == 0,
-            "return_code": result.returncode
+            "return_code": result.returncode,
         }
-    
+
     except subprocess.TimeoutExpired:
         return {"error": "Command timed out (60s limit)"}
     except Exception as e:
