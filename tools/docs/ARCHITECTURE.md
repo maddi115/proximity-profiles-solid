@@ -1,7 +1,7 @@
 
 === 🧠 CODEBRAIN ARCHITECTURE ANALYSIS ===
 Project: proximity-profiles-solid
-Files Analyzed: 93 | Depth: unlimited
+Files Analyzed: 94 | Depth: unlimited
 
 📂 DIRECTORY STRUCTURE WITH CODE REFERENCES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -17,7 +17,7 @@ src/
 │   │   📄 src/main.tsx
 │   │   ├─ Imports: solid-js/web, App
 │
-├── 📱 Features (9)
+├── 📱 Features (10)
 │   ├── auth/ (9 files)
 │   │
 │   ├── 🧩 Components (4)
@@ -238,24 +238,30 @@ src/
 │           📄 src/features/proximity/utils.js
 │           ├─ Exports: calculateDistance, createHeart
 │
-│   └── settings/ (3 files)
-    │
-    ├── 🧩 Components (2)
-    │   ├── SettingsSection.jsx
-    │   │   📄 src/features/settings/components/SettingsSection.jsx
-    │   │   ├─ Imports: settings.module
-    │   │   └─ Key Function: SettingsSection() - 26 lines
-    │   └── ThemeToggle.jsx
-    │       📄 src/features/settings/components/ThemeToggle.jsx
-    │       ├─ Imports: settingsStore, settings.module
-    │       └─ Key Function: ThemeToggle() - 30 lines
+│   ├── settings/ (3 files)
+│   │
+│   ├── 🧩 Components (2)
+│   │   ├── SettingsSection.jsx
+│   │   │   📄 src/features/settings/components/SettingsSection.jsx
+│   │   │   ├─ Imports: settings.module
+│   │   │   └─ Key Function: SettingsSection() - 26 lines
+│   │   └── ThemeToggle.jsx
+│   │       📄 src/features/settings/components/ThemeToggle.jsx
+│   │       ├─ Imports: settingsStore, settings.module
+│   │       └─ Key Function: ThemeToggle() - 30 lines
+│   │
+│   ├── 💾 Stores (1)
+│   │   └── settingsStore.ts
+│   │       📄 src/features/settings/store/settingsStore.ts
+│   │       └─ Used by: 2 files
+│   │           - ThemeToggle.jsx
+│   │           - settings.jsx
+│
+│   └── test/ (1 files)
     │
     ├── 💾 Stores (1)
-    │   └── settingsStore.ts
-    │       📄 src/features/settings/store/settingsStore.ts
-    │       └─ Used by: 2 files
-    │           - ThemeToggle.jsx
-    │           - settings.jsx
+    │   └── testStore.ts
+    │       📄 src/features/test/store/testStore.ts
 │
 ├── 🗺️  Routes (29)
 │   ├── _layout.jsx
@@ -377,9 +383,10 @@ src/
   - notifications/ (no external feature dependencies)
   - profile/ (no external feature dependencies)
   - settings/ (no external feature dependencies)
+  - test/ (no external feature dependencies)
 
 📊 FEATURE SIZE:
-  proximity            20 files (22%) ████
+  proximity            20 files (21%) ████
   auth                  9 files (10%) ██
   loading               5 files (5%) █
   notifications         5 files (5%) █
@@ -388,6 +395,7 @@ src/
   settings              3 files (3%) 
   following             1 files (1%) 
   messages              1 files (1%) 
+  test                  1 files (1%) 
 
 === Analysis complete ===
 

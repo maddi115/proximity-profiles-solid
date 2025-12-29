@@ -2,6 +2,7 @@
 import re
 import glob
 import os
+from functools import lru_cache
 
 try:
     from tree_sitter_languages import get_parser
@@ -128,9 +129,11 @@ def parse_with_tree_sitter(file_path):
     except:
         return parse_with_regex(file_path)
 
+@lru_cache(maxsize=1000)
 def parse_file(file_path):
     """Main entry point - try Tree-sitter, fallback to regex"""
     return parse_with_tree_sitter(file_path)
+
 
 def parse_all_files():
     """Parse all TypeScript/JavaScript files in src/"""

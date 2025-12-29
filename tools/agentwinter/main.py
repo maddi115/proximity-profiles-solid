@@ -7,6 +7,7 @@ from .parser import parse_all_files
 from .indexer import build_index
 from .query import process_query
 from .file_watcher import FileWatcher
+from .cache import get_cache_stats, clear_all_caches
 
 def rebuild_context_and_index():
     """Rebuild context, parsed files, and symbol index"""
@@ -93,6 +94,19 @@ def main():
                     context, parsed_files, symbol_index = rebuild_context_and_index()
                 print(f"{COLORS['GREEN']}✅ Refreshed!{COLORS['RESET']}")
                 continue
+            if query == '!cache':
+                stats = get_cache_stats()
+                print(f"{COLORS['CYAN']}📊 Cache Statistics:{COLORS['RESET']}")
+                print(f"  Parse cache: {stats['parse_cache_size']} files")
+                print(f"  Search cache: {stats['search_cache_size']} queries")
+                print(f"  Embedding cache: {stats['embedding_cache_size']} embeddings")
+                continue
+            
+            if query == '!clear-cache':
+                clear_all_caches()
+                print(f"{COLORS['GREEN']}✅ All caches cleared{COLORS['RESET']}")
+                continue
+
             
             # Use context from ref if in watch mode
             current_context = context_ref['value'] if watch_mode else context

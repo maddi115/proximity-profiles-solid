@@ -1,7 +1,28 @@
 """Semantic search using embeddings"""
 import psycopg2
+from ..cache import cached_semantic_search
+
 
 def semantic_search(query, embedding_model, db_url, limit=5):
+    """Semantic search with caching and visual indicator"""
+    from ..cache import search_cache
+    from ..config import COLORS
+    
+    cache_key_str = f"{query}|{limit}"
+    
+    if cache_key_str in search_cache:
+        print(f"    {COLORS['GREEN']}💨 CACHE HIT{COLORS['RESET']}")
+        return search_cache[cache_key_str]
+    
+    # Not in cache, do actual search
+    return cached_semantic_search(
+        query, 
+        limit,
+        lambda q, l: semantic_search_uncached(q, embedding_model, db_url, l)
+    )
+
+
+def semantic_search_uncached(query, embedding_model, db_url, limit=5):
     """Search codebase semantically"""
     query_embedding = embedding_model.encode(query).tolist()
     conn = psycopg2.connect(db_url)

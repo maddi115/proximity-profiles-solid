@@ -3,6 +3,10 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from pathlib import Path
+try:
+    from .cache import clear_parse_cache
+except ImportError:
+    clear_parse_cache = lambda: None
 
 class CodeFileHandler(FileSystemEventHandler):
     """Handle code file change events"""
@@ -60,6 +64,8 @@ class FileWatcher:
         self.on_change = on_change_callback or self.default_callback
         
     def default_callback(self, file_path, event_type):
+        """Default callback if none provided"""
+        clear_parse_cache()  # Clear cache on any change
         """Default callback if none provided"""
         print(f"📝 {event_type.title()}: {file_path}")
     

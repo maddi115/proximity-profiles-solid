@@ -739,6 +739,13 @@ useAuth()
   → Array.from()
   → grouped.entries()
 
+### src/features/test/store/testStore.ts
+// STORE (stateful, writes via setStore)
+
+doSomething()  // DEV LOGGING
+  → testValue()
+newFunction()  // DEV LOGGING
+
 ### src/types/activity.ts
 createActivity()
   → Date.now.toString()
