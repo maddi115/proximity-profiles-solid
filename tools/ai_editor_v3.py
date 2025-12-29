@@ -1,162 +1,132 @@
 #!/usr/bin/env python3
 """
-AI Coding Agent v3 - Powered by CocoIndex + Postgres + MiniMax M2.1
+AI Code Editor v3 - Semantic search + AI analysis
 """
-import anthropic
-import psycopg2
-from pgvector.psycopg2 import register_vector
-from sentence_transformers import SentenceTransformer
-import os
 import sys
 from dotenv import load_dotenv
+from sentence_transformers import SentenceTransformer
+import psycopg2
+import os
+import anthropic
 
 load_dotenv()
 
-# Initialize embedding model
+# ANSI color codes
+YELLOW = '\033[93m'
+CYAN = '\033[96m'
+GREEN = '\033[92m'
+RESET = '\033[0m'
+BOLD = '\033[1m'
+
+def show_banner():
+    """Show helpful usage banner"""
+    print(f"\n{YELLOW}{'='*70}{RESET}")
+    print(f"{YELLOW}💡 AI CODE ASSISTANT{RESET}")
+    print(f"{YELLOW}{'='*70}{RESET}")
+    print(f"{CYAN}Usage:{RESET} python tools/ai_editor_v3.py {GREEN}'your question here'{RESET}")
+    print(f"\n{CYAN}Examples:{RESET}")
+    print(f"  • python tools/ai_editor_v3.py {GREEN}'explain proximity features'{RESET}")
+    print(f"  • python tools/ai_editor_v3.py {GREEN}'how does auth work'{RESET}")
+    print(f"  • python tools/ai_editor_v3.py {GREEN}'show me dynamic island code'{RESET}")
+    print(f"\n{CYAN}Tips:{RESET}")
+    print(f"  • Be specific in your queries")
+    print(f"  • Re-index after code changes: {GREEN}python tools/index_codebase.py{RESET}")
+    print(f"  • Search only: {GREEN}python tools/search_code.py 'query'{RESET}")
+    print(f"{YELLOW}{'='*70}{RESET}\n")
+
+# Initialize
 model = SentenceTransformer('nomic-ai/nomic-embed-text-v1.5', trust_remote_code=True)
 
-# Initialize MiniMax M2.1
 client = anthropic.Anthropic(
-    api_key=os.environ.get("ANTHROPIC_API_KEY"),
-    base_url="https://api.minimax.io/anthropic"
+    api_key=os.getenv("ANTHROPIC_API_KEY"),
+    base_url=os.getenv("ANTHROPIC_BASE_URL")
 )
 
-def get_db_connection():
-    """Connect to local Postgres"""
-    conn = psycopg2.connect(
-        host=os.getenv("POSTGRES_HOST", "localhost"),
-        port=os.getenv("POSTGRES_PORT", "5432"),
-        database=os.getenv("POSTGRES_DB", "codebase_index"),
-        user=os.getenv("POSTGRES_USER", "postgres"),
-        password=os.getenv("POSTGRES_PASSWORD", "")
+def semantic_search_code(query, limit=5):
+    """Search codebase semantically"""
+    query_embedding = model.encode(query).tolist()
+    
+    conn = psycopg2.connect(os.getenv("COCOINDEX_DATABASE_URL"))
+    cur = conn.cursor()
+    
+    cur.execute("""
+        SELECT filename, location, code,
+               1 - (embedding <=> %s::vector) as similarity
+        FROM codebaseindex__codebase_embeddings
+        ORDER BY similarity DESC
+        LIMIT %s
+    """, (query_embedding, limit))
+    
+    results = cur.fetchall()
+    conn.close()
+    
+    return [{
+        'filename': r[0],
+        'location': r[1],
+        'code': r[2],
+        'similarity': r[3]
+    } for r in results]
+
+def call_ai(task, context):
+    """Call AI with context"""
+    prompt = f"""You are an expert code analyst.
+
+TASK: {task}
+
+RELEVANT CODE FROM CODEBASE:
+{context}
+
+Provide clear, accurate analysis based on the code shown above."""
+
+    message = client.messages.create(
+        model="claude-sonnet-4-20250514",
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}]
     )
-    register_vector(conn)
-    return conn
+    
+    # Handle thinking blocks
+    text_content = []
+    for block in message.content:
+        if block.type == "text":
+            text_content.append(block.text)
+    
+    return "\n".join(text_content)
 
-def semantic_search_code(query: str, limit: int = 5) -> list[dict]:
-    """Search codebase semantically using Postgres + pgvector"""
-    
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        
-        # Embed query
-        query_embedding = model.encode(query).tolist()
-        
-        # Vector search
-        cur.execute("""
-            SELECT filename, code, location,
-                   1 - (embedding <=> %s::vector) as similarity
-            FROM codebaseindex__codebase_embeddings
-            ORDER BY embedding <=> %s::vector
-            LIMIT %s
-        """, (query_embedding, query_embedding, limit))
-        
-        results = [
-            {
-                "filepath": row[0],
-                "code": row[1],
-                "location": row[2],
-                "similarity": row[3]
-            }
-            for row in cur.fetchall()
-        ]
-        
-        cur.close()
-        conn.close()
-        
-        return results
-        
-    except psycopg2.Error as e:
-        print(f"❌ Database error: {e}")
-        print("   Run: python tools/index_codebase.py")
-        sys.exit(1)
-    except Exception as e:
-        print(f"❌ Search failed: {e}")
-        return []
-
-def build_smart_context(task: str) -> str:
-    """Build context from relevant code"""
-    
-    print(f"🔍 Searching codebase for relevant code...\n")
-    
-    results = semantic_search_code(task, limit=5)
-    
-    if not results:
-        return "⚠️  No relevant code found in index."
-    
-    print(f"   ✅ Found {len(results)} relevant sections\n")
-    
-    context = "RELEVANT CODE FROM YOUR CODEBASE:\n\n"
-    
-    for i, result in enumerate(results, 1):
-        similarity = result["similarity"] * 100
-        
-        context += f"{i}. {result['filepath']} ({similarity:.1f}% match)\n"
-        context += f"   Location: {result['location']}\n"
-        context += f"```\n{result['code']}\n```\n\n"
-    
-    return context
-
-def run_agent(task: str):
-    """Run the AI agent"""
-    
+def run_agent(task):
     print("=" * 70)
     print(f"🎯 TASK: {task}")
     print("=" * 70)
     print()
     
-    # Get relevant code
-    context = build_smart_context(task)
+    print("🔍 Searching codebase for relevant code...")
+    results = semantic_search_code(task)
+    print(f"   ✅ Found {len(results)} relevant sections")
+    print()
     
-    # Build prompt
-    prompt = f"""You are an expert coding assistant with access to the user's codebase.
-
-TASK: {task}
-
-{context}
-
-Based on the RELEVANT CODE above, provide a detailed analysis or solution.
-Reference the specific code you see. Be precise and actionable.
-"""
+    # Build context
+    context = ""
+    for i, r in enumerate(results, 1):
+        context += f"\n{i}. {r['filename']} ({r['similarity']*100:.1f}% match)\n"
+        context += f"Location: {r['location']}\n"
+        context += f"Code:\n{r['code']}\n"
+        context += "-" * 70 + "\n"
     
-    print("🤖 MiniMax M2.1 analyzing...\n")
+    print("🤖 AI analyzing...")
+    print()
     
-    try:
-        response = client.messages.create(
-            model="MiniMax-M2.1",
-            max_tokens=4000,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        
-        print("=" * 70)
-        print("💡 ANALYSIS")
-        print("=" * 70)
-        print()
-        
-        # Handle both text and thinking blocks
-        for block in response.content:
-            if hasattr(block, 'text'):
-                print(block.text)
-            elif hasattr(block, 'thinking'):
-                # Skip thinking blocks, just show final answer
-                pass
-        print()
-        
-    except Exception as e:
-        print(f"❌ MiniMax API error: {e}")
-        sys.exit(1)
+    analysis = call_ai(task, context)
+    
+    print("=" * 70)
+    print("💡 ANALYSIS")
+    print("=" * 70)
+    print()
+    print(analysis)
+    print()
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("AI Coding Agent v3 - Semantic Code Search")
-        print()
-        print("Usage:")
-        print("  python tools/ai_editor_v3.py 'your task'")
-        print()
-        print("Examples:")
-        print("  python tools/ai_editor_v3.py 'explain proximity features'")
-        print("  python tools/ai_editor_v3.py 'find authentication logic'")
+        show_banner()
         sys.exit(1)
     
-    run_agent(sys.argv[1])
+    task = sys.argv[1]
+    run_agent(task)
