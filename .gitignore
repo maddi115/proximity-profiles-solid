@@ -108,3 +108,14 @@ htmlcov/
 # ============================================
 /mnt/transcripts/
 *.transcript.txt
+
+# AI Assistant - Memory & Traces (personal, don't commit)
+.lancedb/
+.edit_history.db
+tools/__pycache__/
+tools/*.pyc
+
+# AI Assistant - Temporary files
+.cocoindex_cache/
+*.embedding_cache
+
