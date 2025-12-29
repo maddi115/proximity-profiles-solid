@@ -1,15 +1,18 @@
 
 💡 ═══════════════════════════════════════════════════════════════
-   AI CODE ASSISTANT READY!
+   AGENTWINTER - MODULAR AI CODE ASSISTANT
    ═══════════════════════════════════════════════════════════════
    
    🚀 Start:  agentwinter
    
-   💬 Try:    "where is authStore used?"
+   💬 Try:    "tell me about the project structure"
+              "how does authentication work?"
+              "where is authStore used?"
               "show me all stores"
-              "how does proximity tracking work?"
    
    📚 Docs:   cat tools/README.md
+   
+   🏗️  Now:   Clean modular architecture (9 focused modules)
    
 ═══════════════════════════════════════════════════════════════════
 
