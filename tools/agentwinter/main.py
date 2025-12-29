@@ -1,5 +1,6 @@
 """Main CLI loop and user interaction"""
 from .config import get_anthropic_client, get_embedding_model, get_db_url, COLORS
+from .auto_refresh import auto_refresh
 from .context import build_full_context
 from .parser import parse_all_files
 from .indexer import build_index
@@ -33,6 +34,7 @@ def main():
     
     # Initial refresh
     context, parsed_files, symbol_index = refresh_all()
+    auto_refresh()
     
     # CLI header
     print(f"\n{COLORS['YELLOW']}{'='*70}{COLORS['RESET']}")
