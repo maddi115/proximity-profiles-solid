@@ -4,6 +4,7 @@ from .list_stores import list_stores
 from .list_components import list_components
 from .semantic_search import semantic_search
 from .run_treesitter_query import run_treesitter_query
+from .run_shell_command import run_shell_command
 
 TOOLS = [
     {
@@ -54,6 +55,20 @@ TOOLS = [
             },
             "required": ["query_pattern"]
         }
+    },
+    {
+        "name": "run_shell_command",
+        "description": "Execute safe shell commands for generating static documentation or reading project files. Use when you need to: generate fresh ARCHITECTURE.md and FLOW.md via './analyze-project.sh', read documentation files, check git status. Always safe - only whitelisted commands allowed.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "command": {
+                    "type": "string",
+                    "description": "Command to execute. Safe commands: './analyze-project.sh', 'cat TOOLS.md', 'cat ARCHITECTURE.md', 'git status'"
+                }
+            },
+            "required": ["command"]
+        }
     }
 ]
 
@@ -73,4 +88,7 @@ def execute_tool(tool_name, tool_input, symbol_index, parsed_files, embedding_mo
             tool_input.get("language", "tsx"),
             tool_input.get("max_results", 20)
         )
+    elif tool_name == "run_shell_command":
+        return run_shell_command(tool_input["command"])
+    
     return {"error": f"Unknown tool: {tool_name}"}
