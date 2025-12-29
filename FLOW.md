@@ -11,9 +11,14 @@ Legend:
 
 ### src/routes/_layout.jsx
 MainLayout()
+  → onMount()
 
 ### src/routes/(sheet)/_layout.jsx
 SheetLayout()
+  → useLocation()
+  → showFooter()
+showFooter()
+  → path.includes()
 
 ### src/routes/(sheet)/activity.jsx
 ActivityHistory()
@@ -65,17 +70,39 @@ Menu()
 ### src/routes/(sheet)/footer/SheetFooter.jsx
 SheetFooter()
 
-### src/routes/(sheet)/home/DynamicIsland.jsx
+### src/routes/(sheet)/home/dynamicIsland/components/BalanceWarning.jsx
+BalanceWarning()
+  → isLowBalance()
+  → store.balance.toFixed()
+
+### src/routes/(sheet)/home/dynamicIsland/index.jsx
 DynamicIsland()
-  → useNavigate()
   → useProximityTracking()
   → createEffect()
   → nearbyCount()
   → queueCount()
-handleIslandClick()
-  → e.stopPropagation()
-  → e.preventDefault()
-  → navigate()
+
+### src/routes/(sheet)/home/dynamicIsland/modes/CompactMode.jsx
+CompactMode()
+  → myAvatar()
+
+### src/routes/(sheet)/home/dynamicIsland/modes/NotificationMode.jsx
+NotificationMode()
+
+### src/routes/(sheet)/home/dynamicIsland/modes/ProximityMode.jsx
+ProximityMode()
+
+### src/routes/(sheet)/home/dynamicIsland/store/islandStore.ts
+// STORE (stateful, writes via setStore)
+
+<object>.collapse()
+  → setStore()
+<object>.expand()
+  → setStore()
+<object>.returnFromNotification()
+  → setStore()
+<object>.showNotification()
+  → setStore()
 
 ### src/routes/(sheet)/home/following/index.jsx
 Following()
@@ -97,7 +124,7 @@ Home()
   → useLocation()
   → createMemo()
   → profile()
-isOnSuperClosePage()
+isOnSubPage()
   → location.pathname.includes()
 
 ### src/routes/(sheet)/home/messages/conversation.jsx
@@ -137,6 +164,18 @@ ViewingProfile()
   → useNavigate()
   → profile()
 
+### src/routes/(sheet)/home/my-story/index.jsx
+handleCameraClick()
+  → cameraInputRef.click()
+handleFileSelect()  // DEV LOGGING
+  → setSelectedFile()
+handleImageClick()
+  → imageInputRef.click()
+MyStory()
+  → useNavigate()
+  → createSignal()
+  → selectedFile()
+
 ### src/routes/(sheet)/home/ProfileActions.jsx
 handleButtonClick()
   → e.preventDefault()
@@ -152,66 +191,25 @@ ProfileActions()
 ### src/routes/(sheet)/home/SelectedProfileCard.jsx
 SelectedProfileCard()
 
-### src/routes/(sheet)/home/super-close/index.jsx
-formatTime()
-getProfile()
-  → profiles.find()
-handleWaveAndPassBy()  // DEV LOGGING
-SuperClose()
+### src/routes/(sheet)/home/StoryButton.jsx
+StoryButton()
   → useNavigate()
+  → myAvatar()
 
 ### src/routes/(sheet)/my-profile.jsx
-formatTime()
-recentActivities()
-  → activityStore.activities.slice()
-toggleEdit()
-  → profileActions.setEditing()
 UserProfile()
-  → recentActivities()
   → profileStore.user.joinedDate.toLocaleDateString()
 
 ### src/routes/(sheet)/settings.jsx
 handleLogout()  // DEV LOGGING
 Settings()
 
-## Dynamic Island Flow
-
-### src/features/dynamicIsland/components/BalanceWarning.jsx
-BalanceWarning()
-  → isLowBalance()
-  → balance.toFixed()
-  → balance()
-isLowBalance()
-  → balance()
-
-### src/features/dynamicIsland/components/DynamicIsland.jsx
-DynamicIsland()
-  → useProximityTracking()
-  → createEffect()
-  → nearbyCount()
-  → queueCount()
-
-### src/features/dynamicIsland/components/modes/CompactMode.jsx
-CompactMode()
-  → myAvatar()
-
-### src/features/dynamicIsland/components/modes/NotificationMode.jsx
-NotificationMode()
-
-### src/features/dynamicIsland/components/modes/ProximityMode.jsx
-ProximityMode()
-
-### src/features/dynamicIsland/store/islandStore.ts
-// STORE (stateful, writes via setStore)
-
-<object>.collapse()
-  → setStore()
-<object>.expand()
-  → setStore()
-<object>.returnFromNotification()
-  → setStore()
-<object>.showNotification()
-  → setStore()
+### src/routes/(sheet)/welcome-page/index.jsx
+handleEnter()
+  → navigate()
+WelcomePage()
+  → useNavigate()
+  → onMount()
 
 ## Proximity Flow
 
@@ -637,22 +635,9 @@ App()
 handleGoogle()
   → auth.clearError()
   → auth.signInWithOAuth()
-handleSubmit()
-  → e.preventDefault()
-  → setIsLoading()
-  → auth.clearError()
-  → auth.signIn()
-  → email()
-  → password()
-  → navigate()
 LoginForm()
-  → useNavigate()
   → useAuth()
-  → createSignal()
-  → email()
-  → password()
   → auth.error()
-  → isLoading()
 
 ### src/features/auth/components/LoginModal.jsx
 LoginModal()

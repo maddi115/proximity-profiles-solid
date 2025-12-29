@@ -3,6 +3,7 @@ from .find_usages import find_usages
 from .list_stores import list_stores
 from .list_components import list_components
 from .semantic_search import semantic_search
+from .run_treesitter_query import run_treesitter_query
 
 TOOLS = [
     {
@@ -37,6 +38,22 @@ TOOLS = [
             },
             "required": ["query"]
         }
+    },
+    {
+        "name": "run_treesitter_query",
+        "description": "Execute custom Tree-sitter S-expression query for complex patterns. Use when standard tools insufficient. Examples: find hooks with specific patterns, detect anti-patterns, trace dependency chains. You already know Tree-sitter query syntax.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query_pattern": {
+                    "type": "string",
+                    "description": "S-expression query like: (call_expression function: (identifier) @fn (#eq? @fn \"useState\"))"
+                },
+                "language": {"type": "string", "default": "tsx"},
+                "max_results": {"type": "integer", "default": 20}
+            },
+            "required": ["query_pattern"]
+        }
     }
 ]
 
@@ -50,4 +67,10 @@ def execute_tool(tool_name, tool_input, symbol_index, parsed_files, embedding_mo
         return list_components(symbol_index, parsed_files)
     elif tool_name == "semantic_search":
         return semantic_search(tool_input["query"], embedding_model, db_url, tool_input.get("limit", 5))
+    elif tool_name == "run_treesitter_query":
+        return run_treesitter_query(
+            tool_input["query_pattern"],
+            tool_input.get("language", "tsx"),
+            tool_input.get("max_results", 20)
+        )
     return {"error": f"Unknown tool: {tool_name}"}
