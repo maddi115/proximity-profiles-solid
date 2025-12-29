@@ -1,118 +1,197 @@
-# AI Code Assistant Tools
+# AI Code Assistant v9
 
-Quick reference for your semantic code search system.
+**Autonomous code analysis powered by Tree-sitter + Semantic Search**
 
-## 🔧 Stack
+## Features
 
-- **Embeddings**: nomic-embed-text-v1.5 (768-dim, code-trained)
-- **Vector DB**: Postgres + pgvector (local)
-- **Indexing**: CocoIndex (incremental updates)
-- **AI**: MiniMax M2.1 via Anthropic API
+🌳 **Tree-sitter Parsing** - Compiler-grade understanding of your codebase  
+🔍 **Semantic Search** - Find code by meaning, not just keywords (via Nomic embeddings)  
+🤖 **Automatic Tool Selection** - Claude decides which tools to use  
+📊 **Live Indexing** - Parses 81+ files, tracks 201+ symbols  
+🔄 **Git Awareness** - Shows uncommitted changes  
+💬 **Multi-Tool Execution** - Handles complex, multi-part queries  
 
-## 📊 Current Stats
+---
 
-- **Indexed chunks**: 202
-- **Search quality**: ~63% average match
-- **Cost per query**: ~$0.02
-- **Speed**: 3-5 seconds
-
-## 🚀 Common Commands
-
-### Re-index codebase (after code changes)
+## Quick Start
 ```bash
-python tools/index_codebase.py
-```
-- Scans `src/` for TS/TSX/JS/JSX files
-- Chunks code intelligently (1000 chars, 200 overlap)
-- Generates 768-dim embeddings
-- Updates Postgres incrementally
+# Activate (from project root)
+python tools/ai_editor_v9.py
 
-### Search code semantically
+# Example queries
+> where is authStore used?
+> show me all stores
+> how does proximity tracking work?
+> what components use useAuth?
+```
+
+---
+
+## How It Works
+
+### Hybrid Architecture
+
+**Tree-sitter (Structure)** → Precise imports, function calls, component hierarchy  
+**CocoIndex (Meaning)** → Semantic search via Nomic embeddings + pgvector  
+**Claude Sonnet 4** → Autonomous tool orchestration and analysis
+
+### Available Tools
+
+| Tool | Usage | Example |
+|------|-------|---------|
+| `find_usages` | Where is symbol X defined/used? | "where is authStore used?" |
+| `list_stores` | Show all stores in codebase | "show me all stores" |
+| `list_components` | Show all React/Solid components | "list components" |
+| `semantic_search` | Find code by behavior/concept | "how does auth work?" |
+
+**Claude automatically picks the right tool(s) for your query!**
+
+---
+
+## Installation
+
+### Prerequisites
 ```bash
-python tools/search_code.py 'proximity tracking'
+pip install tree-sitter tree-sitter-languages sentence-transformers psycopg2 anthropic python-dotenv
 ```
-- Returns top 10 matches with similarity scores
-- Shows filename, location, code preview
-- No need for exact keywords
 
-### Ask AI about your code
+### Environment Variables
+
+Create `.env` in project root:
 ```bash
-python tools/ai_editor_v3.py 'explain auth flow'
-```
-- Searches codebase semantically
-- Sends relevant chunks to AI
-- Gets grounded, zero-hallucination analysis
-- No memory between queries (stateless)
-
-## 🔄 When to Re-index
-
-- ✅ After adding new features
-- ✅ After major refactoring
-- ✅ Once a week if actively developing
-- ❌ Not needed for minor tweaks
-
-## 🐛 Troubleshooting
-
-### "Connection refused" error
-```bash
-# Check Postgres is running
-pg_isready
-
-# Start if needed
-brew services start postgresql
-# or: sudo systemctl start postgresql
+ANTHROPIC_API_KEY=your_key_here
+ANTHROPIC_BASE_URL=https://api.anthropic.com  # optional
+COCOINDEX_DATABASE_URL=postgresql://user:pass@host:5432/dbname
 ```
 
-### Search returns irrelevant results
-```bash
-# Re-index to pick up recent changes
-python tools/index_codebase.py
+---
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `!refresh-tree` | Re-parse codebase and rebuild symbol index |
+| `reindex` | Reminder to run CocoIndex embedding refresh |
+| `quit`, `exit`, `q` | Exit the assistant |
+
+---
+
+## Architecture Details
+
+### Parsing Strategy
+
+1. **Tree-sitter First** - Tries AST parsing for TS/TSX/JS/JSX
+2. **Regex Fallback** - Uses pattern matching if Tree-sitter fails
+3. **Symbol Indexing** - Builds graph of definitions and usages
+
+### Context Building
+
+**For structural queries** ("where is X?"):
+- Uses Tree-sitter parsed import graph
+- Returns exact file locations and usage counts
+
+**For conceptual queries** ("how does X work?"):
+- Uses semantic search (Nomic embeddings)
+- Retrieves relevant code chunks by meaning
+- May combine multiple tools for comprehensive answers
+
+### Example: Complex Query Handling
+```
+Query: "how does proximity tracking work?"
+
+Claude automatically:
+1. semantic_search("proximity tracking")
+2. semantic_search("distance calculation") 
+3. find_usages("proximityHitsStore")
+4. semantic_search("tracking intervals")
+... (13 tool calls total!)
+
+Result: Comprehensive analysis citing actual code
 ```
 
-### AI gives generic answers
-- Check that re-indexing worked
-- Try more specific queries
-- Ensure .env has ANTHROPIC_API_KEY
+---
 
-## 📁 Files
-```
-tools/
-├── index_codebase.py    # CocoIndex → Postgres indexing
-├── search_code.py       # Semantic search only
-└── ai_editor_v3.py      # AI analysis with search
+## Performance
 
-Database:
-└── Postgres (localhost:5432/codebase_index)
-    └── Table: codebaseindex__codebase_embeddings
-```
+- **Parsing**: ~81/93 files successfully parsed
+- **Symbols**: 201+ indexed (functions, components, stores, imports)
+- **Query Speed**: 1-5s for simple queries, 10-30s for complex multi-tool queries
+- **Accuracy**: Tree-sitter eliminates semantic search hallucinations
 
-## 🎯 LanceDB Note
+---
 
-LanceDB was evaluated for trace/memory system but decided against it:
-- Codebase itself is source of truth
-- Git log captures what changed
-- Don't have the pain point yet
+## Comparison to Alternatives
 
-May revisit if:
-- Team grows (onboarding needs)
-- Codebase hits 1000+ files
-- Working on project after 6+ month gap
+| Tool | Tree-sitter | Semantic Search | Auto Tool Selection | Live FS Access |
+|------|-------------|-----------------|---------------------|----------------|
+| **This (v9)** | ✅ | ✅ | ✅ | ✅ |
+| Cursor | ❌ | ✅ | ❌ | ✅ |
+| Aider | ❌ | ❌ | ❌ | ✅ |
+| GitHub Copilot | ❌ | ⚠️ | ❌ | ❌ |
+| CntxtJS | ❌ | ❌ | ❌ | ❌ (static JSON) |
+| FalkorDB Code Graph | ⚠️ | ❌ | ❌ | ❌ (graph DB) |
 
-**For now: Keep it simple. The search works great.**
+---
 
-## 💡 Quick Tips
+## Tips
 
-**Good queries:**
-- "proximity tracking implementation"
-- "how does auth timeout work"
-- "dynamic island state management"
+**Be specific with symbols:**
+- ✅ "where is authStore used?"
+- ❌ "where is the store used?" (ambiguous)
 
-**Bad queries:**
-- "code" (too vague)
-- "fix bug" (need specifics)
-- "all files" (use grep for that)
+**For conceptual questions, use natural language:**
+- ✅ "how does authentication flow work?"
+- ✅ "show me error handling patterns"
 
-**After 6 months away:**
-1. `python tools/index_codebase.py` (refresh index)
-2. `python tools/ai_editor_v3.py 'overview of architecture'`
-3. You're caught up in 30 seconds
+**Multi-part queries work:**
+- ✅ "show me all stores, and also where is authStore used?"
+
+**Claude will call multiple tools if needed!**
+
+---
+
+## Troubleshooting
+
+### "Symbol not found in index"
+- Run `!refresh-tree` to rebuild the index
+- Check if file is in `src/` (only parses src directory)
+- Verify file is `.ts`, `.tsx`, `.jsx`, or `.js`
+
+### Parsing shows 0/X files
+- Check Tree-sitter installation: `pip install tree-sitter-languages`
+- Fallback regex parser should still work
+
+### Slow responses
+- Complex queries trigger multiple tool calls (expected)
+- CocoIndex semantic search requires DB connection
+- Consider limiting search results for faster queries
+
+---
+
+## Development
+
+**Built with:**
+- Python 3.12+
+- Tree-sitter (parsing)
+- Nomic embeddings (semantic search)
+- PostgreSQL + pgvector (vector DB)
+- Claude Sonnet 4 (orchestration)
+
+**Architecture:**
+- Stateless tool execution
+- Fresh messages per query (no history pollution)
+- Autonomous tool selection via Anthropic's tool use API
+
+---
+
+## License
+
+MIT
+
+---
+
+## Credits
+
+Built by maddi as a production-grade alternative to commercial code assistants.
+
+**Key Innovation:** Combining Tree-sitter's precision with semantic search's flexibility, orchestrated by Claude's reasoning.
