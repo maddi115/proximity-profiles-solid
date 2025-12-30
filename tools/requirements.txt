@@ -31,3 +31,6 @@ ruff==0.14.10                    # Fast Python linter & formatter
 # MiniMax Configuration:
 # export ANTHROPIC_BASE_URL="https://api.minimax.io/anthropic"
 # export ANTHROPIC_AUTH_TOKEN="<YOUR_MINIMAX_API_KEY>"
+
+# Session persistence (augments/sessions)
+redis>=5.0.0
