@@ -1,0 +1,33 @@
+# AgentWinter - AI Code Intelligence Platform
+# Core dependencies for autonomous code analysis
+
+# AI & LLM
+anthropic==0.75.0                # Anthropic SDK (works with MiniMax-M2.1 compatible API)
+                                 # Note: AgentWinter uses MiniMax-M2.1 via Anthropic-compatible API
+                                 # Configure via ANTHROPIC_AUTH_TOKEN and ANTHROPIC_BASE_URL
+
+# Code Parsing
+tree-sitter==0.25.2              # Syntax tree parsing
+tree-sitter-languages==1.10.2    # Language grammars (TS, JS, TSX, JSX)
+
+# Semantic Search & Embeddings
+sentence-transformers==5.2.0     # Embedding model (BGE-small-en-v1.5)
+psycopg2-binary==2.9.9           # PostgreSQL client for CocoIndex semantic search
+
+# Caching & Performance
+cachetools==6.2.4                # TTL cache for semantic search results
+
+# File Watching
+watchdog==6.0.0                  # Live file change detection
+
+# Code Formatting
+black==25.12.0                   # Python code formatter
+autopep8==2.3.2                  # PEP8 code formatter
+ruff==0.14.10                    # Fast Python linter & formatter
+
+# Installation:
+# pip install -r tools/requirements.txt --break-system-packages
+
+# MiniMax Configuration:
+# export ANTHROPIC_BASE_URL="https://api.minimax.io/anthropic"
+# export ANTHROPIC_AUTH_TOKEN="<YOUR_MINIMAX_API_KEY>"

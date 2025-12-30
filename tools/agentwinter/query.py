@@ -1,3 +1,5 @@
+import os
+
 """Query orchestration - LLM + tool execution"""
 
 import json
@@ -20,18 +22,43 @@ def process_query(
     start_time = time.time()
     print(f"\n{COLORS['CYAN']}🤖 Processing: {query_text[:60]}...{COLORS['RESET']}")
 
-    # Build messages
+    # Load agent orchestration rules
+    orchestration_dir = os.path.join(os.path.dirname(__file__), "agent-orchestration")
+
+    with open(os.path.join(orchestration_dir, "planning-behavior.md")) as f:
+        planning_rules = f.read()
+
+    with open(os.path.join(orchestration_dir, "output-templates.md")) as f:
+        output_templates = f.read()
+
+    # Build messages with orchestration rules
     messages = [
         {
             "role": "user",
-            "content": f"""TASK: {query_text}
+            "content": f"""{planning_rules}
 
-PROJECT CONTEXT (always reference this):
+{output_templates}
+
+═══════════════════════════════════════════════════════════════
+CURRENT TASK:
+═══════════════════════════════════════════════════════════════
+
+{query_text}
+
+═══════════════════════════════════════════════════════════════
+PROJECT CONTEXT:
+═══════════════════════════════════════════════════════════════
+
 {context[:2000]}
 
 Parsed: {len(symbol_index)} symbols from {len(parsed_files)} files.
 
-Use tools to answer. Call multiple tools if needed.""",
+Available tools: find_usages, list_stores, list_components, semantic_search, 
+run_shell_command, view, git_log, git_blame, git_recent_changes, 
+git_contributors, git_diff, dependency_graph, format_code
+
+Use tools strategically. For planning questions: explore → findings → plan → visual tree → approve.
+For simple queries: just answer.""",
         }
     ]
 
