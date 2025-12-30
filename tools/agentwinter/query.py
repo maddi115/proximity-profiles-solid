@@ -96,10 +96,10 @@ For simple queries: just answer.""",
     # Initial call
     response = anthropic_client.messages.create(
         model="claude-sonnet-4-20250514",
-        max_tokens=4096,
-        temperature=1.0,
-        top_p=0.95,
-        top_k=40,
+        max_tokens=8192,
+        temperature=0.2,
+        top_p=0.9,
+        top_k=25,
         tools=TOOLS,
         messages=messages,
     )
@@ -139,10 +139,10 @@ For simple queries: just answer.""",
         # Continue conversation
         response = anthropic_client.messages.create(
             model="claude-sonnet-4-20250514",
-            max_tokens=4096,
-            temperature=1.0,
-            top_p=0.95,
-            top_k=40,
+            max_tokens=8192,
+            temperature=0.2,
+            top_p=0.9,
+            top_k=25,
             tools=TOOLS,
             messages=messages,
         )
