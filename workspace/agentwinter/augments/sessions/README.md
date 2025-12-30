@@ -106,13 +106,13 @@ def cleanup_messages(messages):
 
 **To enable** (default):
 ```python
-# tools/agentwinter.py
+# workspace/agentwinter.py
 from agentwinter.augments.sessions import session_main as main
 ```
 
 **To disable**:
 ```python
-# tools/agentwinter.py
+# workspace/agentwinter.py
 from agentwinter.main import main
 ```
 

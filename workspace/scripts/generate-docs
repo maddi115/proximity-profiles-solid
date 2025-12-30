@@ -10,9 +10,9 @@ echo "🔄 Generating architecture documentation..."
 mkdir -p docs
 
 # Run codebrain.mjs if it exists
-if [ -f "tools/static-analysis/codebrain.mjs" ]; then
+if [ -f "workspace/static-analysis/codebrain.mjs" ]; then
   echo "Running codebrain.mjs tree..."
-  node tools/static-analysis/codebrain.mjs tree src > docs/ARCHITECTURE.md 2>&1
+  node workspace/static-analysis/codebrain.mjs tree src > docs/ARCHITECTURE.md 2>&1
   if [ $? -eq 0 ]; then
     echo "✅ docs/ARCHITECTURE.md generated"
   else
@@ -23,9 +23,9 @@ else
 fi
 
 # Run flow-doc.cjs from project root
-if [ -f "tools/static-analysis/flow-doc.cjs" ]; then
+if [ -f "workspace/static-analysis/flow-doc.cjs" ]; then
   echo "Running flow-doc.cjs..."
-  node tools/static-analysis/flow-doc.cjs > docs/FLOW.md 2>&1
+  node workspace/static-analysis/flow-doc.cjs > docs/FLOW.md 2>&1
   if [ $? -eq 0 ]; then
     echo "✅ docs/FLOW.md generated"
   else

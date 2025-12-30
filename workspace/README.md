@@ -32,7 +32,7 @@ cp -r /path/to/tools /your-project/
 cd /your-project
 
 # Install dependencies
-pip install -r tools/requirements.txt --break-system-packages
+pip install -r workspace/requirements.txt --break-system-packages
 
 # Set up API key
 export ANTHROPIC_API_KEY="your-key-here"
@@ -42,7 +42,7 @@ echo 'export PATH="$PATH:/your-project/tools"' >> ~/.bashrc
 source ~/.bashrc
 
 # Run AgentWinter
-./tools/agentwinter.py
+./workspace/agentwinter.py
 # OR if added to PATH:
 agentwinter
 ```
@@ -183,7 +183,7 @@ AgentWinter:
 
 ## 📁 Project Structure
 ```
-tools/                        # AgentWinter installation
+workspace/                        # AgentWinter installation
 ├── agentwinter/
 │   ├── main.py              # Entry point
 │   ├── query.py             # Query orchestration
@@ -194,7 +194,7 @@ tools/                        # AgentWinter installation
 │   ├── file_watcher.py      # Live file watching
 │   ├── cache.py             # Context caching
 │   ├── config.py            # Configuration
-│   └── tools/               # Tool implementations
+│   └── workspace/               # Tool implementations
 │       ├── find_usages.py
 │       ├── semantic_search.py
 │       ├── git_history.py
@@ -208,7 +208,7 @@ tools/                        # AgentWinter installation
 your-project/                # Your actual codebase
 ├── src/                    # AgentWinter analyzes this
 │   └── ...
-├── tools/                  # AgentWinter installed here
+├── workspace/                  # AgentWinter installed here
 └── ...
 ```
 
@@ -289,12 +289,12 @@ AgentWinter works best with:
 
 ### Adding a New Tool
 
-1. **Create tool file**: `tools/agentwinter/tools/your_tool.py`
+1. **Create tool file**: `workspace/agentwinter/workspace/your_tool.py`
 2. **Implement function**: Return dict with results
-3. **Register in**: `tools/agentwinter/tools/__init__.py`
+3. **Register in**: `workspace/agentwinter/workspace/__init__.py`
 4. **Add to TOOLS array**: Include name, description, schema
 5. **Add execute branch**: elif tool_name == "your_tool"
-6. **Format with black**: `black tools/agentwinter/`
+6. **Format with black**: `black workspace/agentwinter/`
 7. **Test**: Ask questions that trigger your tool
 
 See `CONTRIBUTING.md` for details.
@@ -319,7 +319,7 @@ agentwinter --watch     # Live watch mode
 
 ### "Module not found"
 ```bash
-pip install -r tools/requirements.txt --break-system-packages
+pip install -r workspace/requirements.txt --break-system-packages
 ```
 
 ### "API key not set"

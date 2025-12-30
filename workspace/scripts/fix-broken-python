@@ -2,7 +2,7 @@
 # Fix broken Python files - even with syntax errors!
 # Usage: ./fix-broken-python [file]
 
-FILE=${1:-"tools/agentwinter/tools/__init__.py"}
+FILE=${1:-"workspace/agentwinter/workspace/__init__.py"}
 
 echo "🔧 Attempting to fix: $FILE"
 

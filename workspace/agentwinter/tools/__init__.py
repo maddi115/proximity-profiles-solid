@@ -175,7 +175,7 @@ TOOLS = [
                 },
                 "target_path": {
                     "type": "string",
-                    "default": "tools/agentwinter/",
+                    "default": "workspace/agentwinter/",
                     "description": "Path to format (default: tools/agentwinter/)",
                 },
             },
@@ -239,7 +239,7 @@ def execute_tool(
     elif tool_name == "format_code":
         return format_code(
             tool_input.get("formatter", "all"),
-            tool_input.get("target_path", "tools/agentwinter/"),
+            tool_input.get("target_path", "workspace/agentwinter/"),
         )
 
     return {"error": f"Unknown tool: {tool_name}"}

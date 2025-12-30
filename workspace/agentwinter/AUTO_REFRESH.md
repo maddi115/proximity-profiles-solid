@@ -13,7 +13,7 @@ On AgentWinter startup:
 ## Markers
 
 - `.coco_last_index` - Timestamp of last CocoIndex update
-- `tools/docs/.last_generated` - Timestamp of last static doc generation
+- `workspace/docs/.last_generated` - Timestamp of last static doc generation
 
 ## Manual Refresh
 ```python

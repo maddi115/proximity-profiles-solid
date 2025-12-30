@@ -15,19 +15,19 @@ Say: "✅ Discovery complete - found X features, Y stores, Z components"
 
 ### Step 1b: REINDEX COCOINDEX (MANDATORY)
 Ensure semantic search is up-to-date:
-- `run_shell_command("tools/scripts/reindex-if-needed")`
+- `run_shell_command("workspace/scripts/reindex-if-needed")`
 
 Say: "✅ CocoIndex up-to-date" or "✅ CocoIndex reindexed (X files changed)"
 
 ### Step 1c: UPDATE PROJECT MAP
 After discovery, run:
-- `run_shell_command("tools/scripts/update-project-map")`
+- `run_shell_command("workspace/scripts/update-project-map")`
 
 Say: "✅ planning/project-map.md updated with current structure"
 
 ### Step 1d: GENERATE ARCHITECTURE DOCS
 Trigger static analysis:
-- `run_shell_command("tools/scripts/generate-docs")`
+- `run_shell_command("workspace/scripts/generate-docs")`
 
 Say: "✅ docs/ARCHITECTURE.md generated"
 Say: "✅ docs/FLOW.md generated"

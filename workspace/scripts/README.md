@@ -7,38 +7,38 @@ Utility scripts for code formatting and maintenance.
 ### format-all (Recommended)
 Runs all formatters at once:
 ```bash
-./tools/scripts/format-all                    # Format tools/agentwinter/
-./tools/scripts/format-all path/to/code/      # Format specific directory
+./workspace/scripts/format-all                    # Format workspace/agentwinter/
+./workspace/scripts/format-all path/to/code/      # Format specific directory
 ```
 
 ### format-black
 Python formatter (black):
 ```bash
-./tools/scripts/format-black tools/agentwinter/
+./workspace/scripts/format-black workspace/agentwinter/
 ```
 
 ### format-autopep8
 PEP8 compliant formatter:
 ```bash
-./tools/scripts/format-autopep8 tools/agentwinter/
+./workspace/scripts/format-autopep8 workspace/agentwinter/
 ```
 
 ### format-ruff
 Fast linter + formatter:
 ```bash
-./tools/scripts/format-ruff tools/agentwinter/
+./workspace/scripts/format-ruff workspace/agentwinter/
 ```
 
 ## Quick Reference
 ```bash
 # After copy-pasting Python code:
-./tools/scripts/format-all
+./workspace/scripts/format-all
 
 # Before committing:
-./tools/scripts/format-all
+./workspace/scripts/format-all
 
 # Check a specific file:
-./tools/scripts/format-black tools/agentwinter/main.py
+./workspace/scripts/format-black workspace/agentwinter/main.py
 ```
 
 ## AI Usage

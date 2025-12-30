@@ -10,7 +10,7 @@ class AutoRefresh:
 
     def __init__(self):
         self.coco_marker = Path(".coco_last_index")
-        self.static_marker = Path("tools/docs/.last_generated")
+        self.static_marker = Path("workspace/docs/.last_generated")
         self.src_dir = "src/"
 
     def _get_marker_time(self, marker):
@@ -52,7 +52,7 @@ class AutoRefresh:
         print("📊 Refreshing CocoIndex (code changed)...")
         try:
             result = subprocess.run(
-                ["python3", "tools/indexing/index_codebase.py"],
+                ["python3", "workspace/indexing/index_codebase.py"],
                 capture_output=True,
                 text=True,
                 timeout=300,  # 5 minute timeout

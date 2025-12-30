@@ -4,7 +4,7 @@ import subprocess
 import os
 
 
-def format_code(formatter="all", target_path="tools/agentwinter/"):
+def format_code(formatter="all", target_path="workspace/agentwinter/"):
     """Format Python code with specified formatter
 
     Args:
@@ -28,7 +28,7 @@ def format_code(formatter="all", target_path="tools/agentwinter/"):
         }
 
     script_name = script_map[formatter]
-    script_path = f"tools/scripts/{script_name}"
+    script_path = f"workspace/scripts/{script_name}"
 
     if not os.path.exists(script_path):
         return {"error": f"Script not found: {script_path}"}
