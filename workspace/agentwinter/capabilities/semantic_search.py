@@ -1,13 +1,13 @@
 """Semantic search using embeddings"""
 
 import psycopg2
-from ..cache import cached_semantic_search
+from ..indexing.cache import cached_semantic_search
 
 
 def semantic_search(query, embedding_model, db_url, limit=5):
     """Semantic search with caching and visual indicator"""
-    from ..cache import search_cache
-    from ..config import COLORS
+    from ..indexing.cache import search_cache
+    from ..core.config import COLORS
 
     cache_key_str = f"{query}|{limit}"
 

@@ -2,13 +2,13 @@
 
 import sys
 from .config import get_anthropic_client, get_embedding_model, get_db_url, COLORS
-from .auto_refresh import auto_refresh
+from ..indexing.auto_refresh import auto_refresh
 from .context import build_full_context
-from .parser import parse_all_files
-from .indexer import build_index
+from ..indexing.parser import parse_all_files
+from ..indexing.indexer import build_index
 from .query import process_query
-from .file_watcher import FileWatcher
-from .cache import get_cache_stats, clear_all_caches
+from ..indexing.file_watcher import FileWatcher
+from ..indexing.cache import get_cache_stats, clear_all_caches
 
 
 def rebuild_context_and_index():

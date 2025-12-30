@@ -4,9 +4,9 @@ import os
 
 import json
 import time
-from .tools import TOOLS, execute_tool
+from ..capabilities import TOOLS, execute_tool
 from .config import COLORS
-from .cache import get_cache_stats
+from ..indexing.cache import get_cache_stats
 
 
 def process_query(

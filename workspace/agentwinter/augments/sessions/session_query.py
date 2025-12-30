@@ -3,9 +3,9 @@
 import os
 import json
 import time
-from ...tools import TOOLS, execute_tool
-from ...config import COLORS
-from ...cache import get_cache_stats
+from ...capabilities import TOOLS, execute_tool
+from ...core.config import COLORS
+from ...indexing.cache import get_cache_stats
 
 
 def serialize_content(content):
