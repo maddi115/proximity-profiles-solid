@@ -183,3 +183,105 @@ agentwinter
 **Sliding TTL**: Active sessions don't expire
 **Cleanup**: Prevents context window bloat
 **JSON-safe**: All data fully serializable
+
+---
+
+## ⚠️ IMPORTANT: Session Usage Best Practices
+
+### One Feature Per Session Rule
+
+**Each new session should focus on ONE feature or a closely-related set of features.**
+
+#### Why This Matters
+
+Sessions accumulate context over time. Mixing unrelated features in one session leads to:
+- **Context confusion**: LLM loses track of which feature it's working on
+- **Context rot**: Old decisions contaminate new work
+- **Tool result bloat**: Summarization can't distinguish important from noise
+- **Poor planning**: Jumping between features creates incomplete implementations
+
+#### Best Practices
+
+✅ **GOOD - Focused Sessions:**
+```bash
+# Session 1: Authentication feature
+> create JWT authentication system
+> add password reset flow
+> integrate with authStore
+> !new  # Done with auth
+
+# Session 2: Real-time messaging
+> create websocket message system
+> add typing indicators
+> integrate with messagesStore
+```
+
+❌ **BAD - Unfocused Sessions:**
+```bash
+# One messy session doing everything
+> create JWT auth
+> also add websocket messaging
+> oh and fix that CSS bug
+> and refactor proximityStore
+> wait, back to auth - add OAuth
+# [45 messages later, context is chaos]
+```
+
+#### When to Start a New Session
+
+Start `!new` when:
+1. ✅ **Switching features**: Moving from auth to messaging
+2. ✅ **Feature complete**: Finished implementing and testing one feature
+3. ✅ **Context feels stale**: LLM seems confused or repeating itself
+4. ✅ **Major direction change**: Pivoting implementation approach
+5. ✅ **Session >30 messages**: Getting unwieldy (warning will appear)
+
+Continue existing session when:
+1. ✅ **Iterating on same feature**: Refining, bug-fixing, testing
+2. ✅ **Related sub-features**: Adding login after implementing signup
+3. ✅ **Follow-up questions**: Clarifying implementation details
+4. ✅ **Session <20 messages**: Still focused and manageable
+
+#### Session Scoping Examples
+
+**Feature: Authentication System**
+- ✅ Login form
+- ✅ Signup form  
+- ✅ Password reset
+- ✅ Session management
+- ✅ Protected routes
+→ All related, one session is fine
+
+**Feature: Dashboard + Analytics + Settings**
+- ❌ Dashboard UI (start session 1)
+- ❌ Analytics backend (start session 2)  
+- ❌ Settings page (start session 3)
+→ Different concerns, separate sessions
+
+#### Red Flags (Time for !new)
+
+Watch for these signs that context is degrading:
+- 🚩 LLM asks about decisions already made
+- 🚩 Suggests code patterns you already rejected
+- 🚩 Can't remember file structure discussed 10 messages ago
+- 🚩 Proposes features you already implemented
+- 🚩 Session exceeds 30 messages
+
+#### The 45-Minute Rule
+
+Sessions expire after 45 minutes of inactivity. Use this as a natural break:
+- Take a break → session expires → fresh start
+- Perfect for context reset between features
+- Prevents accumulation of stale exploration data
+
+#### Summary
+
+**Think of sessions like Git branches:**
+- One branch (session) per feature
+- Keep commits (messages) focused
+- Merge (complete) before starting new branch
+- Clean history = better context
+
+**Golden Rule:**
+> "If you wouldn't put both features in the same Git commit, don't put them in the same session."
+
