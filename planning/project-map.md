@@ -1,0 +1,34 @@
+# Project Map (Auto-Generated)
+
+**Last Updated:** $(date)
+
+## Directory Structure
+```
+$(tree src/ -L 3 -I 'node_modules|*.test.*')
+```
+
+## Features
+
+$(ls -1 src/features/ | while read feature; do
+  echo "### $feature"
+  if [ -d "src/features/$feature/store" ]; then
+    echo "- Store: $(ls src/features/$feature/store/ 2>/dev/null || echo 'none')"
+  fi
+  if [ -d "src/features/$feature/components" ]; then
+    echo "- Components: $(ls src/features/$feature/components/ 2>/dev/null | tr '\n' ', ' | sed 's/,$//')"
+  fi
+  echo ""
+done)
+
+## Types
+```
+$(tree src/types/ 2>/dev/null || echo "No types directory")
+```
+
+## Routes
+```
+$(tree src/routes/ -L 2 2>/dev/null || echo "No routes directory")
+```
+
+---
+*This file is auto-generated. Do not edit manually.*

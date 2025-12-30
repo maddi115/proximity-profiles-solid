@@ -1,0 +1,39 @@
+#!/bin/bash
+# Generate architecture documentation using static analysis
+
+PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+cd "$PROJECT_ROOT"
+
+echo "🔄 Generating architecture documentation..."
+
+# Create docs directory
+mkdir -p docs
+
+# Run codebrain.mjs if it exists
+if [ -f "tools/static-analysis/codebrain.mjs" ]; then
+  echo "Running codebrain.mjs tree..."
+  node tools/static-analysis/codebrain.mjs tree src > docs/ARCHITECTURE.md 2>&1
+  if [ $? -eq 0 ]; then
+    echo "✅ docs/ARCHITECTURE.md generated"
+  else
+    echo "⚠️  codebrain.mjs failed, check docs/ARCHITECTURE.md for details"
+  fi
+else
+  echo "⚠️  codebrain.mjs not found, skipping"
+fi
+
+# Run flow-doc.cjs from project root
+if [ -f "tools/static-analysis/flow-doc.cjs" ]; then
+  echo "Running flow-doc.cjs..."
+  node tools/static-analysis/flow-doc.cjs > docs/FLOW.md 2>&1
+  if [ $? -eq 0 ]; then
+    echo "✅ docs/FLOW.md generated"
+  else
+    echo "⚠️  flow-doc.cjs failed, check docs/FLOW.md for details"
+  fi
+else
+  echo "⚠️  flow-doc.cjs not found, skipping"
+fi
+
+echo "✅ Documentation generation complete"
+ls -lh docs/
