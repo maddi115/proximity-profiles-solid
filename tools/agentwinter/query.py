@@ -25,10 +25,41 @@ def process_query(
     # Load agent orchestration rules
     orchestration_dir = os.path.join(os.path.dirname(__file__), "agent-orchestration")
 
-    with open(os.path.join(orchestration_dir, "planning-behavior.md")) as f:
-        planning_rules = f.read()
+    # Load all 5 phase files
+    phases = []
+    phase_files = {
+        1: "phase-1-exploration.md",
+        2: "phase-2-findings.md",
+        3: "phase-3-planning.md",
+        4: "phase-4-visual-map.md",
+        5: "phase-5-approval.md",
+    }
+    for phase_num in range(1, 6):
+        phase_file = os.path.join(orchestration_dir, phase_files[phase_num])
+        if os.path.exists(phase_file):
+            with open(phase_file) as f:
+                phases.append(f.read())
 
+    # Combine all phases with explicit Phase 1 instruction
+    phase1_header = """
+CRITICAL INSTRUCTION FOR ALL PLANNING QUESTIONS:
+
+Before using ANY tools, you MUST first output this exact header:
+```
+═══════════════════════════════════════════════════════════════
+PHASE 1: EXPLORATION
+═══════════════════════════════════════════════════════════════
+
+Building complete understanding of codebase...
+```
+
+Then proceed with tool calls as described in Phase 1.
+"""
+    planning_rules = phase1_header + "\n\n" + "\n\n".join(phases)
+
+    # Load output templates
     with open(os.path.join(orchestration_dir, "output-templates.md")) as f:
+        output_templates = f.read()
         output_templates = f.read()
 
     # Build messages with orchestration rules
@@ -66,6 +97,9 @@ For simple queries: just answer.""",
     response = anthropic_client.messages.create(
         model="claude-sonnet-4-20250514",
         max_tokens=4096,
+        temperature=1.0,
+        top_p=0.95,
+        top_k=40,
         tools=TOOLS,
         messages=messages,
     )
@@ -106,6 +140,9 @@ For simple queries: just answer.""",
         response = anthropic_client.messages.create(
             model="claude-sonnet-4-20250514",
             max_tokens=4096,
+            temperature=1.0,
+            top_p=0.95,
+            top_k=40,
             tools=TOOLS,
             messages=messages,
         )
