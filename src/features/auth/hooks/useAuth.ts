@@ -15,6 +15,7 @@ interface UseAuthReturn {
   resetPassword: (email: string) => Promise<AuthResponse>;
   updateProfile: (updates: ProfileUpdate) => Promise<AuthResponse>;
   clearError: () => void;
+  skipAuth: () => void; // GUEST MODE: Skip auth for development
 }
 
 export function useAuth(): UseAuthReturn {
@@ -30,6 +31,7 @@ export function useAuth(): UseAuthReturn {
     signInWithOAuth: authActions.signInWithOAuth.bind(authActions),
     resetPassword: authActions.resetPassword.bind(authActions),
     updateProfile: authActions.updateProfile.bind(authActions),
-    clearError: authActions.clearError.bind(authActions)
+    clearError: authActions.clearError.bind(authActions),
+    skipAuth: authActions.skipAuth.bind(authActions) // GUEST MODE
   };
 }

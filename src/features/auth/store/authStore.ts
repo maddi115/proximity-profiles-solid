@@ -123,7 +123,6 @@ export const authActions = {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: provider as any,
         options: { redirectTo: `${window.location.origin}/home` }
-
       });
       if (error) throw error;
       return { success: true };
@@ -176,44 +175,77 @@ export const authActions = {
     });
   },
 
-setupAuthListener() {
-  const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-    console.log('🔐 Auth event:', event);
+  setupAuthListener() {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔐 Auth event:', event);
 
-    // Treat INITIAL_SESSION like a normal session set
-    if ((event === 'INITIAL_SESSION' || event === 'SIGNED_IN') && session) {
-      setStore({
-        user: session.user,
-        session: session,
-        isAuthenticated: true,
-        error: null
-      });
-      this._syncProfile(session.user);
-      return;
-    }
+      if ((event === 'INITIAL_SESSION' || event === 'SIGNED_IN') && session) {
+        setStore({
+          user: session.user,
+          session: session,
+          isAuthenticated: true,
+          error: null
+        });
+        this._syncProfile(session.user);
+        return;
+      }
 
-    if (event === 'SIGNED_OUT') {
-      setStore({
-        user: null,
-        session: null,
-        isAuthenticated: false
-      });
-      return;
-    }
+      if (event === 'SIGNED_OUT') {
+        setStore({
+          user: null,
+          session: null,
+          isAuthenticated: false
+        });
+        return;
+      }
 
-    if ((event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') && session) {
-      setStore({
-        user: session.user,
-        session: session,
-        isAuthenticated: true
-      });
-      return;
-    }
-  });
+      if ((event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') && session) {
+        setStore({
+          user: session.user,
+          session: session,
+          isAuthenticated: true
+        });
+        return;
+      }
+    });
 
-  return authListener;
-},
+    return authListener;
+  },
 
+  // ========================================================================
+  // GUEST MODE (DEVELOPMENT ONLY)
+  // Bypasses authentication to test app features without Supabase setup
+  // TODO: Remove before production deployment
+  // ========================================================================
+  
+  skipAuth(): void {
+    console.warn('⚠️ GUEST MODE ACTIVATED - No real authentication');
+    
+    const guestUser: User = {
+      id: 'guest-dev-' + Date.now(),
+      email: 'guest@dev.local',
+      user_metadata: { 
+        username: 'Guest User',
+        avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=guest'
+      }
+    };
+    
+    setStore({
+      user: guestUser,
+      session: { 
+        access_token: 'guest-token-dev-only',
+        user: guestUser 
+      } as Session,
+      isAuthenticated: true,
+      isLoading: false,
+      error: null
+    });
+    
+    this._syncProfile(guestUser);
+    console.log('✅ Guest mode active - authenticated as guest user');
+  },
+
+  // ========================================================================
 
   clearError(): void {
     setStore("error", null);
