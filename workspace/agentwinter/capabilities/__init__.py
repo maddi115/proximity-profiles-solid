@@ -5,7 +5,7 @@ from .list_stores import list_stores
 from .list_components import list_components
 from .semantic_search import semantic_search
 from .run_treesitter_query import run_treesitter_query
-from .run_shell_command import run_shell_command
+from .shell_execution import run_shell_command
 from .dependency_graph import dependency_graph
 from .format_code import format_code
 from .git_history import (
