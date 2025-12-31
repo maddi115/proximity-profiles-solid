@@ -10,7 +10,7 @@
               "where is authStore used?"
               "show me all stores"
    
-   📚 Docs:   cat tools/README.md
+   📚 Docs:   cat workspace/README.md
    
    🏗️  Now:   Clean modular architecture (9 focused modules)
    
