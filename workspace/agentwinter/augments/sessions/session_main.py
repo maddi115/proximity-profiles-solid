@@ -1,6 +1,7 @@
 """Main entry point with session management"""
 
 import readline
+import readline
 import sys
 from ...core.config import get_anthropic_client, get_embedding_model, get_db_url, COLORS
 from ...indexing.auto_refresh import auto_refresh
