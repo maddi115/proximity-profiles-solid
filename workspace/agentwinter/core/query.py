@@ -23,7 +23,7 @@ def process_query(
     print(f"\n{COLORS['CYAN']}🤖 Processing: {query_text[:60]}...{COLORS['RESET']}")
 
     # Load agent orchestration rules
-    orchestration_dir = os.path.join(os.path.dirname(__file__), "agent-orchestration")
+    orchestration_dir = os.path.join(os.path.dirname(__file__), "../agent-orchestration")
 
     # Load all 5 phase files
     phases = []
@@ -40,6 +40,29 @@ def process_query(
             with open(phase_file) as f:
                 phases.append(f.read())
 
+    # CRITICAL: Sequential execution forcing instruction
+    sequential_instruction = """
+═══════════════════════════════════════════════════════════════
+CRITICAL EXECUTION REQUIREMENT - READ THIS FIRST
+═══════════════════════════════════════════════════════════════
+
+YOU MUST OUTPUT ALL 5 PHASES IN EXACT SEQUENTIAL ORDER.
+YOU CANNOT SKIP ANY PHASE. EACH PHASE IS MANDATORY.
+
+Your response MUST contain these 5 exact phase headers in this order:
+1. "PHASE 1: EXPLORATION" (with tool calls)
+2. "PHASE 2: FINDINGS & ANALYSIS" (with 3 approaches)
+3. "PHASE 3: DETAILED PLANNING" (with steps, checklist, self-critique)
+4. "PHASE 4: VISUAL IMPLEMENTATION MAP" (with annotated tree)
+5. "PHASE 5: APPROVAL" (with confidence assessment)
+
+If ANY phase header is missing from your response, your response is INVALID.
+If you skip from Phase 1 directly to Phase 4, your response is INVALID.
+
+You must COMPLETE each phase BEFORE moving to the next phase.
+═══════════════════════════════════════════════════════════════
+"""
+
     # Combine all phases with explicit Phase 1 instruction
     phase1_header = """
 CRITICAL INSTRUCTION FOR ALL PLANNING QUESTIONS:
@@ -55,12 +78,23 @@ Building complete understanding of codebase...
 
 Then proceed with tool calls as described in Phase 1.
 """
-    planning_rules = phase1_header + "\n\n" + "\n\n".join(phases)
+    planning_rules = sequential_instruction + "\n\n" + phase1_header + "\n\n" + "\n\n".join(phases)
 
     # Load output templates
     with open(os.path.join(orchestration_dir, "output-templates.md")) as f:
         output_templates = f.read()
-        output_templates = f.read()
+
+    # Auto-detect if this is a planning/implementation query
+    planning_keywords = [
+        "plan", "implement", "add", "create", "build", "refactor", 
+        "feature", "modify", "change", "update", "design", "architect"
+    ]
+    is_planning_query = any(keyword in query_text.lower() for keyword in planning_keywords)
+    
+    # Set temperature based on query type
+    temperature = 0.7 if is_planning_query else 0.2
+    
+    print(f"{COLORS['YELLOW']}🎯 Mode: {'Planning' if is_planning_query else 'Query'} (temp={temperature}){COLORS['RESET']}")
 
     # Build messages with orchestration rules
     messages = [
@@ -80,12 +114,12 @@ CURRENT TASK:
 PROJECT CONTEXT:
 ═══════════════════════════════════════════════════════════════
 
-{context[:2000]}
+{context}
 
 Parsed: {len(symbol_index)} symbols from {len(parsed_files)} files.
 
-Available tools: find_usages, list_stores, list_components, semantic_search, 
-run_shell_command, view, git_log, git_blame, git_recent_changes, 
+Available tools: find_usages, list_stores, list_components, semantic_search,
+run_shell_command, view, git_log, git_blame, git_recent_changes,
 git_contributors, git_diff, dependency_graph, format_code
 
 Use tools strategically. For planning questions: explore → findings → plan → visual tree → approve.
@@ -93,13 +127,13 @@ For simple queries: just answer.""",
         }
     ]
 
-    # Initial call
+    # Initial call - Using MiniMax-M2.1
     response = anthropic_client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="MiniMax-M2.1",
         max_tokens=8192,
-        temperature=0.2,
-        top_p=0.9,
-        top_k=25,
+        temperature=temperature,
+        top_p=0.95,
+        top_k=40,
         tools=TOOLS,
         messages=messages,
     )
@@ -138,11 +172,11 @@ For simple queries: just answer.""",
 
         # Continue conversation
         response = anthropic_client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="MiniMax-M2.1",
             max_tokens=8192,
-            temperature=0.2,
-            top_p=0.9,
-            top_k=25,
+            temperature=temperature,
+            top_p=0.95,
+            top_k=40,
             tools=TOOLS,
             messages=messages,
         )
