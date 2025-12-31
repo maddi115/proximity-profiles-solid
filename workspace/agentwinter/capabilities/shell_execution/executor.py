@@ -20,6 +20,19 @@ DANGEROUS_OPERATIONS = [
     '/etc', '/usr', '../', 'eval', 'exec'
 ]
 
+# Security block visual template
+SECURITY_BLOCK_TEMPLATE = """
+╔══════════════════════════════════════════════════════════════╗
+║  🚨 SECURITY BLOCK - DANGEROUS COMMAND PREVENTED 🚨          ║
+╔══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║  Command: {command:<54} ║
+║  Reason:  {reason:<54} ║
+║  Type:    {violation_type:<54} ║
+║                                                               ║
+╚══════════════════════════════════════════════════════════════╝
+"""
+
 
 def is_command_allowed(command: str) -> bool:
     """Check if command is in explicit whitelist"""
@@ -93,7 +106,7 @@ def run_shell_command(command: str) -> dict:
     3. Check blocked patterns with smart pipe/chain handling
     
     Returns dict with: command, output, error_output, success, return_code
-    OR dict with: error, hint
+    OR dict with: error, hint, blocked, visual_alert
     """
 
     # Security check 1: Whitelist takes priority
@@ -103,9 +116,17 @@ def run_shell_command(command: str) -> dict:
     # Security check 2: Smart blocking with pipe/chain awareness
     elif is_blocked(command):
         return {
-            "error": "Command blocked: contains dangerous pattern",
+            "error": "SECURITY_BLOCK",
+            "blocked": True,
+            "security_violation": "DESTRUCTIVE_OPERATION",
             "command": command,
-            "hint": "See BLOCKED_PATTERNS.py. Safe read-only pipes/chains are allowed."
+            "reason": "Contains dangerous pattern (rm/mv/cp/chmod/etc)",
+            "hint": "See BLOCKED_PATTERNS.py for security restrictions",
+            "visual_alert": SECURITY_BLOCK_TEMPLATE.format(
+                command=command[:54] if len(command) <= 54 else command[:51] + "...",
+                reason="Contains dangerous pattern",
+                violation_type="DESTRUCTIVE_OPERATION"
+            )
         }
     # Security check 3: Not whitelisted and not explicitly safe
     else:
@@ -115,14 +136,17 @@ def run_shell_command(command: str) -> dict:
             pass
         else:
             return {
-                "error": f"Command not allowed: {command}",
-                "allowed_commands": ALLOWED_COMMANDS,
-                "safe_examples": [
-                    "cat src/features/auth/components/LoginForm.jsx",
-                    "ls src/ | wc -l",
-                    "git log | head -10"
-                ],
-                "hint": "See ALLOWED_COMMANDS.py and SAFE_FILE_PATTERNS.py"
+                "error": "SECURITY_BLOCK",
+                "blocked": True,
+                "security_violation": "NOT_WHITELISTED",
+                "command": command,
+                "reason": "Command not in whitelist",
+                "hint": "See ALLOWED_COMMANDS.py and SAFE_FILE_PATTERNS.py",
+                "visual_alert": SECURITY_BLOCK_TEMPLATE.format(
+                    command=command[:54] if len(command) <= 54 else command[:51] + "...",
+                    reason="Command not in whitelist",
+                    violation_type="NOT_WHITELISTED"
+                )
             }
 
     # Execute command

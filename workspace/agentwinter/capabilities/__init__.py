@@ -206,7 +206,11 @@ def execute_tool(
             tool_input.get("max_results", 20),
         )
     elif tool_name == "run_shell_command":
-        return run_shell_command(tool_input["command"])
+        result = run_shell_command(tool_input["command"])
+        # Print visual alert if command was blocked
+        if isinstance(result, dict) and result.get("blocked"):
+            print(result.get("visual_alert", ""))
+        return result
     elif tool_name == "git_log":
         return git_log(tool_input["file_path"], tool_input.get("limit", 10))
     elif tool_name == "git_blame":
@@ -227,19 +231,14 @@ def execute_tool(
             tool_input.get("commit1", "HEAD~1"),
             tool_input.get("commit2", "HEAD"),
         )
-
     elif tool_name == "dependency_graph":
         return dependency_graph(
-            tool_input["graph_type"],
-            tool_input.get("target"),
-            symbol_index,
-            parsed_files,
+            tool_input["graph_type"], tool_input.get("target")
         )
-
     elif tool_name == "format_code":
         return format_code(
             tool_input.get("formatter", "all"),
             tool_input.get("target_path", "workspace/agentwinter/"),
         )
-
-    return {"error": f"Unknown tool: {tool_name}"}
+    else:
+        return {"error": f"Unknown tool: {tool_name}"}
