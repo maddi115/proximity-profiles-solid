@@ -23,17 +23,17 @@ export default function WelcomePage() {
         <h1 class={styles.title}>Welcome</h1>
         
         <p class={styles.subtitle}>
-          Placebook is a local directory connecting people through shared physical spaces.
+          Placebook is a local directory  that connects people through shared physical spaces.
         </p>
 
         <div class={styles.locationBadge}>
-          You are entering Greenway Grocery.
+          You are entering <span class={styles.highlighted}>Greenway Grocery</span>.
         </div>
 
         <ul class={styles.featureList}>
           <li class={styles.featureItem}>See who is here</li>
-          <li class={styles.featureItem}>Recognize familiar faces</li>
-          <li class={styles.featureItem}>Leave quiet notes.</li>
+          <li class={styles.featureItem}>Discover familiar faces</li>
+          <li class={styles.featureItem}>Leave quiet notes on profiles</li>
         </ul>
 
         <button class={styles.enterButton} onClick={handleEnter}>
