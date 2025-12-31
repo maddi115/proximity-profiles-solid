@@ -51,7 +51,7 @@ def process_query(
 
     # Load existing messages from session
     messages = session_manager.load_session(session_id)
-    
+
     # If new session, build initial message with orchestration rules
     if not messages:
         # Load agent orchestration rules
@@ -72,6 +72,29 @@ def process_query(
                 with open(phase_file) as f:
                     phases.append(f.read())
 
+        # CRITICAL: Sequential execution forcing instruction
+        sequential_instruction = """
+═══════════════════════════════════════════════════════════════
+CRITICAL EXECUTION REQUIREMENT - READ THIS FIRST
+═══════════════════════════════════════════════════════════════
+
+YOU MUST OUTPUT ALL 5 PHASES IN EXACT SEQUENTIAL ORDER.
+YOU CANNOT SKIP ANY PHASE. EACH PHASE IS MANDATORY.
+
+Your response MUST contain these 5 exact phase headers in this order:
+1. "PHASE 1: EXPLORATION" (with tool calls)
+2. "PHASE 2: FINDINGS & ANALYSIS" (with 3 approaches)
+3. "PHASE 3: DETAILED PLANNING" (with steps, checklist, self-critique)
+4. "PHASE 4: VISUAL IMPLEMENTATION MAP" (with annotated tree)
+5. "PHASE 5: APPROVAL" (with confidence assessment)
+
+If ANY phase header is missing from your response, your response is INVALID.
+If you skip from Phase 1 directly to Phase 4, your response is INVALID.
+
+You must COMPLETE each phase BEFORE moving to the next phase.
+═══════════════════════════════════════════════════════════════
+"""
+
         # Combine all phases with explicit Phase 1 instruction
         phase1_header = """
 CRITICAL INSTRUCTION FOR ALL PLANNING QUESTIONS:
@@ -87,11 +110,23 @@ Building complete understanding of codebase...
 
 Then proceed with tool calls as described in Phase 1.
 """
-        planning_rules = phase1_header + "\n\n" + "\n\n".join(phases)
+        planning_rules = sequential_instruction + "\n\n" + phase1_header + "\n\n" + "\n\n".join(phases)
 
         # Load output templates
         with open(os.path.join(orchestration_dir, "output-templates.md")) as f:
             output_templates = f.read()
+
+        # Auto-detect if this is a planning/implementation query
+        planning_keywords = [
+            "plan", "implement", "add", "create", "build", "refactor", 
+            "feature", "modify", "change", "update", "design", "architect"
+        ]
+        is_planning_query = any(keyword in query_text.lower() for keyword in planning_keywords)
+        
+        # Set temperature based on query type
+        temperature = 0.7 if is_planning_query else 0.2
+        
+        print(f"{COLORS['YELLOW']}🎯 Mode: {'Planning' if is_planning_query else 'Query'} (temp={temperature}){COLORS['RESET']}")
 
         # Build initial message with orchestration rules
         messages = [
@@ -111,7 +146,7 @@ CURRENT TASK:
 PROJECT CONTEXT:
 ═══════════════════════════════════════════════════════════════
 
-{context[:2000]}
+{context}
 
 Parsed: {len(symbol_index)} symbols from {len(parsed_files)} files.
 
@@ -123,7 +158,7 @@ Use tools strategically. For planning questions: explore → findings → plan �
 For simple queries: just answer.""",
             }
         ]
-        
+
         print(f"{COLORS['YELLOW']}🆕 New session: {session_id[:20]}...{COLORS['RESET']}")
     else:
         # Existing session - just append new query
@@ -132,14 +167,28 @@ For simple queries: just answer.""",
             "content": query_text
         })
         print(f"{COLORS['GREEN']}↩️  Resuming session: {session_id[:20]}... ({len(messages)} messages){COLORS['RESET']}")
+        
+        # For existing sessions, use lower temperature for consistency
+        temperature = 0.2
 
-    # Initial call
+    # Determine temperature for new sessions
+    if not messages or len(messages) == 1:
+        planning_keywords = [
+            "plan", "implement", "add", "create", "build", "refactor", 
+            "feature", "modify", "change", "update", "design", "architect"
+        ]
+        is_planning_query = any(keyword in query_text.lower() for keyword in planning_keywords)
+        temperature = 0.7 if is_planning_query else 0.2
+    else:
+        temperature = 0.2
+
+    # Initial call - Using MiniMax-M2.1
     response = anthropic_client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="MiniMax-M2.1",
         max_tokens=8192,
-        temperature=0.2,
-        top_p=0.9,
-        top_k=25,
+        temperature=temperature,
+        top_p=0.95,
+        top_k=40,
         tools=TOOLS,
         messages=messages,
     )
@@ -179,11 +228,11 @@ For simple queries: just answer.""",
 
         # Continue conversation
         response = anthropic_client.messages.create(
-            model="claude-sonnet-4-20250514",
+            model="MiniMax-M2.1",
             max_tokens=8192,
-            temperature=0.2,
-            top_p=0.9,
-            top_k=25,
+            temperature=temperature,
+            top_p=0.95,
+            top_k=40,
             tools=TOOLS,
             messages=messages,
         )
@@ -194,11 +243,11 @@ For simple queries: just answer.""",
     print(f"\n{COLORS['BLUE']}{'=' * 70}{COLORS['RESET']}")
     print(final_text)
     print(f"{COLORS['BLUE']}{'=' * 70}{COLORS['RESET']}")
-    
+
     # Serialize final response content before saving
     serialized_final = serialize_content(response.content)
     messages.append({"role": "assistant", "content": serialized_final})
-    
+
     # Save session to Redis
     session_manager.save_session(session_id, messages)
     print(f"{COLORS['CYAN']}💾 Session saved (expires in 45 min){COLORS['RESET']}")
