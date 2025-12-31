@@ -20,6 +20,7 @@ ALLOWED_COMMANDS = [
     "ls workspace",
     "ls workspace/static-analysis/output",
     "tree src",
+    "pwd",
     
     # Git operations (read-only)
     "git status",
