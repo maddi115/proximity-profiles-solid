@@ -1,5 +1,5 @@
 import { useNavigate } from '@solidjs/router';
-import { authStore } from '../../../features/auth/store/authStore';
+import { authStore } from '../../../features/auth/store/DB_authStore';
 import styles from './StoryButton.module.css';
 
 export function StoryButton() {

@@ -1,6 +1,6 @@
 import { Router, Route, Navigate } from "@solidjs/router";
 import { lazy, onMount } from "solid-js";
-import { authActions } from "../features/auth/store/authStore";
+import { authActions } from "../features/auth/store/DB_authStore";
 import { ProtectedRoute } from "../features/auth/components/ProtectedRoute";
 
 import MainLayout from "../routes/_layout";

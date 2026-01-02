@@ -1,5 +1,5 @@
 import { onMount } from "solid-js";
-import { authActions } from "../features/auth/store/authStore";
+import { authActions } from "../features/auth/store/DB_authStore";
 import { ProximityMap } from "../features/proximity/ProximityMap";
 import { BalanceWarning } from "./(sheet)/home/dynamicIsland/components/BalanceWarning";
 import styles from "./mainLayout.module.css";

@@ -1,6 +1,6 @@
 import { onMount } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
-import { authStore } from '../../../features/auth/store/authStore';
+import { authStore } from '../../../features/auth/store/DB_authStore';
 import styles from './welcome-page.module.css';
 
 export default function WelcomePage() {

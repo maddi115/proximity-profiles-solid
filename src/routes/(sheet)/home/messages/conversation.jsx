@@ -1,6 +1,6 @@
 import { For, Show } from 'solid-js';
 import { useNavigate, useLocation } from '@solidjs/router';
-import { authStore } from '../../../../features/auth/store/authStore';
+import { authStore } from '../../../../features/auth/store/DB_authStore';
 import styles from '../../../routes.module.css';
 import homeStyles from '../home.module.css';
 import messageStyles from './messages.module.css';

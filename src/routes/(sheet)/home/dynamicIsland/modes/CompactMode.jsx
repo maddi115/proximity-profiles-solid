@@ -1,4 +1,4 @@
-import { authStore } from "../../../../../features/auth/store/authStore";
+import { authStore } from "../../../../../features/auth/store/DB_authStore";
 import styles from "../island.module.css";
 
 /**

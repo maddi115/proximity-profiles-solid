@@ -1,5 +1,5 @@
 import { Accessor } from 'solid-js';
-import { authStore, authActions } from '../store/authStore';
+import { authStore, authActions } from '../store/DB_authStore';
 import type { User, Session, AuthResponse, UserMetadata, ProfileUpdate } from '../../../types/auth';
 
 interface UseAuthReturn {

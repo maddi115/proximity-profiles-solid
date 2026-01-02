@@ -3,7 +3,7 @@ import { useNavigate } from '@solidjs/router';
 import { messagesActions } from '../../../../features/messages/store/messagesStore';
 import { store as proximityStore } from '../../../../features/proximity/store/proximityStore';
 import { profiles } from '../../../../features/proximity/mockData';
-import { authStore } from '../../../../features/auth/store/authStore';
+import { authStore } from '../../../../features/auth/store/DB_authStore';
 import styles from '../../../routes.module.css';
 import homeStyles from '../home.module.css';
 import messageStyles from './messages.module.css';

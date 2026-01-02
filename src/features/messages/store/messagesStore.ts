@@ -1,6 +1,6 @@
 import { createStore } from "solid-js/store";
 import { activityStore } from "../../notifications/store/activityStore";
-import { authStore } from "../../auth/store/authStore";
+import { authStore } from "../../auth/store/DB_authStore";
 import type { Activity } from "../../../types/activity";
 
 export interface Message extends Activity {
